@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<modules>
+    <module name='adjunct'>
+        <specification>
+            <description>
+                <name>Adjunct</name>
+                <version>1.0</version>
+                <short>Adjunct Module</short>
+                <long><![CDATA[Adjunct Module...]]></long>
+            </description>
+
+            <components>
+                <element name='adjunct' render='adjunct' src='php:adjunct_render' definition="zobjectdef/@name" />
+
+                <ajax action='adjunct' render='php:juniper_zobject_validate' />
+            </components>
+
+            <program>
+                <control type="display" src="php:zwpadmin_admin_panel_display" />
+                <control type="redirect" src="php:zwpadmin_admin_panel_redirect" />
+                <control type="page" src="php:zwpadmin_admin_panel_page" />
+                <control type="autotemplate" src="zo-wpadmin-AutoTemplate.xsl" />
+            </program>
+        </specification>
+
+        <file id='adjunct' type='php' src='adjunct.php' mode='startup' />
+
+        <file id='adjunct-css' type='css' src="css/zo-module-zobjects.css" />
+
+        <file id="adjunct-js" type="js" src="adjunct.js" dependancies="jquery-validation,jquery-validation-additional-methods" />
+    </module>
+</modules>

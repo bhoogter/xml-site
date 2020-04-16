@@ -1,7 +1,7 @@
-# xml-modules
+# xml-site
 
-A commong source for data elements
+An xml-based CMS engine
 
 ## License
 
-- LGPLv3
+- GPLv3
