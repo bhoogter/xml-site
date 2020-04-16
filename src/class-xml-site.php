@@ -16,9 +16,12 @@ class xml_site extends source
             resource_resolver::instance()->init($a[0]);  // 2nd, http-root
         }
         $this->resource_folder = $n >= 1 ? $a[0] : null;
-        php_logger::alert("resource_folder=$resource_folder");
         $this->init_source();
-        $this->server = new xml_serve($this->get_source("PAGES"), $this->resource_folder);
+        $this->server = new xml_serve(
+            $this->resource_folder,
+            $this->get_source("PAGES"), 
+            $this->get_source("SITE")
+        );
     }
 
     public function resolve_file($res, $scn = [], $ext = [], $sub = ['.', '*']) {
@@ -76,7 +79,6 @@ class xml_site extends source
         foreach($files as $ff) {
             $src = $ff->getAttribute("src");
             $module = $ff->parentNode->getAttribute("name");
-            php_logger::alert("RR: ", resource_resolver::instance());
             $f = $this->resolve_file($src, "module", $module);
             if ($f == "") throw new Exception("Could not find file for module.  Module=$module, src=$src");
             print "\n=========\nsrc=$src, module=$module, f=$f\n";

@@ -15,7 +15,7 @@ class xml_site_test extends TestCase
         $pages = realpath(self::PAGES_XML);
         $res = realpath(__DIR__ . "/resources/content");
         self::$subject = new xml_site($res, $pages);
-        print_r(self::$subject->resource_folder);
+        print_r(self::$subject->get_source("SITE")->saveXML());
     }
 
     public function testXmlSiteLoads()
@@ -44,8 +44,8 @@ class xml_site_test extends TestCase
         // php_logger::set_log_level("xml_serve::new_pagepart_xml", 'all');
         // php_logger::set_log_level("xml_serve", 'all');
         php_logger::set_log_level("page_render", 'all');
-        php_logger::set_log_level("resource_resolver", 'trace');
+        // php_logger::set_log_level("resource_resolver", 'trace');
         $result = self::$subject->render("/about");
-        $this->assertNotNull(self::$subject);
+        $this->assertNotNull($result);
     }
 }
