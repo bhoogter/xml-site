@@ -34,7 +34,7 @@ class xml_site_test extends TestCase
 
     public function testServerPageRender()
     {
-        $part = self::$subject->server->get_page('/about');
+        $result = self::$subject->server->get_page('/about');
         $this->assertNotNull($result);
     }
 
