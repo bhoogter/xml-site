@@ -41,10 +41,7 @@ class xml_site_test extends TestCase
     public function testXmlPageRender()
     {
         php_logger::clear_log_levels('warning');
-        // php_logger::set_log_level("xml_serve::new_pagepart_xml", 'all');
-        // php_logger::set_log_level("xml_serve", 'all');
         php_logger::set_log_level("page_render", 'all');
-        // php_logger::set_log_level("resource_resolver", 'trace');
         $result = self::$subject->render("/about");
         $this->assertNotNull($result);
     }

@@ -2,9 +2,8 @@
 <modules>
     <module>
         <dependencies>
-            <dependency group="bhoogter" name="xml-file" version="0.2.70" />
             <dependency group="bhoogter" name="xml-modules" version="0.1.8" />
-            <dependency group="bhoogter" name="xml-serve" version="0.1.19" />
+            <dependency group="bhoogter" name="xml-serve" version="0.1.22" />
         </dependencies>
     </module>
  </modules>
