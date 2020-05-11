@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<extension>
+    <specification>
+        <description>
+            <name>ZObject System Module</name>
+            <version>1.0</version>
+            <short>ZObject System Module</short>
+            <long><![CDATA[ZObject Main System Module]]></long>
+        </description>
+
+        <components>
+            <element name='zobject' render='zobject' src='zo-class-zobject' definition="zobjectdef/@name" />
+            <element name='zaction' render='zobject_action' src='zo-class-zaction' definition="zactiondef/@name" />
+
+            <scan name='typedef'  />
+            <scan name='zobjectdef' />
+            <scan name='zactiondef' />
+
+            <ajax action='validate' render='php:juniper_zobject_validate' />
+            <ajax action='zobject-auth' render='php:juniper_zobject_auth' />
+        </components>
+
+        <program>
+            <control type="page" src="php:zwpadmin_admin_panel_page" />
+            <control type="display" src="php:zwpadmin_admin_panel_display" />
+            <control type="redirect" src="php:zwpadmin_admin_panel_redirect" />
+            <control type="autotemplate" src="zo-wpadmin-AutoTemplate.xsl" />
+        </program>
+    </specification>
+
+    <file id='simple-blog-functions' type='php' src='functions.php'	/>
+</extension>

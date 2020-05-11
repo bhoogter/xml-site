@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+
+<pagetemplate name='Forest'>
+	<uri>https://wordpress.org/themes/twentytwenty/</uri>
+	<version>20.20</version>
+	<description>Wordpress 2020 theme</description>
+	<author>Wordpress</author>
+	<author-uri>http://www.wordpress.org</author-uri>
+	<tags>green, three-column</tags>
+	<preview>green-screen.jpg</preview>
+
+	<css src='style.css'/>
+	<css src='style-rtl.css'/>
+	<css src='print.css'/>
+
+	<content id="logo"		type="html"	src="logo.html" />
+	<content id="links"     type="html"	src="links.html" />
+	<content id="sidebar" 	type="html"	src="sidebar.html" />
+	<content id="footer" 	type="html"	src="footer.html" />
+
+    <file id='twentytwenty' src='functions.php' />
+
+	<pagebody>
+		<!-- <?php		wp_body_open();	?> -->
+		<header id="site-header" class="header-footer-group" role="banner">
+            <content id='header' />
+        </header>
+
+        <article>
+            <content id='content' />
+        </article>
+
+        <footer id="site-footer" role="contentinfo" class="header-footer-group">
+            <content id='footer' />
+        </footer>
+	</pagebody>
+</pagetemplate>

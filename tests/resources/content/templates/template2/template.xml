@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+
+<pagetemplate name='Test Template 2'>
+    <uri>http://www.benjaminhoogterp.com/</uri>
+    <version>1.4</version>
+    <description>A blue theme</description>
+    <author>Blue</author>
+    <author-uri>http://www.benjaminhoogterp.com/</author-uri>
+    <tags>blue, two-column</tags>
+    <preview>screen.jpg</preview>
+
+    <css src='style.css'/>
+    <css src='global-for-template.css'/>
+    <images src='images/'/>
+
+    <pagebody>
+        <div id="main">
+            <header>
+                <content id='logo' />
+                <nav><content id='links'/></nav>
+            </header>
+            <main>
+                <div id='site_content'>
+                    <aside><div id='sidebar'><content id='sidebar' /></div></aside>
+                    <article><div id='content'><content id='content' /></div></article>
+                </div>
+            </main>
+            <footer id='footer'>
+                <content id='footer'>(c) Someone.</content>
+            </footer>
+        </div>
+    </pagebody>
+</pagetemplate>
