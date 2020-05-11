@@ -108,22 +108,29 @@ ul
 }
 
 #site_content
-{ width: 980px;
-  overflow: hidden;
-  margin: 0 auto 0 auto;
-  padding: 5px 0;} 
+{ 
+    float: left;
+    width: 980px;
+    overflow: hidden;
+    margin: 0 auto 0 auto;
+    padding: 5px 0;
+    border: solid 5px black;
+} 
 
 #sidebar
-{ font-family: Tahoma;
-  font-size: 14px;
-  float: right;
-  width: 258px;
-  margin: 0px 0px 0px 0px;
-  padding: 0 20px 0 20px;
+{ 
+    clear: right;
+    float: right;
+    width: 258px;
+    margin: 0px 0px 0px 0px;
+    padding: 0 20px 0 20px;
+    font-family: Tahoma;
+    font-size: 14px;
 }
 
 #sidebar ul
-{ width: 228px; 
+{ 
+    width: 228px; 
   padding: 4px 0 0 0; 
   margin: 4px 0 30px 0;}
 
@@ -140,43 +147,58 @@ ul
 { color: #444;} 
 
 #content
-{ float: left;
-  text-align: left;
-  font-family: tahoma;
-  font-size: 14px;
-  width: 633px;
-  margin: 0px 0px 0px 0px;
-  padding: 0 20px 0 20px;
+{ 
+    float: left;
+    text-align: left;
+    font-family: tahoma;
+    font-size: 14px;
+    width: 633px;
+    margin: 0px 0px 0px 0px;
+    padding: 0 20px 0 20px;
 }
 
 #pic-right
-{ float: left;
-  text-align: left;
-  font-family: tahoma;
-  font-size: 14px;
-  width: 10px;
-  height: 10px;
-  background-color: black;
-  margin: 0px 0px 0px 0px;
-  padding: 0 00px 0 20px;
+{ 
+    float: left;
+    text-align: left;
+    font-family: tahoma;
+    font-size: 14px;
+    width: 10px;
+    height: 10px;
+    background-color: black;
+    margin: 0px 0px 0px 0px;
+    padding: 0 00px 0 20px;
+}
+
+#nav * li
+{
+    float: left;
+    list-style-type: none;
+    font-family: 'Arial';
+    font-size: 14px;
+    font-weight: bold;
+    padding-right: 20px;
 }
 
 /* main container */
 #main
-{ width: 1000px;
-  margin-left: auto; 
-  margin-right: auto;
+{ 
+    width: 1000px;
+    margin-left: auto; 
+    margin-right: auto;
+    text-align: center;
 }
 
 /* links above the logo */
 #links
-{ background: url(images/links.png) repeat;
-  margin: 5px auto 0 auto;
-  padding: 17px 0px 6px 0px;
-  width: 980px;
-  text-align: center;
-  height: 27px;
-  border: 0px solid;
+{ 
+    background: url(images/links.png) repeat;
+    margin: 5px auto 0 auto;
+    padding: 17px 0px 6px 0px;
+    width: 980px;
+    text-align: center;
+    height: 27px;
+    border: 0px solid;
 }
 
 #links a
@@ -258,7 +280,8 @@ ul#g-nav-main li a
 
 /* footer */
 #footer
-{ background: url(images/footer.png) repeat;
+{ 
+    background: url(images/footer.png) repeat;
   padding: 14px 0px 0px 0px;
   width: 980px;
   text-align: center;
@@ -267,7 +290,7 @@ ul#g-nav-main li a
   font-size: 16px;
   margin: 5px auto 0px auto;
   overflow: hidden;
-  border-style: none;;
+  border-style: none;
 }
 
 #footer a{text-decoration: none;}

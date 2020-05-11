@@ -1,36 +1,34 @@
 <?xml version='1.0' encoding='ISO-8859-1'?>
 
 <pagetemplate name='Forest'>
-	<uri>http://www.google.com/</uri>
-	<version>1.1</version>
-	<description>A new forest-green template</description>
-	<author>Verde</author>
-	<author-uri>http://www.blazingglory.org</author-uri>
-	<tags>green, three-column</tags>
-	<preview>green-screen.jpg</preview>
+    <uri>http://www.google.com/</uri>
+    <version>1.1</version>
+    <description>A new forest-green template</description>
+    <author>Verde</author>
+    <author-uri>http://www.blazingglory.org</author-uri>
+    <tags>green, three-column</tags>
+    <preview>green-screen.jpg</preview>
 
-	<css src='color.css'/>
-	<css src='style.css'/>
+    <css src='color.css'/>
+    <css src='style.css'/>
     <css src='global-for-template.css'/>
-	<images src='images/'/>
+    <images src='images/'/>
 
-	<content id="logo"		type="html"	src="logo.html" />
-	<content id="links"     type="html"	src="links.html" />
-	<content id="sidebar" 	type="html"	src="sidebar.html" />
-	<content id="footer" 	type="html"	src="footer.html" />
-
-	<pagebody>
-		<div id="main">
-			<content id='logo'>
-				<img src='logo-*'/>
-			</content>
-			<content id='links'/>
-			<div id='site_content'>
-				<content id='sidebar' />
-				<content id='content' />
-			</div>
-			<div id='clearfooter'>&#160;</div>
-			<content id='footer'>(c) Someone.</content>
-		</div>
-	</pagebody>
+    <pagebody>
+        <div id="main">
+            <header>
+                <content id='logo' />
+                <nav><content id='links'/></nav>
+            </header>
+            <main>
+                <div id='site_content'>
+                    <aside><div id='sidebar'><content id='sidebar' /></div></aside>
+                    <div id='content'><content id='content' /></div>
+                </div>
+            </main>
+            <footer id='footer'>
+                <content id='footer'>(c) Someone.</content>
+            </footer>
+        </div>
+    </pagebody>
 </pagetemplate>

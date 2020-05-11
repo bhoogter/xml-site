@@ -10,9 +10,8 @@
             </description>
 
             <components>
-                <element name='adjunct' render='adjunct' src='php:adjunct_render' definition="zobjectdef/@name" />
-
-                <ajax action='adjunct' render='php:juniper_zobject_validate' />
+                <element name='adjunct' render='adjunct' src='adjunct' />
+                <ajax action='adjunct' render='adjunct' src='adjunct' />
             </components>
 
             <program>

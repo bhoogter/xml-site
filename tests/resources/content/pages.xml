@@ -1,33 +1,46 @@
 <?xml version='1.0' ?>
 <pages template='template-main'>
     <pageset template='main'>
-        <pagedef loc='home' default='1'>
+        <pagedef text='Home' loc='home' default='1' linklists='main'>
             <content id='content' src='main-content.html' />
         </pagedef>
-        <pagedef loc='404' default404='1'>
+        <pagedef text='Not Found' loc='404' default404='1'>
             <content id='content' src='404-content.html' />
         </pagedef>
-        <pagedef loc='about'>
+        <pagedef text='About' loc='about' linklists='main'>
             <content id='content' src='about-content.html' />
         </pagedef>
-        <pagedef loc='contact'>
+        <pagedef text='Contact Us' loc='contact' linklists='main'>
             <content id='content' src='contact-content.html' />
         </pagedef>
-        <pagedef loc='sub' pageset='subset1' />
+
+        <pagedef loc='sub' pageset='subset1' linklists='sub' />
         <pagedef loc='sub/sub' pageset='subset1' />
         <pagedef loc='sub/sub/sub' pageset='subset1' />
-        <pagedef loc='sub1b' pageset='subset1' />
-        <pagedef loc='sub1c' pageset='subset1' />
+        <pagedef loc='sub1b' pageset='subset1' linklists='sub' />
+        <pagedef loc='sub1c' pageset='subset1' linklists='sub' />
 
         <pagedef loc='some/long/path/somewhere/sub2' pageset='subset2' />
 
-        <pagedef loc='sub2' pageset='subset2' />
-        <pagedef loc='sub2/sub2' pageset='subset2' />
+        <pagedef loc='sub2' pageset='subset2' linklists='sub' />
+        <pagedef loc='sub2/sub2' pageset='subset2' linklists='sub' />
         <pagedef loc='sub2/extra2'>
             <content id='content' src='contact-content.html' />
         </pagedef>
 
         <pagedef loc='sub3/sub3/sub3' pageset='subset3' />
+
+        <pagedef text='Google' loc='ext1' href='https://www.google.com' linklists="external"/>
+        <pagedef text='Yahoo' loc='ext2' href='https://www.yahoo.com' linklists="external" />
+        <pagedef text='Duck Duck Go' loc='ext3' href='https://www.duckduckgo.com' linklists="external" />
+        <pagedef text='Subway' loc='extsub' href='https://www.subway.com' linklists="external,sub" />
+
+        <pagedef text='More Glory' loc='moreglory' href='http://www.moreglory.org/' linklists='sites' />
+        <pagedef text='Church of the Beyond' loc='moreglory' href='http://www.churchofthebeyond.com/' linklists='sites,main' />
+
+        <pagedef text='Blog #1' loc='blog' extension='simple-blog' linklists="blogs" />
+        <pagedef text='Blog #2' loc='blog2' extension='simple-blog' linklists="blogs" />
+
     </pageset>
 
     <pageset id='subset1' template='template1'>
