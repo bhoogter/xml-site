@@ -10,7 +10,7 @@
             </description>
 
             <components>
-                <element name='zobject' render='zobject' src='zo-class-zobject' definition="zobjectdef/@name" />
+                <element name='zobject' render='zobject_render' src='zo-render' definition="zobjectdef/@name" />
                 <element name='zaction' render='zobject_action' src='zo-class-zaction' definition="zactiondef/@name" />
 
                 <ajax action='validate' render='php:juniper_zobject_validate' />
@@ -25,11 +25,12 @@
             </program>
         </specification>
 
-        <file id='zo-class-zobject' type='php' src='components/class-zobject.php'	/>
+        <file id='zo-render' type='php' src='zobject-render.php' mode='startup' />
+        <file id="zobject" type="php" src="zobject.php" mode='startup' />
+        <file id="zo-datatypes" type="php" src="zobject-datatypes.php" mode='startup' />
+
         <file id='zo-class-zaction' type='php' src='components/class-zaction.php'	/>
         <file id='zo-class-zmodule' type='php' src='components/class-zmodule-display.php'	/>
-
-        <file id="zo-datatypes" type="php" src="zobject-datatypes.php" mode='startup' />
 
         <file id="zocss" type="css" src="css/zo-module-zobjects.css" />
         <file id="zodatatypescss" type="css" src="css/zo-datatypes.css" />
