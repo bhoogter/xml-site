@@ -29,8 +29,8 @@
         <file id="zobject" type="php" src="zobject.php" mode='startup' />
         <file id="zo-datatypes" type="php" src="zobject-datatypes.php" mode='startup' />
 
-        <file id='zo-class-zaction' type='php' src='components/class-zaction.php'	/>
-        <file id='zo-class-zmodule' type='php' src='components/class-zmodule-display.php'	/>
+        <file id='zo-class-zaction' type='php' src='zaction.php'	/>
+        <!-- <file id='zo-class-zmodule' type='php' src='zmodule-display.php'	/> -->
 
         <file id="zocss" type="css" src="css/zo-module-zobjects.css" />
         <file id="zodatatypescss" type="css" src="css/zo-datatypes.css" />

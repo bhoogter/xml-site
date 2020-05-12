@@ -110,37 +110,4 @@ class xml_site
         $s .= "</list>";
         return xml_file::XMLToDoc($s);
     }
-
-    static function KeyValue($k, $Args="", $alt="")
-		{
-        php_logger::log("CALL - KeyValue($k, $Args, $alt)");
-//		if ($k=='#USERNAME') return GetCurrentUsername();
-		$v = @$_REQUEST[$k];
-		if ($Args == "" && $this->iOBJ()!=null) $Args = $this->iOBJ()->args;
-//print "<br/>args=$Args";
-		if ($v=="" && $Args!="") $v = querystring::get($Args, $k);
-		if ($v=="" && $this->iOBJ()) $v = $this->iOBJ()->arg($k);
-		if ($v=="" && $this->iOBJ() && method_exists($this->iOBJ(), 'result_field')) $v = $this->iOBJ()->result_field($k);
-		if ($v=="" && $this->iOBJ2()) $v = $this->iOBJ2()->arg($k);
-		if ($v=="" && $this->iOBJ2() && method_exists($this->iOBJ2(), 'result_field')) $v = $this->iOBJ2()->result_field($k);		// previous object...  ?
-		if ($v=="" && $alt!="") $v=$alt;
-//print "<br/>KeyValue($k, $Args, $alt) == $v";
-		return $v;
-        }
-        
-        static function InterpretFields($f, $auto_quote = false, $token = "@")
-		{
-        php_logger::log("CALL - InterpretFields($f, $auto_quote, $token)");
-		$counter=0;
-		
-		$l = strlen($token);
-		if ($auto_quote)
-			$cb = create_function('$matches', "return \"'\".juniper()->KeyValue(substr(\$matches[0],$l)).\"'\";");
-		else
-			$cb = create_function('$matches', "return juniper()->KeyValue(substr(\$matches[0],$l));");
-
-		$f = preg_replace_callback('/'.$token."[a-zA-Z0-9_]+".'/i', $cb, $f);
-//print "<br/>InterpretFields: $f";
-		return $f;
-		}
 }

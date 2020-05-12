@@ -19,8 +19,17 @@ class zobject
 
     public $gid;
 
+    private static $iOBJs = [];
+
+    function __destruct()
+    {
+        self::unset_iOBJ($this);    
+    }
+
     function __construct()
     {
+        self::set_iOBJ($this);
+
         $this->page = "1";
         $this->page_count = "30";
 
@@ -39,23 +48,13 @@ class zobject
         $this->prefix = ($n >= 4 && is_string($a[3]) ? $a[3] : "");
     }
 
-    function transform()
-    {
-        return realpath(__DIR__ . "/source/transform.xsl");
-    }
+    function transform() { return realpath(__DIR__ . "/source/transform.xsl"); }
 
-    function FetchObjPart($n, $p) {
-        $p = "//MODULES/modules/module/zobjectdef[@name='$n']/$p";
-        // php_logger::trace($n, $p);
-        return xml_site::$source->get($p);
-    }
-
-    function FetchDTPart($n, $p) {
-        $p = "//MODULES/modules/module/zobject[@name='$p']/$n";
-        php_logger::trace($n, $p);
-        php_logger::trace(xml_site::$source->get("//MODULES/*/module/zobjectdef")); 
-        return xml_site::$source->get($p);
-    }
+    static function FetchObjFields($n) { return xml_site::$source->lst("//MODULES/modules/module/zobjectdef[@name='$n']/fielddefs/fielddef/@id"); }
+    static function FetchObjPart($n, $p) { return xml_site::$source->get("//MODULES/modules/module/zobjectdef[@name='$n']/$p"); }
+    static function FetchObjFieldPart($n, $f, $p) { return xml_site::$source->get("//MODULES/modules/module/zobjectdef[@name='$n']/fielddefs/fielddef[@id='$f']/$p"); }
+    static function FetchDTPart($n, $p) { return xml_site::$source->get("//MODULES/modules/module/typedef[@name='$n']/$p"); }
+    static function FetchDSPart($n, $p) { return xml_site::$source->get("//MODULES/modules/module/datasource[@name='$n']/$p"); }
 
     function arg($key)
     {
@@ -76,14 +75,14 @@ class zobject
         $n = $this->name;                 // local copy
         $this->options = array();
 
-        $this->options['name']            = $this->FetchObjPart($n, "@name");
+        $this->options['name']              = $this->FetchObjPart($n, "@name");
         $this->options['module']            = $this->FetchObjPart($n, "@module");
         php_logger::log("LOAD: " . $this->gid . ", ob=" . $this->options['name'] . ", module=" . $this->options['module']);
-        $this->options['type']            = $this->FetchObjPart($n, "@type");
-        $this->options['index']            = $this->FetchObjPart($n, "@index");
-        $this->options['key-field']            = $this->TranslateKeyList($this->FetchObjPart($n, "@key-field"));
-        $this->options['key-field-optional']    = $this->TranslateKeyList($this->FetchObjPart($n, "@key-field-optional"));
-        $this->options['keys']            = $this->options['key-field'];
+        $this->options['type']              = $this->FetchObjPart($n, "@type");
+        $this->options['index']             = $this->FetchObjPart($n, "@index");
+        $this->options['key-field']         = $this->TranslateKeyList($this->FetchObjPart($n, "@key-field"));
+        $this->options['key-field-optional']= $this->TranslateKeyList($this->FetchObjPart($n, "@key-field-optional"));
+        $this->options['keys']              = $this->options['key-field'];
 
         $this->options['prefix']            = '';
 
@@ -118,7 +117,7 @@ class zobject
         if ($kf == "") return true;
         php_logger::info("QueryStringSatisfied: Checking...");
         foreach (explode(",", $kf) as $k)
-            if (xml_site::KeyValue($k, $ZA) == "") return false;
+            if (self::KeyValue($k, $ZA) == "") return false;
         return true;
     }
 
@@ -145,7 +144,7 @@ class zobject
             $this->named_template = "";
         } else if (strstr($ZM, ";") !== false) {
             $R = explode(";", $ZM);
-            php_logger::debug("R=", $R);
+            php_logger::dump("R=", $R);
             $ZM = $R[0];
             $name = $R[1];
             $this->named_template = $this->FetchObjPart($ZN, "render[@name='$name']/@src");
@@ -164,19 +163,19 @@ class zobject
         if ($ZM == "dnposition") $ZM = ">";
         if ($ZM == "upposition") $ZM = "<";
         if ($ZM == "") $ZM = "d";
-        switch ($ZM[0]) {
-            case "0":            case "d":            case "D":                $ZM = $Sat ? "display" : "find";                break;
-            case "1":            case "e":            case "E":                $ZM = $Sat ? "edit" : "find";                break;
-            case "*":            case "b":            case "B":                $ZM = "build";                break;
-            case "-":            case "c":            case "C":                $ZM = "create";                break;
-            case "=":            case "l":            case "L":                if ($ZM != "list-create" && $ZM != "list-edit")                    $ZM = "list";                break;
-            case "-":            case "h":            case "H":                $ZM = "list-edit";                break;
-            case "+":            case "j":            case "J":                $ZM = "list-create";                break;
-            case "^":            case "f":            case "F":                $ZM = "find";                break;
-            case '<':                $ZM = 'upposition';                break;            case '>':                $ZM = 'dnposition';                break;
-            case "p":                $ZM = 'position';                break;
-            case "x":                $ZM = "delete";                break;
-            default:                $ZM = ($Sat ? "display" : "list");                break;
+        switch (strToLower($ZM[0])) {
+            case "0":  case "d": $ZM = $Sat ? "display" : "find"; break;
+            case "1":  case "e": $ZM = $Sat ? "edit" : "find"; break;
+            case "*":  case "b": $ZM = "build"; break;
+            case "-":  case "c": $ZM = "create"; break;
+            case "=":  case "l": if ($ZM != "list-create" && $ZM != "list-edit")     $ZM = "list"; break;
+            case "-":  case "h": $ZM = "list-edit"; break;
+            case "+":  case "j": $ZM = "list-create"; break;
+            case "^":  case "f": $ZM = "find"; break;
+            case '<': $ZM = 'upposition'; break;            case '>': $ZM = 'dnposition'; break;
+            case "p": $ZM = 'position'; break;
+            case "x": $ZM = "delete"; break;
+            default: $ZM = ($Sat ? "display" : "list"); break;
         }
 
         switch ($ZM) {
@@ -218,7 +217,7 @@ class zobject
     {
         php_logger::log("TranslateZArgs($ZName, $ZArgs)");
         if ($ZArgs == "") $ZArgs = @$_SERVER["QUERY_STRING"];            //  this should be the ONLY place zobject directly references the query string...
-        $ZArgs = xml_site::InterpretFields($ZArgs);
+        $ZArgs = self::InterpretFields($ZArgs);
         $ZArgs = str_replace("'", "", $ZArgs);
         $ZArgs = $this->TransferObjectKeys($ZArgs);
         return $this->args = $ZArgs;
@@ -231,20 +230,22 @@ class zobject
         return $this->result->fetch_part("//row[$rn]/field[@id='$f']");
     }
 
-    function set_result($D)
-    {
-        $this->result = new xml_file($D);
-    }
+    function set_result($D) { $this->result = new xml_file($D); }
+    function get_result() { return$this->result; }
 
     function load_result(&$tform = null)
     {
-        php_logger::log("load_result($tform)");
+        php_logger::log("CALL");
         require_once("zobject-query.php");
 
         $resultDoc = zobject_query::get_result($this->name, $this->mode, $this->args, $this->record_count, $tform);
-        if (!$resultDoc) print "<br/>No zobject::resultDoc in load_result";
-        if (!$resultDoc) return false;
-        $this->set_result($resultDoc);
+        if (!$resultDoc) 
+        {
+            $this->set_result($resultDoc);
+            php_logger::warning("No zobject::resultDoc in load_result");
+            return false;
+        }
+        php_logger::trace("RESULT: ", $this->get_result());
         return true;
     }
 
@@ -273,7 +274,7 @@ class zobject
         return true;
     }
 
-    function render($params = nil, $vArgs = "")
+    function render($params = null, $vArgs = "")
     {
         php_logger::log("CALL - ", $params, $vArgs);
         $vName = @$params['name'];
@@ -288,7 +289,7 @@ class zobject
         php_logger::trace("zobject::render:  name=$vName, mode=$vMode, args=$vArgs, px=$vPrefix, NT= " . $this->named_template);
         switch ($this->options['type']) {
             case "transform":
-                $Ix = xml_site::KeyValue("value");
+                $Ix = self::KeyValue("value");
                 //print "<br/>Ix=$Ix";
                 $r = $this->FetchObjPart($vName, "action[@value='$Ix']");
                 //print ESKf($r);
@@ -311,10 +312,12 @@ class zobject
             print $t;
         }
 
+        php_logger::log("Including support files");
         xml_site::include_support_files($this->options['module']);        // this is what this particular objects has requested..  required before load_result()
 
+        php_logger::log("Loading result set");
         if (!$this->load_result($tform)) {
-            php_logger::trace("tform");
+            php_logger::trace("================ TFORM");
             $D = ($tform == "") ? $this->empty_render() : new xml_file($tform);
             return $D;
         }
@@ -326,12 +329,11 @@ class zobject
         //print "<br/>".$this->arg64();
         //print "<br/>transform: ".$this->transform(); 
 
-        $res = new xml_file(juniper()->resultDoc(), '', $this->transform());
+        php_logger::log("Generating Output");
+        $res = new xml_file($this->get_result(), '', $this->transform());
         $zobj = $res->Doc;
-        //die($res->saveXML());
+//die($res->saveXML());
         unset($res);
-
-        //		$zobj = xml_file::make_tidy_doc($zobj, "xhtml");
 
         return $zobj;
     }    //  FUNCTION: render
@@ -514,8 +516,8 @@ class zobject
         while (($a = strpos($s, "{@")) !== false) {
             $b = strpos($s, "}", $a);
             $c = substr($s, $a + 2, $b - $a - 2);
-            $d = xml_site::KeyValue($c, $this->args);
-            //print "<br/>test=".xml_site::KeyValue($c, $this->args);
+            $d = self::KeyValue($c, $this->args);
+            //print "<br/>test=".self::KeyValue($c, $this->args);
 
             if ($d == "") $d = DefaultValue(juniper()->FetchObjFieldPart($this->name, $c, "@default"));
             //print "<br/>TemplateEscapeTokens 1: a=$a, b=$b, c=$c, d=$d";
@@ -525,7 +527,7 @@ class zobject
         while (($a = strpos($s, "{php:")) !== false) {
             $b = strpos($s, "}", $a);
             $c = substr($s, $a + 5, $b - $a - 5);
-            $d = xml_site::KeyValue($c, $this->args);
+            $d = self::KeyValue($c, $this->args);
             $d = juniper()->php_hook("php:$c", $this->args);
             //print "<br/>TemplateEscapeTokens 2: a=$a, b=$b, c=$c, d=$d";
             $s = str_replace("{php:" . $c . "}", $d, $s);
@@ -740,7 +742,7 @@ class zobject
             $kp = substr($s, $a, $i - $a);
             $kf = substr($kp, 2);
             //print "<br/>kp=$kp, kf=$kf, Args=$Args";
-            $s = str_replace($kp, xml_site::KeyValue($kf, $Args), $s);
+            $s = str_replace($kp, self::KeyValue($kf, $Args), $s);
         }
 
         //die("<br/>sql=".$s);
@@ -753,35 +755,36 @@ class zobject
 
     function TransferObjectKeys($Args)
     {
-        php_logger::log("CALL TransferObjectKeys($Args), L=", $this->options['key-array-all']);
+        php_logger::log("CALL, L=", $this->options['key-array-all']);
+        php_logger::dump("Args: ", $Args);
         $l = $this->options['key-array-all'];
         $l[] = zobject::ZP_PAGE;
         $l[] = zobject::ZP_PAGECOUNT;
         foreach ($l as $m) if ($m != "" && $m[0] != '#') {
-            //print "<br/>TransferObjectKeys: m=$m";
-            $Args = querystring::add($Args, $m, xml_site::KeyValue($m, $Args));
+            php_logger::log("TransferObjectKeys: m=$m");
+            $Args = querystring::add($Args, $m, self::KeyValue($m, $Args));
         }
-        //print "<br/>TransferObjectKeys: $Args";
+        php_logger::debug("TransferObjectKeys: $Args");
         return $Args;
     }
 
     function FillInQueryStringKeys($m, $ZArgs = "", $dolast = true)
     {
-        //print "<br/>FillInQueryStringKeys($m, $ZArgs, $dolast), L=".$this->options['key'].",".$this->options['key-field-optional'];
+        php_logger::log("CALL - FillInQueryStringKeys($m, $ZArgs, $dolast), L=".$this->options['key'].",".$this->options['key-field-optional']);
         $k = $this->options['key'];
         //print "<br/>FillInQueryStringKeys field=".implode(",",$this->options['key-array-all']);
         foreach ($this->options['key-array-all'] as $l)
             if ($l != "" && ($dolast || (!$dolast && $l != $k))) {
-                $m = str_replace("@" . $l, xml_site::KeyValue($l, $ZArgs), $m);
+                $m = str_replace("@" . $l, self::KeyValue($l, $ZArgs), $m);
                 //print "<br/>FillInQueryStringKeys <b>loop</b> l=$l - $m";
             }
-        //print "<br/>FillInQueryStringKeys: $m";
+        php_logger::debug("FillInQueryStringKeys: $m");
         return $m;
     }
 
     function TransferQueryStringKeys($List, $HREF)
     {
-        //print "<br/>TransferQueryStringKeys($List, $HREF)";
+        php_logger::log("CALL - TransferQueryStringKeys($List, $HREF)");
         $N = 0;
         $List = $this->TranslateKeyList($List);
         //print "<br/>List=$List";
@@ -833,7 +836,7 @@ class zobject
 
     function FormAction($FormID = "", $Args = "0")
     {
-        //print "<br/>FormAction($FormID, $Args), ajax=".(juniper()->AJAX?"Yes":"No");
+        php_logger::log("FormAction($FormID, $Args), ajax=".(juniper()->AJAX?"Yes":"No"));
         if (juniper()->AJAX) return juniper()->ajaxURL('save-zobject') . "?_AJAX=1&_Save=1";
         $r = "";
         //		$r = juniper()->php_hook($this->FetchObjPart($this->name, "action"));
@@ -843,7 +846,7 @@ class zobject
 
     function LinkArgs($Mode, $TN, $Args)
     {
-        //print "<br/>LinkArgs($Mode, $TN, $Args)";
+        php_logger::log("LinkArgs($Mode, $TN, $Args)");
         $key = "@" . $this->options["key"];
 
         if ($key != "") {
@@ -861,7 +864,7 @@ class zobject
 
     function ItemLink($field, $mode = "create", $text = "", $ajax = "", $C = "", $T = "")
     {
-        //print "<br/>ItemLink($field, $mode, $text, $ajax, $C, $T)";
+        php_logger::log("ItemLink($field, $mode, $text, $ajax, $C, $T)");
         //print "<br/>gid=$this->gid(), args=$this->args";
 
         if (($TN = $this->name) == "") return "";
@@ -878,30 +881,14 @@ class zobject
             //print "<br/>TN=$TN";
         }
         if ($text == "") switch ($mode) {
-            case "display":
-                $text = "@";
-                break;
-            case "create":
-                $text = "*";
-                break;
-            case "edit":
-                $text = "#";
-                break;
-            case "delete":
-                $text = "X";
-                break;
-            case "position":
-                $text = "Pos";
-                break;
-            case "upposition":
-                $text = "-";
-                break;
-            case "dnposition":
-                $text = "+";
-                break;
-            default:
-                $text = "[??? mode]";
-                break;
+            case "display":                $text = "@";                break;
+            case "create":                $text = "*";                break;
+            case "edit":                $text = "#";                break;
+            case "delete":                $text = "X";                break;
+            case "position":                $text = "Pos";                break;
+            case "upposition":                $text = "-";                break;
+            case "dnposition":                $text = "+";                break;
+            default:                $text = "[??? mode]";                break;
         }
         $text = juniper()->InterpretFields($text);
         if ($text == "") $text = "[???]";
@@ -1034,80 +1021,66 @@ class zobject
     {
         //print "<br/>transform_var($VarName)";
         switch ($VarName) {
-            case "login-key":
-                return "";
-            case "uid":
-                return $this->gid();
-            case "name":
-                return $this->name;
-            case "mode":
-                return $this->mode;
-            case "prefix":
-                return $this->prefix;
-            case "page":
-                return $this->page;
-            case "page-count":
-                return $this->page_count;
-            case "args":
-                return $this->args;
-            case "args64":
-                return $this->arg64();
-            case "count":
-                return $this->record_count;
-            case "jsid":
-                return $this->gid();
+            case "login-key":       return "";
+            case "uid":             return $this->gid();
+            case "name":            return $this->name;
+            case "mode":            return $this->mode;
+            case "prefix":          return $this->prefix;
+            case "page":            return $this->page;
+            case "page-count":      return $this->page_count;
+            case "args":            return $this->args;
+            case "args64":          return $this->arg64();
+            case "count":           return $this->record_count;
+            case "jsid":            return $this->gid();
         }
     }
-}        // CLASS: zobject
 
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-function class_zobject_test()
-{
-    date_default_timezone_set('America/New_York');
-    include_once('module_test.php');
-
-    include_once("class-source.php");
-    if (@$_REQUEST["_Save"] != "") return class_zobject_save_test();
-
-
-    zobject_test_header("ZOBJECT");
-
-    $x = 1;
-
-    if ($x == 1) {
-        $Z = new zobject("EventSource", "", "");
-
-        $testname = "Create Object";
-        $testresult = $Z->name;
-        $testexpect = "EventSource";
-        $testok = ($testresult == $testexpect);
-        zobject_test_result($testname, $testresult, $testok, $A);
-
-        $testname = "Render Object";
-        $testresult = "" . $Z;
-        $testok = $testresult != "";
-        zobject_test_result($testname, $testresult, $testok, $A);
-    } else if ($x == 2) {
-        print new zobject("y_zobject_field", "", "");
+    protected static function unset_iOBJ($o) {
+        foreach(self::$iOBJs as $k=>$v) 
+            if ($o == $v) unset(self::$iOBJs[$k]);
     }
 
+    protected static function set_iOBJ($o) {
+        return array_push(self::$iOBJs, $o);
+    }
 
-    zobject_test_footer();
-}
+    public static function iOBJ($n = 0) {
+        return count(self::$iOBJs) <= $n ? null : self::$iOBJs[-$n];
+    }
+    public static function iOBJ2() { return self::iOBJ(1); }
 
-function class_zobject_save_test()
-{
-    zobject_test_header("ZOBJECT");
-    juniper()->save();
-    zobject_test_footer();
-}
+    public static function KeyValue($k, $Args="", $alt="")
+		{
+        php_logger::log("CALL - KeyValue($k, $Args, $alt)");
+//		if ($k=='#USERNAME') return GetCurrentUsername();
+		$v = @$_REQUEST[$k];
+		if ($Args == "" && self::iOBJ()!=null) $Args = self::iOBJ()->args;
+        php_logger::debug("args=$Args");
+		if ($v=="" && $Args!="") $v = querystring::get($Args, $k);
+		if ($v=="" && self::iOBJ()) $v = self::iOBJ()->arg($k);
+		if ($v=="" && self::iOBJ() && method_exists(self::iOBJ(), 'result_field')) $v = self::iOBJ()->result_field($k);
+		if ($v=="" && self::iOBJ2()) $v = self::iOBJ2()->arg($k);
+		if ($v=="" && self::iOBJ2() && method_exists(self::iOBJ2(), 'result_field')) $v = self::iOBJ2()->result_field($k);		// previous object...  ?
+		if ($v=="" && $alt!="") $v=$alt;
+        php_logger::debug("KeyValue($k, $Args, $alt) == $v");
+		return $v;
+        }
+        
+        public static function InterpretFields($f, $auto_quote = false, $token = "@")
+		{
+        php_logger::log("CALL - InterpretFields($f, $auto_quote, $token)");
+		$counter = 0;
+		
+		$l = strlen($token);
+		if ($auto_quote)
+			$cb = create_function('$matches', "return \"'\".juniper()->KeyValue(substr(\$matches[0],$l)).\"'\";");
+		else
+			$cb = create_function('$matches', "return juniper()->KeyValue(substr(\$matches[0],$l));");
+
+		$f = preg_replace_callback('/'.$token."[a-zA-Z0-9_]+".'/i', $cb, $f);
+//print "<br/>InterpretFields: $f";
+		return $f;
+		}
+
+
+}        

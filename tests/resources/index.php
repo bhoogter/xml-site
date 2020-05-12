@@ -12,6 +12,9 @@ require_once(__DIR__ . "/load.php");
 // php_logger::set_log_level('render_content', 'trace');
 // php_logger::set_log_level('render_perfect', 'trace');
 php_logger::set_log_level('zobject', 'trace');
+php_logger::set_log_level('zobject_query', 'trace');
+php_logger::set_log_level('zobject_query::load_result', 'dump');
+php_logger::set_log_level('zobject_query::GetZObjectCreateQuery', 'all');
 
 // print "<!DOCTYPE html>\n";
 print '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">' . "\n";

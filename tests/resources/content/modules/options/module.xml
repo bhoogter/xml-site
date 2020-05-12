@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<modules>
+    <module>
+        <specification>
+            <description>
+                <name>Options Module</name>
+                <version>1.0</version>
+                <short>User Options Module</short>
+                <long><![CDATA[User Options Main System Module]]></long>
+            </description>
+        </specification>
+
+        <zobjectdef name="options" key-field="userid" index="id" allow-display="[!]">
+            <style>
+                <caption>Options</caption>
+                <class>user-options</class>
+                <options addonlist="1" />
+            </style>
+            <action>php:zwpadmin_redirect_url</action>
+            <render name="wp-list" type="list" src="templates/zobjects-wp-admin-action-list.xml" />
+            <render name="wp-edit" type="edit" src="templates/zobjects-wp-admin-action-edit.xml" />
+            <xmlfile src="php:zwpadmin_module_file" list="/*/zactiondef/@name" base="/*/zactiondef[@name='@ZAct']/" />
+            <fielddefs>
+                <fielddef id="id" datatype="string" access="@name" required="1" remote="php:zwpadmin_verify_zaction_name" />
+                <fielddef id="name" datatype="string" access="@name" required="1" remote="php:zwpadmin_verify_zaction_name" />
+                <fielddef id="option1" datatype="string" access="@require" />
+                <fielddef id="option2" datatype="string" access="@require" />
+                <fielddef id="option3" datatype="string" access="@require" />
+            </fielddefs>
+        </zobjectdef>
+    </module>
+</modules>
