@@ -78,7 +78,7 @@ class zobject_query
 						$tform = $tform . "</form>\n";
 						return null;
 						}
-                    php_logger::log("sql: " .self::FetchObjPart($ZName, "sql"));
+                    php_logger::log("sql: " . self::FetchObjPart($ZName, "sql"));
 					}
 
 				if ($ZMode=="build") 

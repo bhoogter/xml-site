@@ -21,6 +21,7 @@ class zobject
 
     private static $iOBJs = [];
 
+    function gid() { return $this->gid; }
     function __destruct()
     {
         self::unset_iOBJ($this);    
@@ -54,7 +55,20 @@ class zobject
     static function FetchObjPart($n, $p) { return xml_site::$source->get("//MODULES/modules/module/zobjectdef[@name='$n']/$p"); }
     static function FetchObjFieldPart($n, $f, $p) { return xml_site::$source->get("//MODULES/modules/module/zobjectdef[@name='$n']/fielddefs/fielddef[@id='$f']/$p"); }
     static function FetchDTPart($n, $p) { return xml_site::$source->get("//MODULES/modules/module/typedef[@name='$n']/$p"); }
+
     static function FetchDSPart($n, $p) { return xml_site::$source->get("//MODULES/modules/module/datasource[@name='$n']/$p"); }
+    static function FetchSpecPart($n, $p) { return xml_site::$source->get("//MODULES/modules/module/specification/control[@name='$n']/$p"); }
+
+    static function handled_elements() { return xml_serve::handler_list(); }
+    static function source_document($n) { php_logger::log("CALL $n");return xml_site::$source->get_source_doc($n); }
+
+    static function named_template() { 
+        return self::IOBJ() ? self::IOBJ()->named_template : ''; 
+    }
+    static function transform_var($n) { 
+        php_logger::log("F=$n");
+        return self::iOBJ() ? self::iOBJ()->get_var($n) : ''; 
+    }
 
     function arg($key)
     {
@@ -231,7 +245,7 @@ class zobject
     }
 
     function set_result($D) { $this->result = new xml_file($D); }
-    function get_result() { return$this->result; }
+    function get_result() { return $this->result; }
 
     function load_result(&$tform = null)
     {
@@ -241,11 +255,11 @@ class zobject
         $resultDoc = zobject_query::get_result($this->name, $this->mode, $this->args, $this->record_count, $tform);
         if (!$resultDoc) 
         {
-            $this->set_result($resultDoc);
             php_logger::warning("No zobject::resultDoc in load_result");
             return false;
         }
-        php_logger::trace("RESULT: ", $this->get_result());
+        $this->set_result($resultDoc);
+        php_logger::dump("RESULT: ", $this->get_result());
         return true;
     }
 
@@ -347,7 +361,7 @@ class zobject
         else
             $s = querystring::add($s, "_ZM", $this->mode);
 
-        if ($enc) $s = juniper()->encode_args($s);
+        if ($enc) $s = self::encode_args($s);
         return $s;
     }
 
@@ -359,7 +373,7 @@ class zobject
         }
 
         //print "<br/>ZName=$this->name<br/>ZMode=$this->mode, named_template=$this->named_template<br/>vArgs=$this->args";
-        $this->args = juniper()->decode_args($this->args);
+        $this->args = self::decode_args($this->args);
 
         xml_site::include_support_files($this->options['module']);        // this is what this particular objects has requested..  required for save and load
 
@@ -367,8 +381,8 @@ class zobject
         zobject_query::save_form();
 
         //print "<br/>".juniper()->FetchSpecPart($this->options['module'], "program/control[@type='page']/@src");
-        $Target = juniper()->php_hook(juniper()->FetchSpecPart($this->options['module'], "program/control[@type='page']/@src"), array("save_object::" . $this->name, "action"), true);
-        if (!$Target) $Target = juniper()->php_hook($this->FetchObjPart($this->name, "action"));
+        $Target = php_hook::call(self::FetchSpecPart($this->options['module'], "program/control[@type='page']/@src"), array("save_object::" . $this->name, "action"), true);
+        if (!$Target) $Target = php_hook::call($this->FetchObjPart($this->name, "action"));
 
         return $Target;
     }
@@ -384,12 +398,12 @@ class zobject
     function NormalizeInputField($f, $DT)
     {
         //print "<br/>NormalizeInputField($f, $DT)";
-        $N = juniper()->FetchDTPart($DT, "@normalize");
+        $N = self::FetchDTPart($DT, "@normalize");
         //print "<br/>N=$N";
-        $Na = juniper()->php_hook($N, $f);
+        $Na = php_hook::call($N, $f);
         if ($Na != $N) $f = $Na;
 
-        if (($k = juniper()->FetchDTPart($DT, "@html-type")) == "") $k = $DT;
+        if (($k = self::FetchDTPart($DT, "@html-type")) == "") $k = $DT;
         switch ($k) {
             case "wysiwyg":
             case "rtf":
@@ -399,7 +413,7 @@ class zobject
                 break;
         }
 
-        $dbt = juniper()->FetchDTPart($DT, "@db-type");
+        $dbt = self::FetchDTPart($DT, "@db-type");
         if ($dbt == "integer" || $dbt == "float" || $dbt == "currency") {
             if ($f == "Yes" || $f == "yes") $f = 1;
             if ($f == "No" || $f == "no") $f = 0;
@@ -411,12 +425,12 @@ class zobject
     function FormatDataField($f, $DT)
     {
         php_logger::log("FormatDataField($f, $DT)");
-        $N = juniper()->FetchDTPart($DT, "@format");
+        $N = self::FetchDTPart($DT, "@format");
         php_logger::log("br/>N=$N");
-        $Na = juniper()->php_hook($N, $f);
+        $Na = php_hook::call($N, $f);
         if ($Na != $N) $f = $Na;
 
-        if (($k = juniper()->FetchDTPart($DT, "@html-type")) == "") $k = $DT;
+        if (($k = self::FetchDTPart($DT, "@html-type")) == "") $k = $DT;
         switch ($k) {
             case "wysiwyg":
             case "rtf":
@@ -473,7 +487,7 @@ class zobject
 
     function DefaultValue($f)
     {
-        return juniper()->php_hook($f);
+        return php_hook::call($f);
     }
 
     function DisplayMultiValue_List($ValueStr)
@@ -519,7 +533,7 @@ class zobject
             $d = self::KeyValue($c, $this->args);
             //print "<br/>test=".self::KeyValue($c, $this->args);
 
-            if ($d == "") $d = DefaultValue(juniper()->FetchObjFieldPart($this->name, $c, "@default"));
+            if ($d == "") $d = DefaultValue(self::FetchObjFieldPart($this->name, $c, "@default"));
             //print "<br/>TemplateEscapeTokens 1: a=$a, b=$b, c=$c, d=$d";
             $s = str_replace("{@" . $c . "}", $d, $s);
         }
@@ -528,7 +542,7 @@ class zobject
             $b = strpos($s, "}", $a);
             $c = substr($s, $a + 5, $b - $a - 5);
             $d = self::KeyValue($c, $this->args);
-            $d = juniper()->php_hook("php:$c", $this->args);
+            $d = php_hook::call("php:$c", $this->args);
             //print "<br/>TemplateEscapeTokens 2: a=$a, b=$b, c=$c, d=$d";
             $s = str_replace("{php:" . $c . "}", $d, $s);
         }
@@ -544,7 +558,7 @@ class zobject
         include_once("class-autotemplate.php");
 
         //print "<br/>".$this->gid().", module=".$this->options['module'];
-        $f = juniper()->FetchSpecPart($this->options['module'], "program/control[@type='autotemplate']/@src");
+        $f = self::FetchSpecPart($this->options['module'], "program/control[@type='autotemplate']/@src");
         //print "<br/>GetZobjectAutoTemplate.test=".juniper()->FetchSpecPart($this->options['module'], "program/control[@type='autotemplate']/@src");
         if ($f != "") $f = 'modules/' . $this->options["module"] . "/" . $f;
 
@@ -692,7 +706,7 @@ class zobject
         //print "<br/>sr=";print_r($sr);
         //print "<br/>fl=";print_r($fl);
 
-        foreach (juniper()->FetchObjFields($ZName) as $ckf) {
+        foreach (self::FetchObjFields($ZName) as $ckf) {
             //print "<br/>ckf=$ckf";
             for ($i = 0; $i < $n; $i++) {
                 if (GetFieldMode($ZName, $ckf, $ZMode) == $ZMode) {
@@ -707,11 +721,11 @@ class zobject
                                 $v = $_REQUEST[$ckf];
                         }
 
-                        $datatype = juniper()->FetchObjFieldPart($ZName, $ckf, "@datatype");
-                        $deff = juniper()->FetchObjFieldPart($ZName, $ckf, "@default");
+                        $datatype = self::FetchObjFieldPart($ZName, $ckf, "@datatype");
+                        $deff = self::FetchObjFieldPart($ZName, $ckf, "@default");
                         if ($deff == "") $deff = FetchDTPart($datatype, "@default");
                         //print "<br>@default=".FetchDTPart($datatype, "@default");
-                        if ($v == "") $v = juniper()->php_hook($deff);
+                        if ($v == "") $v = php_hook::call($deff);
 
                         if ($v != "") {
                             $v = SVF($v, $datatype);
@@ -873,7 +887,7 @@ class zobject
         if ($C == "") $C = "ItemLink";
 
         if ($field != "") {
-            $ZName = juniper()->FetchObjFieldPart($TN, $field, "@datatype");
+            $ZName = self::FetchObjFieldPart($TN, $field, "@datatype");
             if ($ZName[0] == ":") $ZName = substr($ZName, 1);
             //print "<br/>ZName=$ZName";
             if ($ZName == "") return "";
@@ -890,7 +904,7 @@ class zobject
             case "dnposition":                $text = "+";                break;
             default:                $text = "[??? mode]";                break;
         }
-        $text = juniper()->InterpretFields($text);
+        $text = self::InterpretFields($text);
         if ($text == "") $text = "[???]";
 
         //print "<br/>args: $this->args";
@@ -906,7 +920,7 @@ class zobject
         if ($ajax != "") {
             $Args = querystring::add($Args, '_ZN', $this->name);
             $Args = querystring::add($Args, '_ZM', ($T == "") ? $mode : "$mode;$T");
-            $Args64 = juniper()->encode_args($Args);
+            $Args64 = self::encode_args($Args);
             //print "<br/>Args=$Args";
             //print "<br/>source=".$this->source(false);
             //print "<br/>Args64=$Args64";
@@ -979,9 +993,9 @@ class zobject
                 default:                    $s = "";                    break;
             }
 
-            $p = juniper()->FetchSpecPart($this->options['module'], 'program/control[@type="page"]/@src');
+            $p = self::FetchSpecPart($this->options['module'], 'program/control[@type="page"]/@src');
             //print "<br/>p=$p";
-            if ($p != "") $s = juniper()->php_hook($p, array(":" . $this->name, $s), true);
+            if ($p != "") $s = php_hook::call($p, array(":" . $this->name, $s), true);
             //print "<br/>p=$p, s=$s";
 
             $a  = "";
@@ -1013,13 +1027,12 @@ class zobject
         if ($x == "" && @$_SERVER['SCRIPT_NAME'] != "/content.php") $x = @$_SERVER['SCRIPT_NAME'];
         $f = $x . $b;
         //print "<br/>ZSource=$f";
-        return juniper()->encode_args($f);
+        return self::encode_args($f);
     }
 
-
-    public function transform_var($VarName)
+    function args64()		{	return self::encode_args($this->args);	}
+    public function get_var($VarName)
     {
-        //print "<br/>transform_var($VarName)";
         switch ($VarName) {
             case "login-key":       return "";
             case "uid":             return $this->gid();
@@ -1029,11 +1042,12 @@ class zobject
             case "page":            return $this->page;
             case "page-count":      return $this->page_count;
             case "args":            return $this->args;
-            case "args64":          return $this->arg64();
+            case "args64":          return $this->args64();
             case "count":           return $this->record_count;
             case "jsid":            return $this->gid();
         }
     }
+
 
     protected static function unset_iOBJ($o) {
         foreach(self::$iOBJs as $k=>$v) 
@@ -1048,6 +1062,27 @@ class zobject
         return count(self::$iOBJs) <= $n ? null : self::$iOBJs[-$n];
     }
     public static function iOBJ2() { return self::iOBJ(1); }
+
+	public static function args_prefix()	{	return '@@';		}
+	public static function encode_args($a)	{	return self::args_prefix().base64_encode(str_rot13($a));	}
+	public static function decode_args($a)	
+		{
+        php_logger::log("call - decode_args($a)");
+		$p = self::args_prefix();
+		$n = strlen($p);
+
+			// this is the only real algorithm... as long as it matches the encode and is reversible, it is fine to change...
+//print "<br/>substr($a,0,$n)";
+		if (substr($a,0,$n)==$p) return str_rot13(base64_decode(substr($a,$n)));
+//print "<br/>;lkj;lj.........";
+			// it may have been urlencode'd somewhere...
+		$S = urlencode($p);
+		$m = strlen($S);
+		if (substr($a,0,m)==$S) return $this->decode_args(urldecode($a));
+			// otherwise, decoding an unencoded string does nothing!
+		return $a;
+		}
+
 
     public static function KeyValue($k, $Args="", $alt="")
 		{
@@ -1066,7 +1101,7 @@ class zobject
 		return $v;
         }
         
-        public static function InterpretFields($f, $auto_quote = false, $token = "@")
+    public static function InterpretFields($f, $auto_quote = false, $token = "@")
 		{
         php_logger::log("CALL - InterpretFields($f, $auto_quote, $token)");
 		$counter = 0;
@@ -1083,4 +1118,7 @@ class zobject
 		}
 
 
+    public static function bench_time() {
+            return microtime(TRUE);
+        }
 }        

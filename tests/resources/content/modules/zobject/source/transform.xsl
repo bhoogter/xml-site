@@ -2,40 +2,43 @@
 
 <xsl:stylesheet version="1.0" 
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
-    xmlns:php="http://php.net/xsl" xsl:extension-element-prefixes="php" exclude-result-prefixes="php">
+    xmlns:php="http://php.net/xsl" 
+    xsl:extension-element-prefixes="php" 
+    exclude-result-prefixes="php"
+    >
     <xsl:import href="data-input.xsl" />
 
     <xsl:variable name='BenchmarkTRANSFORM' select='0'/>
     <xsl:variable name='BenchmarkROWS' select='0'/>
 
 
-    <xsl:variable name='DEFS' select='php:function("juniper_source_document","SYS")'/>
-    <xsl:variable name='HandledElements' select='php:functionString("juniper_handled_elements")'/>
+    <xsl:variable name='DEFS' select='php:function("zobject::source_document","MODULES")'/>
+    <xsl:variable name='HandledElements' select='php:functionString("zobject::handled_elements")'/>
     <!-- NOTE:  $PS for page-file, via page.xsl -->
 
-    <xsl:variable name='ZName' select='php:functionString("juniper_transform_var", "name")' />
-    <xsl:variable name='requested-object-mode' select='php:functionString("juniper_transform_var", "mode")' />
-    <xsl:variable name='login-key' select='php:functionString("juniper_transform_var", "login-key")' />
-    <xsl:variable name='OID' select='php:functionString("juniper_transform_var", "uid")' />
-    <xsl:variable name='ZPage' select='php:functionString("juniper_transform_var", "page")' />
-    <xsl:variable name='ZPageCount' select='php:functionString("juniper_transform_var", "page-count")' />
-    <xsl:variable name='ZCount' select='php:functionString("juniper_transform_var", "count")' />
-    <xsl:variable name='ZArgs' select='php:functionString("juniper_transform_var", "args")' />
-    <xsl:variable name='ZArgs64' select='php:functionString("juniper_transform_var", "args64")' />
+    <xsl:variable name='ZName' select='php:functionString("zobject::transform_var", "name")' />
+    <xsl:variable name='requested-object-mode' select='php:functionString("zobject::transform_var", "mode")' />
+    <xsl:variable name='login-key' select='php:functionString("zobject::transform_var", "login-key")' />
+    <xsl:variable name='OID' select='php:functionString("zobject::transform_var", "uid")' />
+    <xsl:variable name='ZPage' select='php:functionString("zobject::transform_var", "page")' />
+    <xsl:variable name='ZPageCount' select='php:functionString("zobject::transform_var", "page-count")' />
+    <xsl:variable name='ZCount' select='php:functionString("zobject::transform_var", "count")' />
+    <xsl:variable name='ZArgs' select='php:functionString("zobject::transform_var", "args")' />
+    <xsl:variable name='ZArgs64' select='php:functionString("zobject::transform_var", "args64")' />
     <xsl:variable name='ZPrefix' select='c' />
 
-    <xsl:variable name='jsid' select='php:functionString("juniper_transform_var", "jsid")' />
+    <xsl:variable name='jsid' select='php:functionString("zobject::transform_var", "jsid")' />
 
-    <xsl:variable name='ZDef' select='$DEFS/*/zobjectdef[@name=$ZName]' />
+    <xsl:variable name='ZDef' select='$DEFS//*/zobjectdef[@name=$ZName]' />
     <xsl:variable name='ZSrc' select='$ZDef/source' />
     <xsl:variable name='obj' select='//.' />
 
-    <xsl:variable name='mode' select='php:functionString("CheckPermissionObjectMode", string($ZName), string($requested-object-mode))' />
+    <xsl:variable name='mode' select='php:functionString("zobject_access::access", string($ZName), string($requested-object-mode))' />
 
 
     <xsl:template match='/'>
-        <xsl:variable name='benchstart' select='php:functionString("BenchTime")'/>
-        <xsl:variable name='named_template' select='php:functionString("juniper_named_template")'/>
+        <xsl:variable name='benchstart' select='php:functionString("zobject::bench_time")'/>
+        <xsl:variable name='named_template' select='php:functionString("zobject::named_template")'/>
         <xsl:variable name='specific_template' select='$ZDef/render[@type=$mode]/@src'/>
         <xsl:variable name='alt_template'>
             <xsl:choose>

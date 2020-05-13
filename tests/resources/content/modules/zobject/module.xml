@@ -26,7 +26,8 @@
         </specification>
 
         <file id='zo-render' type='php' src='zobject-render.php' mode='startup' />
-        <file id="zobject" type="php" src="zobject.php" mode='startup' />
+        <file id='zo-access' type='php' src='zobject-access.php' mode='startup' />
+        <file id="zoobject" type="php" src="zobject.php" mode='startup' />
         <file id="zo-datatypes" type="php" src="zobject-datatypes.php" mode='startup' />
 
         <file id='zo-class-zaction' type='php' src='zaction.php'	/>
