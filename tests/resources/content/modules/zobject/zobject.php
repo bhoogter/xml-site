@@ -5,6 +5,8 @@ class zobject
     public const ZP_PAGE = 'p';
     public const ZP_PAGECOUNT = 'pp';
 
+    public static function DEBUG_TRANSFORM() { return false; }
+
     public $name;
     public $mode;
     public $module;
@@ -19,17 +21,15 @@ class zobject
 
     public $gid;
 
-    private static $iOBJs = [];
-
     function gid() { return $this->gid; }
     function __destruct()
     {
-        self::unset_iOBJ($this);    
+        zobject_iobj::unset($this);    
     }
 
     function __construct()
     {
-        self::set_iOBJ($this);
+        zobject_iobj::set($this);
 
         $this->page = "1";
         $this->page_count = "30";
@@ -62,13 +62,8 @@ class zobject
     static function handled_elements() { return xml_serve::handler_list(); }
     static function source_document($n) { php_logger::log("CALL $n");return xml_site::$source->get_source_doc($n); }
 
-    static function named_template() { 
-        return self::IOBJ() ? self::IOBJ()->named_template : ''; 
-    }
-    static function transform_var($n) { 
-        php_logger::log("F=$n");
-        return self::iOBJ() ? self::iOBJ()->get_var($n) : ''; 
-    }
+    static function iOBJ($n = 0) { return zobject_iobj::iOBJ($n); }
+    static function iOBJ2() { return zobject_iobj::iOBJ2(); }
 
     function arg($key)
     {
@@ -555,17 +550,16 @@ class zobject
     {
         php_logger::log("CALL GetZobjectAutoTemplate");
         //$_a = BenchTime();
-        include_once("class-autotemplate.php");
+        include_once("zobject-autotemplate.php");
 
-        //print "<br/>".$this->gid().", module=".$this->options['module'];
+        php_logger::debug($this->gid().", module=".$this->options['module']);
         $f = self::FetchSpecPart($this->options['module'], "program/control[@type='autotemplate']/@src");
-        //print "<br/>GetZobjectAutoTemplate.test=".juniper()->FetchSpecPart($this->options['module'], "program/control[@type='autotemplate']/@src");
+        php_logger::debug("test=".self::FetchSpecPart($this->options['module'], "program/control[@type='autotemplate']/@src"));
         if ($f != "") $f = 'modules/' . $this->options["module"] . "/" . $f;
 
         $t = zobject_autotemplate::autotemplate($this->name, $this->mode, $f);
 
-        //print "<br><br>".BenchReport($_a, "Auto Template");
-        //log_file("zobject_template", $t);
+        php_logger::debug("zobject_template", $t);
         if (strlen(querystring::get("SaveAutoTemplate")) > 0) {
             //Warning("Saving AutoTemplate to: ".rPATH_AUTOTEMPLATES . $ZName . "_" . $ZMode . ".xml", "GetZObjectTemplate");
             file_put_contents(rPATH_AUTOTEMPLATES . $ZName . "_" . $ZMode . ".xml", DoTidyXMLString($t->SaveXML()));
@@ -578,7 +572,7 @@ class zobject
 
     function GetZObjectTemplate($FName = "", $ZName = "", $ZMode = "")
     {
-        //print "<br/>GetZObjectTemplate($FName, $ZName, $ZMode)";
+        php_logger::log("CALL - $FName, $ZName, $ZMode");
         $tf = $FName;
         $FName = FilePath("z", $FName);
         //print "<br/>FName=$FName";
@@ -1048,21 +1042,6 @@ class zobject
         }
     }
 
-
-    protected static function unset_iOBJ($o) {
-        foreach(self::$iOBJs as $k=>$v) 
-            if ($o == $v) unset(self::$iOBJs[$k]);
-    }
-
-    protected static function set_iOBJ($o) {
-        return array_push(self::$iOBJs, $o);
-    }
-
-    public static function iOBJ($n = 0) {
-        return count(self::$iOBJs) <= $n ? null : self::$iOBJs[-$n];
-    }
-    public static function iOBJ2() { return self::iOBJ(1); }
-
 	public static function args_prefix()	{	return '@@';		}
 	public static function encode_args($a)	{	return self::args_prefix().base64_encode(str_rot13($a));	}
 	public static function decode_args($a)	
@@ -1116,9 +1095,4 @@ class zobject
 //print "<br/>InterpretFields: $f";
 		return $f;
 		}
-
-
-    public static function bench_time() {
-            return microtime(TRUE);
-        }
 }        

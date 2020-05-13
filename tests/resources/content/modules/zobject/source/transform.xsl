@@ -16,18 +16,18 @@
     <xsl:variable name='HandledElements' select='php:functionString("zobject::handled_elements")'/>
     <!-- NOTE:  $PS for page-file, via page.xsl -->
 
-    <xsl:variable name='ZName' select='php:functionString("zobject::transform_var", "name")' />
-    <xsl:variable name='requested-object-mode' select='php:functionString("zobject::transform_var", "mode")' />
-    <xsl:variable name='login-key' select='php:functionString("zobject::transform_var", "login-key")' />
-    <xsl:variable name='OID' select='php:functionString("zobject::transform_var", "uid")' />
-    <xsl:variable name='ZPage' select='php:functionString("zobject::transform_var", "page")' />
-    <xsl:variable name='ZPageCount' select='php:functionString("zobject::transform_var", "page-count")' />
-    <xsl:variable name='ZCount' select='php:functionString("zobject::transform_var", "count")' />
-    <xsl:variable name='ZArgs' select='php:functionString("zobject::transform_var", "args")' />
-    <xsl:variable name='ZArgs64' select='php:functionString("zobject::transform_var", "args64")' />
+    <xsl:variable name='ZName' select='php:functionString("zobject_iobj::transform_var", "name")' />
+    <xsl:variable name='requested-object-mode' select='php:functionString("zobject_iobj::transform_var", "mode")' />
+    <xsl:variable name='login-key' select='php:functionString("zobject_iobj::transform_var", "login-key")' />
+    <xsl:variable name='OID' select='php:functionString("zobject_iobj::transform_var", "uid")' />
+    <xsl:variable name='ZPage' select='php:functionString("zobject_iobj::transform_var", "page")' />
+    <xsl:variable name='ZPageCount' select='php:functionString("zobject_iobj::transform_var", "page-count")' />
+    <xsl:variable name='ZCount' select='php:functionString("zobject_iobj::transform_var", "count")' />
+    <xsl:variable name='ZArgs' select='php:functionString("zobject_iobj::transform_var", "args")' />
+    <xsl:variable name='ZArgs64' select='php:functionString("zobject_iobj::transform_var", "args64")' />
     <xsl:variable name='ZPrefix' select='c' />
 
-    <xsl:variable name='jsid' select='php:functionString("zobject::transform_var", "jsid")' />
+    <xsl:variable name='jsid' select='php:functionString("zobject_iobj::transform_var", "jsid")' />
 
     <xsl:variable name='ZDef' select='$DEFS//*/zobjectdef[@name=$ZName]' />
     <xsl:variable name='ZSrc' select='$ZDef/source' />
@@ -37,8 +37,8 @@
 
 
     <xsl:template match='/'>
-        <xsl:variable name='benchstart' select='php:functionString("zobject::bench_time")'/>
-        <xsl:variable name='named_template' select='php:functionString("zobject::named_template")'/>
+        <xsl:variable name='benchstart' select='php:functionString("zobject_bench::time")'/>
+        <xsl:variable name='named_template' select='php:functionString("zobject_iobj::named_template")'/>
         <xsl:variable name='specific_template' select='$ZDef/render[@type=$mode]/@src'/>
         <xsl:variable name='alt_template'>
             <xsl:choose>
@@ -51,38 +51,25 @@
             </xsl:choose>
         </xsl:variable>
         <xsl:variable name='general_template' select='$ZDef/render[string(@type)=""]/@src'/>
-        <xsl:variable name='docTemplateFile' select='php:functionString("ChooseBest", string($named_template), string($specific_template), string($alt_template), string($general_template))'/>
-        <xsl:variable name='docTemplate' select='php:function("GetZObjectTemplate", $docTemplateFile, $ZName, $mode)' />
+        <xsl:variable name='docTemplateFile'>
+            <xsl:choose>
+                <xsl:when test='string-length($named_template) != 0' select='$named_template' />
+                <xsl:when test='string-length($specific_template) != 0' select='$specific_template' />
+                <xsl:when test='string-length($alt_template) != 0' select='$alt_template' />
+                <xsl:otherwise test='string-length($general_template) != 0' select='$general_template' />
+            </xsl:choose>
+        </xsl:variable>
+        <xsl:variable name='docTemplate' select='php:function("zobject_iobj::get_template", string($docTemplateFile), string($ZName), string($mode))' />
 
-        <xsl:if test="false()">
+        <xsl:if test='php:function("zobject::DEBUG_TRANSFORM")'>
             <table class='DEBUG'>
-                <tr>
-                    <td class='title' colspan='2'>TRANSFORM.XSL</td>
-                </tr>
-                <tr>
-                    <th>Var</th>
-                    <th>Val</th>
-                </tr>
-                <tr>
-                    <td>ZName</td>
-                    <td>
-                        <xsl:value-of select='$ZName'/>
-                    </td>
-                </tr>
-                <tr>
-                    <td>requested-object-mode</td>
-                    <td>
-                        <xsl:value-of select='$requested-object-mode'/>
-                    </td>
-                </tr>
-                <tr>
-                    <td>mode</td>
-                    <td>
-                        <xsl:value-of select='$mode'/>
-                    </td>
-                </tr>
+                <tr><td class='title' colspan='2'>TRANSFORM.XSL</td></tr>
+                <tr><th>Var</th><th>Val</th></tr>
+                <tr><td>ZName</td><td><xsl:value-of select='$ZName'/></td></tr>
+                <tr><td>requested-object-mode</td><td><xsl:value-of select='$requested-object-mode'/></td></tr>
+                <tr><td>mode</td><td><xsl:value-of select='$mode'/></td></tr>
 
-                <!--
+<!--
 	<tr><td>uid</td><td><xsl:value-of select='php:functionString("juniper_transform_var", "uid")'/></td></tr>
 	<tr><td>zpage</td><td><xsl:value-of select='$ZPage'/></td></tr>
 	<tr><td>zpagecount</td><td><xsl:value-of select='$ZPageCount'/></td></tr>
@@ -100,7 +87,7 @@
             </table>
         </xsl:if>
 
-        <xsl:variable name='resetRecNo' select='php:functionString("juniper_recno", "1")'/>
+        <xsl:variable name='resetRecNo' select='php:functionString("zobject_iobj::recno", "1")'/>
         <div>
             <xsl:attribute name='id'>
                 <xsl:value-of select='$jsid'/>
@@ -108,7 +95,7 @@
             <xsl:apply-templates select="$docTemplate/*" />
         </div>
         <xsl:if test='number($BenchmarkTRANSFORM)>0'>
-            <xsl:value-of select='php:functionString("BenchReport",$benchstart, "zobject transform")'/>
+            <xsl:value-of select='php:functionString("zobject_bench::report", $benchstart, "zobject transform")'/>
         </xsl:if>
     </xsl:template>
 
@@ -121,7 +108,7 @@
                     <xsl:value-of select='.'/>
                 </xsl:variable>
                 <xsl:attribute name='{$aname}'>
-                    <xsl:value-of select='php:functionString("TemplateEscapeTokens", string($atext))'/>
+                    <xsl:value-of select='php:functionString("zobject_iobj::template_escape_tokens", string($atext))'/>
                 </xsl:attribute>
             </xsl:otherwise>
         </xsl:choose>
