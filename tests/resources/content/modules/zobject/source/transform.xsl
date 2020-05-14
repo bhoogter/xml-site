@@ -29,75 +29,75 @@
 
     <xsl:variable name='jsid' select='php:functionString("zobject_iobj::transform_var", "jsid")' />
 
-    <xsl:variable name='ZDef' select='$DEFS//*/zobjectdef[@name=$ZName]' />
+    <xsl:variable name='ZDef' select='$DEFS//modules/module/zobjectdef[@name=$ZName]' />
     <xsl:variable name='ZSrc' select='$ZDef/source' />
     <xsl:variable name='obj' select='//.' />
 
     <xsl:variable name='mode' select='php:functionString("zobject_access::check", string($ZName), string($requested-object-mode))' />
 
     <xsl:template match='/'>
-        <xsl:variable name='benchstart' select='php:functionString("zobject_bench::time")'/>
-        <xsl:variable name='named_template' select='php:functionString("zobject_iobj::named_template")'/>
-        <xsl:variable name='specific_template' select='$ZDef/render[@type=$mode]/@src'/>
-        <xsl:variable name='alt_template'>
-            <xsl:choose>
-                <xsl:when test='($mode="edit" or $mode="create") and string-length($ZDef/render[@type="display"]/@src)!=0'>
-                    <xsl:value-of select='$ZDef/render[@type="display"]/@src'/>
-                </xsl:when>
-                <xsl:when test='($mode="list-edit" or $mode="list-create") and string-length($ZDef/render[@type="list"]/@src)!=0'>
-                    <xsl:value-of select='$ZDef/render[@type="list"]/@src'/>
-                </xsl:when>
-            </xsl:choose>
-        </xsl:variable>
-        <xsl:variable name='general_template' select='$ZDef/render[not(@type)]/@src'/>
-
-        <xsl:variable name='docTemplateFile'>
-            <xsl:choose>
-                <xsl:when test='string($named_template) != ""'><xsl:value-of select='string($named_template)' /></xsl:when>
-                <xsl:when test='string($specific_template) != ""'><xsl:value-of select='string($specific_template)' /></xsl:when>
-                <xsl:when test='string($alt_template) != ""'><xsl:value-of select='string($alt_template)' /></xsl:when>
-                <xsl:otherwise test='string($general_template) != ""'><xsl:value-of select='string($general_template)' /></xsl:otherwise>
-            </xsl:choose>
-        </xsl:variable>
-        <xsl:variable name='docTemplate' select='php:function("zobject_iobj::get_template", string($docTemplateFile), string($ZName), string($mode))' />
-
-        <xsl:if test='php:function("zobject::DEBUG_TRANSFORM")'>
-            <table class='DEBUG'>
-                <tr><td class='title' colspan='2'>TRANSFORM.XSL</td></tr>
-                <tr><th>Var</th><th>Val</th></tr>
-                <tr><td>ZName</td><td><xsl:value-of select='$ZName'/></td></tr>
-                <tr><td>requested-object-mode</td><td><xsl:value-of select='$requested-object-mode'/></td></tr>
-                <tr><td>mode</td><td><xsl:value-of select='$mode'/></td></tr>
-
-                <tr><td colspan='2' style='background-color: black;'>_</td></tr>
-                <tr><td>uid</td><td><xsl:value-of select='$OID'/></td></tr>
-                <tr><td>zpage</td><td><xsl:value-of select='$ZPage'/></td></tr>
-                <tr><td>zpagecount</td><td><xsl:value-of select='$ZPageCount'/></td></tr>
-
-                <tr><td colspan='2' style='background-color: black;'>_</td></tr>
-                <tr><td>zname</td><td><xsl:value-of select='$ZName'/></td></tr>
-                <tr><td>prefix</td><td><xsl:value-of select='$ZPrefix'/></td></tr>
-                <tr><td>args</td><td><xsl:value-of select='$ZArgs'/></td></tr>
-
-                <tr><td colspan='2' style='background-color: black;'>_</td></tr>
-                <tr><td>named_template</td><td><xsl:value-of select='$named_template'/></td></tr>
-                <tr><td>specific_template</td><td><xsl:value-of select='$specific_template'/></td></tr>
-                <tr><td>alt_template</td><td><xsl:value-of select='$alt_template'/></td></tr>
-                <tr><td>general_template</td><td><xsl:value-of select='$general_template'/></td></tr>
-                <tr><td>docTemplateFile</td><td><xsl:value-of select='$docTemplateFile'/></td></tr>
-            </table>
-        </xsl:if>
-
-        <xsl:variable name='resetRecNo' select='php:functionString("zobject_iobj::recno", "1")'/>
         <div>
-            <xsl:attribute name='id'>
-                <xsl:value-of select='$jsid'/>
-            </xsl:attribute>
+            <xsl:attribute name='id'><xsl:value-of select='$jsid'/></xsl:attribute>
+            <xsl:variable name='benchstart' select='php:functionString("zobject_bench::time")'/>
+            <xsl:variable name='named_template' select='php:functionString("zobject_iobj::named_template")'/>
+            <xsl:variable name='specific_template' select='$ZDef/render[@type=$mode]/@src'/>
+            <xsl:variable name='alt_template'>
+                <xsl:choose>
+                    <xsl:when test='($mode="edit" or $mode="create") and string-length($ZDef/render[@type="display"]/@src)!=0'>
+                        <xsl:value-of select='$ZDef/render[@type="display"]/@src'/>
+                    </xsl:when>
+                    <xsl:when test='($mode="list-edit" or $mode="list-create") and string-length($ZDef/render[@type="list"]/@src)!=0'>
+                        <xsl:value-of select='$ZDef/render[@type="list"]/@src'/>
+                    </xsl:when>
+                </xsl:choose>
+            </xsl:variable>
+            <xsl:variable name='general_template' select='$ZDef/render[not(@type)]/@src'/>
+
+            <xsl:variable name='docTemplateFile'>
+                <xsl:choose>
+                    <xsl:when test='string($named_template) != ""'><xsl:value-of select='string($named_template)' /></xsl:when>
+                    <xsl:when test='string($specific_template) != ""'><xsl:value-of select='string($specific_template)' /></xsl:when>
+                    <xsl:when test='string($alt_template) != ""'><xsl:value-of select='string($alt_template)' /></xsl:when>
+                    <xsl:otherwise><xsl:value-of select='string($general_template)' /></xsl:otherwise>
+                </xsl:choose>
+            </xsl:variable>
+            <xsl:variable name='docTemplate' select='php:function("zobject_iobj::get_template", string($docTemplateFile), string($ZName), string($mode))' />
+
+            <xsl:if test='php:function("zobject::DEBUG_TRANSFORM")'>
+                <table class='DEBUG'>
+                    <tr><td class='title' colspan='2'>TRANSFORM.XSL (<xsl:value-of select='count($docTemplate)' />)</td></tr>
+                    <tr><th>Var</th><th>Val</th></tr>
+                    <tr><td>ZName</td><td><xsl:value-of select='$ZName'/></td></tr>
+                    <tr><td>verify</td><td><xsl:value-of select='$ZDef/@name'/></td></tr>
+                    <tr><td>requested-object-mode</td><td><xsl:value-of select='$requested-object-mode'/></td></tr>
+                    <tr><td>mode</td><td><xsl:value-of select='$mode'/></td></tr>
+                    <tr><td>ZSrc</td><td><xsl:value-of select='$ZSrc'/></td></tr>
+
+                    <tr><td colspan='2' style='background-color: black;'>_</td></tr>
+                    <tr><td>uid</td><td><xsl:value-of select='$OID'/></td></tr>
+                    <tr><td>zpage</td><td><xsl:value-of select='$ZPage'/></td></tr>
+                    <tr><td>zpagecount</td><td><xsl:value-of select='$ZPageCount'/></td></tr>
+
+                    <tr><td colspan='2' style='background-color: black;'>_</td></tr>
+                    <tr><td>zname</td><td><xsl:value-of select='$ZName'/></td></tr>
+                    <tr><td>prefix</td><td><xsl:value-of select='$ZPrefix'/></td></tr>
+                    <tr><td>args</td><td><xsl:value-of select='$ZArgs'/></td></tr>
+
+                    <tr><td colspan='2' style='background-color: black;'>_</td></tr>
+                    <tr><td>named_template</td><td><xsl:value-of select='$named_template'/></td></tr>
+                    <tr><td>specific_template</td><td><xsl:value-of select='$specific_template'/></td></tr>
+                    <tr><td>alt_template</td><td><xsl:value-of select='$alt_template'/></td></tr>
+                    <tr><td>general_template</td><td><xsl:value-of select='$general_template'/></td></tr>
+                    <tr><td>docTemplateFile</td><td><xsl:value-of select='$docTemplateFile'/></td></tr>
+                </table>
+            </xsl:if>
+
+            <xsl:variable name='resetRecNo' select='php:functionString("zobject_iobj::recno", "1")'/>
             <xsl:apply-templates select="$docTemplate/*" />
+            <xsl:if test='number($BenchmarkTRANSFORM)>0'>
+                <xsl:value-of select='php:functionString("zobject_bench::report", $benchstart, "zobject transform")'/>
+            </xsl:if>
         </div>
-        <xsl:if test='number($BenchmarkTRANSFORM)>0'>
-            <xsl:value-of select='php:functionString("zobject_bench::report", $benchstart, "zobject transform")'/>
-        </xsl:if>
     </xsl:template>
 
     <xsl:template match='@*'>
@@ -247,7 +247,7 @@
 
     <xsl:template name='field'>
         <xsl:variable name='F' select='.' />
-        <xsl:variable name='rn' select='php:functionString("juniper_recno")'/>
+        <xsl:variable name='rn' select='php:functionString("zobject_iobj::recno")'/>
         <xsl:variable name='fid' select='@id' />
         <xsl:variable name='fDef' select='$ZDef/fielddefs/fielddef[@id=$fid]' />
         <xsl:variable name='ixf' select='$ZDef/@index'/>
@@ -294,9 +294,15 @@
         <xsl:variable name='sc1' select='$DEFS/*/typedef[@name=$datatype]/@source' />
         <xsl:variable name='sc2' select='$fDef/@source' />
         <xsl:variable name='sc3' select='@source'/>
-        <xsl:variable name='tsource' select='php:functionString("ChooseBest", $sc3, $sc2, $sc1)'/>
+        <xsl:variable name='tsource'>
+            <xsl:choose>
+                <xsl:when test='$sc3 != ""'><xsl:value-of select='$sc3' /></xsl:when>
+                <xsl:when test='$sc2 != ""'><xsl:value-of select='$sc2' /></xsl:when>
+                <xsl:otherwise><xsl:value-of select='$sc1' /></xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
 
-        <xsl:variable name='source' select='php:functionString("TransformSourceScripts", string($tsource))'/>
+        <xsl:variable name='source' select='php:functionString("zobject::TransformSourceScripts", string($tsource))'/>
         <xsl:variable name='bvalidation'>
             <xsl:choose>
                 <xsl:when test='string-length(@validation)!=0'><xsl:value-of select='string(@validation)'/></xsl:when>
@@ -310,8 +316,8 @@
                 <xsl:otherwise><xsl:value-of select='string($ZDef/fielddefs/fielddef[@id=$fid]/@required)'/></xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
-        <xsl:variable name='validation' select='php:functionString("juniper_validation_string", string($bvalidation), string($rvalidation))'/>
-        <xsl:variable name='remote' select='php:functionString("juniper_remote_validation_url", $fid)'/>
+        <xsl:variable name='validation' select='php:functionString("zobject_validation::validation_string", string($bvalidation), string($rvalidation))'/>
+        <xsl:variable name='remote' select='php:functionString("zobject_validation::remote_url", $fid)'/>
 
         <xsl:if test='php:function("zobject::DEBUG_TRANSFORM_FIELD")'>
             <table class='DEBUG'>
@@ -418,7 +424,13 @@
             </xsl:if>
         </xsl:variable>
         <xsl:variable name='tCap' select='$ZDef/fielddefs/fielddef[@id=$fid]/@caption' />
-        <xsl:variable name='bCap' select='php:functionString("ChooseBest", string($specificCap), string($tCap), string($dCap))'/>
+        <xsl:variable name='bCap'>
+            <xsl:choose>
+                <xsl:when test='string-length($specificCap)!=0'><xsl:value-of select= '$specificCap'/></xsl:when>
+                <xsl:when test='string-length($tCap)!=0'><xsl:value-of select= '$tCap'/></xsl:when>
+                <xsl:otherwise><xsl:value-of select='$dCap' /></xsl:otherwise>
+            </xsl:choose>
+         </xsl:variable>
 
         <label>
             <xsl:attribute name='for'>
@@ -426,10 +438,10 @@
             </xsl:attribute>
             <xsl:choose>
                 <xsl:when test='substring($mode, 1, 4)="list"'>
-                    <xsl:value-of disable-output-escaping='yes' select='php:functionString("PrettyHeader", string($bCap))'/>
+                    <xsl:value-of disable-output-escaping='yes' select='php:functionString("zobject_format::PrettyHeader", string($bCap))'/>
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:value-of disable-output-escaping='yes' select='php:functionString("PrettyCaption", string($bCap))'/>
+                    <xsl:value-of disable-output-escaping='yes' select='php:functionString("zobject_format::PrettyCaption", string($bCap))'/>
                 </xsl:otherwise>
             </xsl:choose>
         </label>
@@ -439,14 +451,14 @@
         <xsl:variable name='fid' select='@id' />
         <xsl:variable name='bCap' select='$DEFS/*/ztabledef[@name=$ZSrc]/fielddefs/fielddef[@id=$fid]/help' />
         <div class='capex'>
-            <xsl:copy-of select='php:functionString("PrettyCaptionHelp", string($bCap))' />
+            <xsl:copy-of select='php:functionString("zobject_format::PrettyCaptionHelp", string($bCap))' />
         </div>
     </xsl:template>
 
     <xsl:template name='fielddesc'>
         <xsl:variable name='fid' select='@id' />
         <xsl:variable name='bCap' select='$DEFS/*/ztabledef[@name=$ZSrc]/fielddefs/fielddef[@id=$fid]/description' />
-        <xsl:copy-of select='php:functionString("PrettyCaptionHelp", string($bCap))' />
+        <xsl:copy-of select='php:functionString("zobject_format::PrettyCaptionHelp", string($bCap))' />
     </xsl:template>
 
     <xsl:template name='row'>
@@ -463,13 +475,13 @@
         </xsl:if>
         <xsl:for-each select='$obj/row'>
             <xsl:if test='position() &gt;= $rangeFrom and position() &lt;= $rangeTo'>
-                <xsl:variable name='rowstart' select='php:functionString("BenchTime")'/>
-                <xsl:variable name='setRecNo' select='php:functionString("juniper_recno", string(position()))'/>
+                <xsl:variable name='rowstart' select='php:functionString("zobject_bench::time")'/>
+                <xsl:variable name='setRecNo' select='php:functionString("zobject_iobj::recno", string(position()))'/>
                 <xsl:for-each select='$row/*'>
                     <xsl:apply-templates select='.' />
                 </xsl:for-each>
                 <xsl:if test='number($BenchmarkROWS)>0'>
-                    <xsl:value-of select='php:functionString("BenchReport", string($rowstart), "Rows")'/>
+                    <xsl:value-of select='php:functionString("zobject_bench::report", string($rowstart), "Rows")'/>
                 </xsl:if>
             </xsl:if>
         </xsl:for-each>
@@ -477,7 +489,7 @@
 
     <xsl:template match='tr'>
         <xsl:variable name='C' select='@class'/>
-        <xsl:variable name='R' select='php:functionString("juniper_recno", "")'/>
+        <xsl:variable name='R' select='php:functionString("zobject_iobj::recno", "")'/>
         <xsl:variable name='alt_ext'>
             <xsl:if test='(number($R) mod 2) = 0'>-alt</xsl:if>
         </xsl:variable>
@@ -502,7 +514,7 @@
 
     <xsl:template match='li'>
         <xsl:variable name='C' select='@class'/>
-        <xsl:variable name='R' select='php:functionString("juniper_recno", "")'/>
+        <xsl:variable name='R' select='php:functionString("zobject_iobj::recno", "")'/>
         <xsl:variable name='alt_ext'>
             <xsl:if test='(number($R) mod 2) = 0'>-alt</xsl:if>
         </xsl:variable>
@@ -530,22 +542,42 @@
     </xsl:template>
 
     <xsl:template name='addlink'>
-        <xsl:variable name='ntext' select='php:functionString("ChooseBest", string(@text), "Add")' />
+        <xsl:variable name='ntext'>
+            <xsl:choose>
+                <xsl:when test='string-length(@text)!=0'><xsl:value-of select='string(@text)' /></xsl:when>
+                <xsl:otherwise>Add</xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
         <xsl:copy-of select='php:function("ItemLink", string(@field), "create", string($ntext), string(@ajax), string(@class), string(@template))'/>
     </xsl:template>
 
     <xsl:template name='displaylink'>
-        <xsl:variable name='ntext' select='php:functionString("ChooseBest", string(@text), "@")' />
+        <xsl:variable name='ntext'>
+            <xsl:choose>
+                <xsl:when test='string-length(@text)!=0'><xsl:value-of select='string(@text)' /></xsl:when>
+                <xsl:otherwise>@</xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
         <xsl:copy-of select='php:function("ItemLink", string(@field), "display", string($ntext), string(@ajax), string(@class), string(@template))' disable-output-escaping='yes'/>
     </xsl:template>
 
     <xsl:template name='editlink'>
-        <xsl:variable name='ntext' select='php:functionString("ChooseBest", string(@text), "#")' />
+        <xsl:variable name='ntext'>
+            <xsl:choose>
+                <xsl:when test='string-length(@text)!=0'><xsl:value-of select='string(@text)' /></xsl:when>
+                <xsl:otherwise>#</xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
         <xsl:copy-of select='php:function("ItemLink", string(@field), "edit", string($ntext), string(@ajax), string(@class), string(@template))' disable-output-escaping='yes'/>
     </xsl:template>
 
     <xsl:template name='dellink'>
-        <xsl:variable name='ntext' select='php:functionString("ChooseBest", string(@text), "X")' />
+        <xsl:variable name='ntext'>
+            <xsl:choose>
+                <xsl:when test='string-length(@text)!=0'><xsl:value-of select='string(@text)' /></xsl:when>
+                <xsl:otherwise>X</xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
         <xsl:copy-of select='php:function("ItemLink", string(@field), "delete", string($ntext), string(@ajax), string(@class))'/>
     </xsl:template>
 
@@ -555,11 +587,22 @@
     </xsl:template>
 
     <xsl:template name='uppositionlink'>
-        <xsl:variable name='ntext' select='php:functionString("ChooseBest", string(@text), "-")' />
+        <xsl:variable name='ntext'>
+            <xsl:choose>
+                <xsl:when test='string-length(@text)!=0'><xsl:value-of select='string(@text)' /></xsl:when>
+                <xsl:otherwise>-</xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
         <xsl:copy-of select='php:function("ItemLink", string(@field), "upposition", string($ntext), string(@ajax), string(@class))'/>
     </xsl:template>
+
     <xsl:template name='dnpositionlink'>
-        <xsl:variable name='ntext' select='php:functionString("ChooseBest", string(@text), "+")' />
+        <xsl:variable name='ntext'>
+            <xsl:choose>
+                <xsl:when test='string-length(@text)!=0'><xsl:value-of select='string(@text)' /></xsl:when>
+                <xsl:otherwise>+</xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
         <xsl:copy-of select='php:function("ItemLink", string(@field), "dnposition", string($ntext), string(@ajax), string(@class))'/>
     </xsl:template>
 
@@ -580,25 +623,28 @@
     <!-- this extends image paths, when not specified, allowing for template image auto-supplantation -->
     <!-- It also works to guarantee better standards conformance by enforcing both @alt and @title, with default of "Image" -->
     <xsl:template name='img'>
-        <xsl:variable name='Nalt' select='php:functionString("ChooseBest", @alt, @title, "Image")'/>
-        <xsl:variable name='Ntitle' select='php:functionString("ChooseBest", @title, @alt, "Image")'/>
+        <xsl:variable name='Nalt'>
+            <xsl:choose>
+                <xsl:when test='string-length(@alt)!=0'><xsl:value-of select='string(@alt)' /></xsl:when>
+                <xsl:when test='string-length(@title)!=0'><xsl:value-of select='string(@title)' /></xsl:when>
+                <xsl:otherwise>Image</xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+        <xsl:variable name='Ntitle'>
+            <xsl:choose>
+                <xsl:when test='string-length(@alt)!=0'><xsl:value-of select='string(@title)' /></xsl:when>
+                <xsl:when test='string-length(@title)!=0'><xsl:value-of select='string(@alt)' /></xsl:when>
+                <xsl:otherwise>Image</xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
 
         <xsl:variable name='asrc' select='php:functionString("TemplateEscapeTokens", string(@src))'/>
         <xsl:variable name='nsrc' select='php:functionString("ExtendURL",$asrc,"i","", 1)'/>
         <img>
-            <xsl:for-each select='@*'>
-                <xsl:copy-of select='.'/>
-            </xsl:for-each>
-            <xsl:attribute name='src'>
-                <xsl:value-of select='$nsrc'/>
-            </xsl:attribute>
-            <xsl:attribute name='alt'>
-                <xsl:value-of select='$Nalt'/>
-            </xsl:attribute>
-            <xsl:attribute name='title'>
-                <xsl:value-of select='$Ntitle'/>
-            </xsl:attribute>
-
+            <xsl:for-each select='@*'><xsl:copy-of select='.'/></xsl:for-each>
+            <xsl:attribute name='src'><xsl:value-of select='$nsrc'/></xsl:attribute>
+            <xsl:attribute name='alt'><xsl:value-of select='$Nalt'/></xsl:attribute>
+            <xsl:attribute name='title'><xsl:value-of select='$Ntitle'/></xsl:attribute>
         </img>
     </xsl:template>
 

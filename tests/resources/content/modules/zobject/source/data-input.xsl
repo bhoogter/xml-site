@@ -17,30 +17,36 @@
 		<xsl:param name='validation' />
 		<xsl:param name='remote' />
 
-		<xsl:variable name='display' select='php:functionString("GetFieldMode", string($ZName), string($FID), string($ZMode))'/>
-		<xsl:variable name='HType' select='php:functionString("ChooseBest", string($iDataTypes/*/typedef[@name=$datatype]/@html-type), $datatype, "text")'/>
+		<xsl:variable name='display' select='php:functionString("zobject_access::check_field", string($ZName), string($FID), string($ZMode))'/>
+        <xsl:variable name='HType'>
+            <xsl:choose>
+                <xsl:when test='string($iDataTypes/*/typedef[@name=$datatype]/@html-type) != ""'><xsl:value-of select='string($iDataTypes/*/typedef[@name=$datatype]/@html-type)' /></xsl:when>
+                <xsl:when test='string($datatype) != ""'><xsl:value-of select='string($datatype)' /></xsl:when>
+                <xsl:otherwise>text</xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
 
-		<xsl:variable name='nValue'><xsl:value-of select='php:functionString("FormatDataField", string($value), string($datatype))'/></xsl:variable>
+		<xsl:variable name='nValue'><xsl:value-of select='php:functionString("zobject_format::FormatDataField", string($value), string($datatype))'/></xsl:variable>
 
-<xsl:if test="false()">
-	<table class='DEBUG'>
-		<tr><td colspan='2' class='title'>DATAINPUT.XSL - data-field</td></tr>
-		<tr><th>Var</th><th>Val</th></tr>
-		<tr><td>ZName</td><td><xsl:value-of select='$ZName'/></td></tr>
-		<tr><td>ZMode</td><td><xsl:value-of select='$ZMode'/></td></tr>
-		<tr><td>FID</td><td><xsl:value-of select='$FID'/></td></tr>
-		<tr><td>datatype</td><td><xsl:value-of select='$datatype'/></td></tr>
-		<tr><td>ZM:Form/Field</td><td><xsl:value-of select='$FormZMode'/>..<xsl:value-of select='$ZMode'/></td></tr>
-		<tr><td>HType</td><td><xsl:value-of select='$HType'/></td></tr>
-		<tr><td>name</td><td><xsl:value-of select='$name'/></td></tr>
-		<tr><td>value</td><td><xsl:copy-of select='$value'/></td></tr>
-		<tr><td>source</td><td><xsl:value-of select='$source'/></td></tr>
-		<tr><td>isMultiple</td><td><xsl:value-of select='$isMultiple'/></td></tr>
-		<tr><td>nValue</td><td><xsl:value-of disable-output-escaping='yes' select='$nValue'/></td></tr>
-		<tr><td>validation</td><td><xsl:value-of select='$validation'/></td></tr>
-		<tr><td>remote</td><td><xsl:value-of select='$remote'/></td></tr>
-	</table>
-</xsl:if>
+        <xsl:if test='php:function("zobject::DEBUG_TRANSFORM_DATA_FIELD")'>
+            <table class='DEBUG'>
+                <tr><td colspan='2' class='title'>DATAINPUT.XSL - data-field</td></tr>
+                <tr><th>Var</th><th>Val</th></tr>
+                <tr><td>ZName</td><td><xsl:value-of select='$ZName'/></td></tr>
+                <tr><td>ZMode</td><td><xsl:value-of select='$ZMode'/></td></tr>
+                <tr><td>FID</td><td><xsl:value-of select='$FID'/></td></tr>
+                <tr><td>datatype</td><td><xsl:value-of select='$datatype'/></td></tr>
+                <tr><td>ZM:Form/Field</td><td><xsl:value-of select='$FormZMode'/>..<xsl:value-of select='$ZMode'/></td></tr>
+                <tr><td>HType</td><td><xsl:value-of select='$HType'/></td></tr>
+                <tr><td>name</td><td><xsl:value-of select='$name'/></td></tr>
+                <tr><td>value</td><td><xsl:copy-of select='$value'/></td></tr>
+                <tr><td>source</td><td><xsl:value-of select='$source'/></td></tr>
+                <tr><td>isMultiple</td><td><xsl:value-of select='$isMultiple'/></td></tr>
+                <tr><td>nValue</td><td><xsl:value-of disable-output-escaping='yes' select='$nValue'/></td></tr>
+                <tr><td>validation</td><td><xsl:value-of select='$validation'/></td></tr>
+                <tr><td>remote</td><td><xsl:value-of select='$remote'/></td></tr>
+            </table>
+        </xsl:if>
 		
 		<xsl:choose>
 			<xsl:when test='$isMultiple'>
@@ -183,7 +189,13 @@
 	</table>
 </xsl:if>
 		<xsl:variable name='DTDef' select='$iDataTypes/*/typedef[@name=$datatype]'/>
-		<xsl:variable name='HType' select='php:functionString("ChooseBest", string($DTDef/@html-type), $datatype, "text")'/>
+        <xsl:variable name='HType'>
+            <xsl:choose>
+                <xsl:when test='string($DTDef/@html-type)!=""'><xsl:value-of select='string($DTDef/@html-type)' /></xsl:when>
+                <xsl:when test='string($datatype)!=""'><xsl:value-of select='string($datatype)' /></xsl:when>
+                <xsl:otherwise>text</xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
 		<xsl:choose>
 			<xsl:when test='$HType="select" or $HType="multi-select"'>
 				<select>
@@ -230,7 +242,14 @@
 				<xsl:variable name='CBDivID' select='concat($name,"DIV")'/>
 				<xsl:variable name='CBSelID' select='concat($name,"SEL")'/>
 				<xsl:variable name='SQ' select='php:functionString("SingleQuoteChar")'/>
-				<xsl:variable name='size' select='php:functionString("ChooseBest", @size, $DEFS/*/zobjectdef[@name=$ZName]/fielddefs/fielddef[@id=$name]/@size, $DTDef/@size, 20)'/>
+				<xsl:variable name='size'>
+                    <xsl:choose>
+                        <xsl:when test='string(@size)!=""'><xsl:value-of select='string(@size)' /></xsl:when>
+                        <xsl:when test='string($DEFS/*/zobjectdef[@name=$ZName]/fielddefs/fielddef[@id=$name]/@size)!=""'><xsl:value-of select='string($DEFS/*/zobjectdef[@name=$ZName]/fielddefs/fielddef[@id=$name]/@size)' /></xsl:when>
+                        <xsl:when test='string($DTDef/@size)!=""'><xsl:value-of select='string($DTDef/@size)' /></xsl:when>
+                        <xsl:otherwise>20</xsl:otherwise>
+                    </xsl:choose>
+                </xsl:variable>
 				<xsl:variable name='dispval' select='php:functionString("SelectOptionListDisplayText", $source, $value)'/>
 
 				<input type='text' class='combo-text {$validation}'>
@@ -284,10 +303,20 @@
 				<xsl:variable name='SQ' select='php:functionString("SingleQuoteChar")'/>
 				<xsl:variable name='B_' select='concat($SQ,"[",$SQ)'/>
 				<xsl:variable name='_B' select='concat($SQ,"]",$SQ)'/>
-				<xsl:variable name='pHg' select='php:functionString("ChooseBest", @size, "5")'/>
+                <xsl:variable name='pHg'>
+                    <xsl:choose>
+                        <xsl:when test='string-length(@size)!=0'><xsl:value-of select='string(@size)' /></xsl:when>
+                        <xsl:otherwise>5</xsl:otherwise>
+                    </xsl:choose>
+                </xsl:variable>
 				<xsl:variable name='Hg' select='number($pHg) * 20'/>
-				<xsl:variable name='Wd' select='php:functionString("ChooseBest", @width, "250")'/>
-				<xsl:variable name='id' select='php:functionString("NewJSID")'/>
+                <xsl:variable name='Wd'>
+                    <xsl:choose>
+                        <xsl:when test='string-length(@width)!=0'><xsl:value-of select='string(@width)' /></xsl:when>
+                        <xsl:otherwise>250</xsl:otherwise>
+                    </xsl:choose>
+                </xsl:variable>
+				<xsl:variable name='id' select='php:functionString("zobject::new_jsid")'/>
 				<xsl:variable name='script' select='concat("r=",$B_,"+this.value+",$_B,";f=document.getElementById(",$SQ,$id,$SQ,");f.value=(!this.checked?f.value.replace(r,",$SQ,$SQ,"):f.value+r);")'/>
 				
 				<xsl:variable name='Wdg' select='concat($Wd,"px")'/>
@@ -427,7 +456,14 @@
 				<xsl:message terminate='yes'>html-type "user" not supported at this time</xsl:message>
 			</xsl:when>
 			<xsl:otherwise>
-				<xsl:variable name='size' select='php:functionString("ChooseBest", @size, $DEFS/*/zobjectdef[@name=$ZName]/fielddefs/fielddef[@id=$name]/@size, $DTDef/@size, 20)'/>
+                <xsl:variable name='size'>
+                    <xsl:choose>
+                        <xsl:when test='string(@size)!=""'><xsl:value-of select='string(@size)' /></xsl:when>
+                        <xsl:when test='string($DEFS/*/zobjectdef[@name=$ZName]/fielddefs/fielddef[@id=$name]/@size)!=""'><xsl:value-of select='string($DEFS/*/zobjectdef[@name=$ZName]/fielddefs/fielddef[@id=$name]/@size)' /></xsl:when>
+                        <xsl:when test='string($DTDef/@size)!=""'><xsl:value-of select='string($DTDef/@size)' /></xsl:when>
+                        <xsl:otherwise>20</xsl:otherwise>
+                    </xsl:choose>
+                </xsl:variable>
 				<input>
 					<xsl:attribute name="class"><xsl:value-of select='$validation'/></xsl:attribute>
 					<xsl:attribute name='type'>text</xsl:attribute>

@@ -5,9 +5,10 @@ class zobject
     public const ZP_PAGE = 'p';
     public const ZP_PAGECOUNT = 'pp';
 
-    public static function DEBUG_TRANSFORM() { return "1"; }
-    public static function DEBUG_TRANSFORM_FIELD() { return "1"; }
-    public static function DEBUG_TRANSFORM_ROW() { return "1"; }
+    public static function DEBUG_TRANSFORM() { return ""; }
+    public static function DEBUG_TRANSFORM_ROW() { return ""; }
+    public static function DEBUG_TRANSFORM_FIELD() { return ""; }
+    public static function DEBUG_TRANSFORM_DATA_FIELD() { return ""; }
 
     public $name;
     public $mode;
@@ -65,7 +66,10 @@ class zobject
     static function FetchObjDefString($n) { return xml_site::$source->def("//MODULES/modules/module/zobjectdef[@name='$n']"); }
     static function FetchObjFieldCategories($n) 
         { 
+            php_logger::log($n);
             $lst = array_unique(xml_site::$source->lst("//MODULES/modules/module/zobjectdef[@name='$n']/fieldsdefs/fielddef/@category"));
+            $lst += ['general'];
+            php_logger::debug("lst: ", $lst);
             return xml_file::toDoc(sizeof($lst) ?
                  "<categories><category>" . join("</category><category>", $lst) . "</category></categories>" :
                  "<categories />");
@@ -445,26 +449,6 @@ class zobject
         return $f;
     }
 
-    function FormatDataField($f, $DT)
-    {
-        php_logger::log("FormatDataField($f, $DT)");
-        $N = self::FetchDTPart($DT, "@format");
-        php_logger::log("br/>N=$N");
-        $Na = php_hook::call($N, $f);
-        if ($Na != $N) $f = $Na;
-
-        if (($k = self::FetchDTPart($DT, "@html-type")) == "") $k = $DT;
-        switch ($k) {
-            case "wysiwyg":
-            case "rtf":
-            case "richtext":
-                $f = str_replace(array("\n"), array("<br/>"), $f);
-                $f = trim($f);
-                break;
-        }
-        return $f;
-    }
-
     function TranslateKeyList($List, $Prev = "", $KeysOnly = true)
     {
         php_logger::log("TranslateKeyList([$List], $Prev)");
@@ -606,24 +590,27 @@ class zobject
             $FName = xml_site::resolve_file($FName, "module", $this->get_var("module"));
         php_logger::debug("FName=$FName");
         if (!($FName == "") && !file_exists($FName)) {
-            Warning("Specified Template File Does Not Exists: $FName, " . getcwd() . "," . realpath($FName), "ZObj::GetZObjectTemplate");
+            php_logger::warn("Specified Template File Does Not Exists: $FName, " . getcwd() . "," . realpath($FName), "ZObj::GetZObjectTemplate");
             $FName = "";
         }
         $t = "";
         if ($FName != "" && strlen($t = file_get_contents($FName)) == 0) {
-            Warning("Specified Template File is empty or no access: $FName", "ZObj::GetZObjectTemplate");
+            php_logger::warn("Specified Template File is empty or no access: $FName", "ZObj::GetZObjectTemplate");
             $FName = "";
         }
         if ($t != "") {
             $d = new DOMDocument;
             $d->loadXML($t);
             if ($d === false) {
-                Warning("Failed to load template: $FName", "ZObj::GetZObjectTemplate");
+                php_logger::warn("Failed to load template: $FName", "ZObj::GetZObjectTemplate");
                 $t = "";
             }
         }
         if ($t == "") $d = $this->GetZobjectAutoTemplate();
-        php_logger::debug("test=".gettype($t));
+        if (gettype($d)=="object") {
+            php_logger::debug("RESULT=".get_class($d));
+            // php_logger::trace($d->saveXML());
+        }
         return $d;
     }
 
@@ -1124,7 +1111,17 @@ class zobject
 			$cb = create_function('$matches', "return juniper()->KeyValue(substr(\$matches[0],$l));");
 
 		$f = preg_replace_callback('/'.$token."[a-zA-Z0-9_]+".'/i', $cb, $f);
-//print "<br/>InterpretFields: $f";
+        php_logger::debug("InterpretFields: $f");
 		return $f;
-		}
-}        
+        }
+        
+    static function TransformSourceScripts($s)
+        {
+//print "<br/>TransformSourceScripts($s)";
+        static $Cache;
+        if (!php_hook::is_hook($s)) return $s;
+        if (!$Cache) $Cache = array();
+        if ($t=@$Cache[$s]) return $t;
+        return $Cache[$s]=php_hook::call($s);		// returned assignment
+    	}
+}

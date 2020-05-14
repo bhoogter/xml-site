@@ -30,6 +30,7 @@
         <file id='zo-bench' type='php' src='zobject-bench.php' mode='startup' />
         <file id='zo-access' type='php' src='zobject-access.php' mode='startup' />
         <file id='zo-autotemplate' type='php' src='zobject-autotemplate.php' mode='startup' />
+        <file id='zo-format' type='php' src='zobject-format.php' mode='startup' />
         <file id='zo-validation' type='php' src='zobject-validation.php' mode='startup' />
         <file id='zo-source-check' type='php' src='zobject-source-check.php' mode='startup' />
         <file id="zoobject" type="php" src="zobject.php" mode='startup' />

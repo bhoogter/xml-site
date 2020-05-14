@@ -31,12 +31,9 @@
                                 <th>#</th>
                             </xsl:if>
                             <xsl:for-each select='/*/fielddefs/*'>
-                                <xsl:variable name='fmode'
-                                              select='php:functionString("zobject_iobj::field_mode", $ZName, @id, $ZMode)'/>
+                                <xsl:variable name='fmode' select='php:functionString("zobject_iobj::field_mode", $ZName, @id, $ZMode)'/>
                                 <xsl:if test='$fmode="list-edit" or $fmode="list" or $fmode="create"'>
-                                    <th>
-                                        <xsl:value-of select='php:functionString("PrettyHeader", @id)'/>
-                                    </th>
+                                    <th><xsl:value-of select='php:functionString("PrettyHeader", @id)'/></th>
                                 </xsl:if>
                             </xsl:for-each>
                             <xsl:if test='string-length(//style/commands/@list)!=0'>
@@ -52,17 +49,11 @@
                                 </xsl:attribute>
                                 <xsl:if test='$ZMode="list-edit"'>
                                     <td>
-                                        <editlink/>
-                                        /
-                                        <dellink/>
-                                        /
-                                        <positionlink/>
+                                        <editlink/> / <dellink/> / <positionlink/>
                                     </td>
                                 </xsl:if>
-                                <xsl:variable name='lid'
-                                              select='php:functionString("zobject_iobj::FetchObjPart", $ZName, "@list-index")'/>
-                                <xsl:variable name='oid'
-                                              select='php:functionString("zobject_iobj::FetchObjPart", $ZName, "@index")'/>
+                                <xsl:variable name='lid' select='php:functionString("zobject_iobj::FetchObjPart", $ZName, "@list-index")'/>
+                                <xsl:variable name='oid' select='php:functionString("zobject_iobj::FetchObjPart", $ZName, "@index")'/>
                                 <xsl:variable name='OID'>
                                     <xsl:choose>
                                         <xsl:when test='string-length($lid) != 0'><xsl:value-of select='$lid'/></xsl:when>
@@ -132,13 +123,10 @@
                     </xsl:if>
 
 
-                    <xsl:for-each
-                            select='php:function("zobject::FetchObjFieldCategories", string($ZName))/categories/category'>
+                    <xsl:for-each select='php:function("zobject::FetchObjFieldCategories", string($ZName))/categories/category'>
                         <xsl:variable name='Category'>
                             <xsl:if test='text()="general"'></xsl:if>
-                            <xsl:if test='text()!="general"'>
-                                <xsl:value-of select='text()'/>
-                            </xsl:if>
+                            <xsl:if test='text()!="general"'><xsl:value-of select='text()'/></xsl:if>
                         </xsl:variable>
 
                         <xsl:if test='$Categories!=0'>
@@ -148,9 +136,7 @@
                             <xsl:text disable-output-escaping='yes'>&gt;</xsl:text>
                         </xsl:if>
                         <table>
-                            <xsl:attribute name='class'>
-                                <xsl:value-of select='$TClass'/>
-                            </xsl:attribute>
+                            <xsl:attribute name='class'><xsl:value-of select='$TClass'/></xsl:attribute>
 
                             <xsl:if test='$AJAX="0" or $ADMIN="1"'>
                                 <thead><th colspan='2'><xsl:value-of select='$ZCaption'/></th></thead>
@@ -161,15 +147,12 @@
                                 Category=<xsl:value-of select='$Category'/>
                                 <br/>
                                 <xsl:for-each select='$DEF/*/fielddefs/fielddef'>
-                                    <xsl:value-of select='string-length(@category)'/> = [<xsl:value-of
-                                        select='@category'/>]
+                                    <xsl:value-of select='string-length(@category)'/> = [<xsl:value-of select='@category'/>]
                                     <br/>
                                 </xsl:for-each>
                             </xsl:if>
-                            <xsl:for-each
-                                    select='$DEF/*/fielddefs/fielddef[$Categories=0 or ($Categories!=0 and (@category=$Category or (string-length(@category)=0 and $Category="")))]'>
-                                <xsl:variable name='fmode'
-                                              select='php:functionString("GetFieldMode", $ZName, @id, $ZMode)'/>
+                            <xsl:for-each select='$DEF/*/fielddefs/fielddef[$Categories=0 or ($Categories!=0 and (@category=$Category or (string-length(@category)=0 and $Category="")))]'>
+                                <xsl:variable name='fmode' select='php:functionString("zobject_access::check_field", $ZName, @id, $ZMode)'/>
                                 <xsl:choose>
                                     <xsl:when test='$fmode="edit" or $fmode="display" or $fmode="create"'>
                                         <xsl:choose>
@@ -178,16 +161,12 @@
                                                 <tr>
                                                     <td class='form-caption'>
                                                         <caption>
-                                                            <xsl:attribute name='id'>
-                                                                <xsl:value-of select='@id'/>
-                                                            </xsl:attribute>
+                                                            <xsl:attribute name='id'><xsl:value-of select='@id'/></xsl:attribute>
                                                         </caption>
                                                     </td>
                                                     <td class='form-value'>
                                                         <field>
-                                                            <xsl:attribute name='id'>
-                                                                <xsl:value-of select='@id'/>
-                                                            </xsl:attribute>
+                                                            <xsl:attribute name='id'><xsl:value-of select='@id'/></xsl:attribute>
                                                         </field>
                                                     </td>
 
@@ -198,16 +177,12 @@
 
                                                     <td class='form-caption'>
                                                         <caption>
-                                                            <xsl:attribute name='id'>
-                                                                <xsl:value-of select='@id'/>
-                                                            </xsl:attribute>
+                                                            <xsl:attribute name='id'><xsl:value-of select='@id'/></xsl:attribute>
                                                         </caption>
                                                     </td>
                                                     <td>
                                                         <field>
-                                                            <xsl:attribute name='id'>
-                                                                <xsl:value-of select='@id'/>
-                                                            </xsl:attribute>
+                                                            <xsl:attribute name='id'><xsl:value-of select='@id'/></xsl:attribute>
                                                             <xsl:attribute name='mode'>
 
                                                                 <xsl:choose>
@@ -222,11 +197,8 @@
                                         </xsl:choose>
                                     </xsl:when>
                                     <xsl:when test='$fmode=""'>
-
                                         <field display='hidden'>
-                                            <xsl:attribute name='id'>
-                                                <xsl:value-of select='@id'/>
-                                            </xsl:attribute>
+                                            <xsl:attribute name='id'><xsl:value-of select='@id'/></xsl:attribute>
                                         </field>
                                     </xsl:when>
                                 </xsl:choose>
@@ -236,16 +208,13 @@
                             </tr>
                             <tr>
                                 <td class='formcontrols' colspan="2" align="center">
-                                    <xsl:variable name='CanEdit'
-                                                  select='php:functionString("CheckObjectAccess", $ZName, "edit")'/>
-                                    <xsl:variable name='CanDelete'
-                                                  select='php:functionString("CheckObjectAccess", $ZName, "delete")'/>
+                                    <xsl:variable name='CanEdit' select='php:functionString("zobject_access::access", $ZName, "edit")'/>
+                                    <xsl:variable name='CanDelete' select='php:functionString("zobject_access::access", $ZName, "delete")'/>
                                     <xsl:if test='$ZMode="display"'>
                                         <xsl:if test='$CanEdit="edit"'>
                                             <page text='Edit Values' asButton='1'>
                                                 <xsl:attribute name='args'>
-                                                    <xsl:value-of
-                                                            select='php:functionString("TransferObjectKeys", $ZName, "?m=edit")'/>
+                                                    <xsl:value-of select='php:functionString("TransferObjectKeys", $ZName, "?m=edit")'/>
                                                 </xsl:attribute>
                                             </page>
                                         </xsl:if>
@@ -271,14 +240,11 @@
                             <xsl:text disable-output-escaping='yes'>&lt;/div&gt;</xsl:text>
                         </xsl:if>
 
-
                     </xsl:for-each>
 
                     <xsl:if test='$Categories!=0'>
                         <xsl:text disable-output-escaping='yes'>&lt;/div&gt;</xsl:text>
                     </xsl:if>
-
-
                     <endform/>
                 </xsl:otherwise>
             </xsl:choose>

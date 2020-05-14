@@ -52,7 +52,12 @@ class zobject_access
 			}
 
 		return $ZMode == $oMode;
-		}
+        }
+        
+    static function check_field($ZName, $fid = "", &$ZMode = "") {
+        self::field_access($ZName, $fid, $ZMode);
+        return $ZMode;
+    }
 
 	static function field_access($ZName, $fid="", &$ZMode="")
 		{

@@ -16,9 +16,11 @@
                 <class>user-options</class>
                 <options addonlist="1" />
             </style>
+            <source>mysource</source>
             <action>php:zwpadmin_redirect_url</action>
             <render name="wp-list" type="list" src="templates/zobjects-wp-admin-action-list.xml" />
             <render name="wp-edit" type="edit" src="templates/zobjects-wp-admin-action-edit.xml" />
+            <!-- <render name="wp-edit" type="create" src="templates/zobjects-wp-admin-action-create.xml" /> -->
             <xmlfile src="php:zwpadmin_module_file" list="/*/zactiondef/@name" base="/*/zactiondef[@name='@ZAct']/" />
             <fielddefs>
                 <fielddef id="id" datatype="string" access="@name" required="1" remote="php:zwpadmin_verify_zaction_name" />
