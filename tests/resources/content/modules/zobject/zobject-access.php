@@ -13,7 +13,16 @@ class zobject_access
 	static function page_access($pid, $mode="")
 		{
 		return true;
-		}
+        }
+        
+    static function conditions_met($what, $v) {
+        return true;
+    }
+
+    static function check($ZName, $ZMode = "") {
+        self::access($ZName, $ZMode);
+        return $ZMode;
+    }
 
 	static function access($ZName, &$ZMode="")
 		{

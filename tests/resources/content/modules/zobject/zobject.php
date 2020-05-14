@@ -5,7 +5,9 @@ class zobject
     public const ZP_PAGE = 'p';
     public const ZP_PAGECOUNT = 'pp';
 
-    public static function DEBUG_TRANSFORM() { return false; }
+    public static function DEBUG_TRANSFORM() { return "1"; }
+    public static function DEBUG_TRANSFORM_FIELD() { return "1"; }
+    public static function DEBUG_TRANSFORM_ROW() { return "1"; }
 
     public $name;
     public $mode;
@@ -29,41 +31,63 @@ class zobject
 
     function __construct()
     {
-        zobject_iobj::set($this);
-
+        $this->gid = uniqid("ZO_");
+        
         $this->page = "1";
         $this->page_count = "30";
-
+        
         $this->record_count = "1";
-
-        $this->gid = uniqid("ZO_");
+        
         $this->mRecNo = "";
-
+        
         $this->named_template = "";
-
+        
         $n = func_num_args();
         $a = func_get_args();
         $this->name = ($n >= 1 && is_string($a[0]) ? $a[0] : "");
         $this->mode = ($n >= 2 && is_string($a[1]) ? $a[1] : "");
         $this->args = ($n >= 3 && is_string($a[2]) ? $a[2] : "");
         $this->prefix = ($n >= 4 && is_string($a[3]) ? $a[3] : "");
+
+        zobject_iobj::set($this);
     }
 
     function transform() { return realpath(__DIR__ . "/source/transform.xsl"); }
+
+    static function ObjectList() {return xml_site::$source->lst("//MODULES/modules/module/zobjectdef/@name");}
+    static function ModuleList() {return xml_site::$source->lst("//MODULES/modules/module/@name");}
 
     static function FetchObjFields($n) { return xml_site::$source->lst("//MODULES/modules/module/zobjectdef[@name='$n']/fielddefs/fielddef/@id"); }
     static function FetchObjPart($n, $p) { return xml_site::$source->get("//MODULES/modules/module/zobjectdef[@name='$n']/$p"); }
     static function FetchObjFieldPart($n, $f, $p) { return xml_site::$source->get("//MODULES/modules/module/zobjectdef[@name='$n']/fielddefs/fielddef[@id='$f']/$p"); }
     static function FetchDTPart($n, $p) { return xml_site::$source->get("//MODULES/modules/module/typedef[@name='$n']/$p"); }
+    static function FetchObjFieldDefault($n, $f) { return self::FetchObjFieldPart($n, $f, '@default'); }
+    static function FetchObjDefString($n) { return xml_site::$source->def("//MODULES/modules/module/zobjectdef[@name='$n']"); }
+    static function FetchObjFieldCategories($n) 
+        { 
+            $lst = array_unique(xml_site::$source->lst("//MODULES/modules/module/zobjectdef[@name='$n']/fieldsdefs/fielddef/@category"));
+            return xml_file::toDoc(sizeof($lst) ?
+                 "<categories><category>" . join("</category><category>", $lst) . "</category></categories>" :
+                 "<categories />");
+        }
 
     static function FetchDSPart($n, $p) { return xml_site::$source->get("//MODULES/modules/module/datasource[@name='$n']/$p"); }
     static function FetchSpecPart($n, $p) { return xml_site::$source->get("//MODULES/modules/module/specification/control[@name='$n']/$p"); }
+
+    static function FetchActPart($n, $p = "") { return xml_site::$source->get("//MODULES/modules/module/zactiondef[@name='$n']".($p==""?"":"/$p")); }
+    static function FetchActRulePart($n, $r, $p = "") { return xml_site::$source->get("//MODULES/modules/module/zactiondef[@name='$n']/action[@value='$r']".($p==""?"":"/$p")); }
 
     static function handled_elements() { return xml_serve::handler_list(); }
     static function source_document($n) { php_logger::log("CALL $n");return xml_site::$source->get_source_doc($n); }
 
     static function iOBJ($n = 0) { return zobject_iobj::iOBJ($n); }
     static function iOBJ2() { return zobject_iobj::iOBJ2(); }
+
+    static function new_jsid($pfx = "js_") { return uniqid($pfx); }
+
+    static function admin() { return ""; }
+    static function ajax() { return xml_site::$ajax; }
+    static function ajax_url() { return "http://localhost/ajax.php"; }
 
     function arg($key)
     {
@@ -77,6 +101,10 @@ class zobject
         if ($N != "") $this->mRecNo = $N;
         if ($this->mRecNo == "") $this->mRecNo = "1";
         return $this->mRecNo;
+    }
+
+    public function form_action() {
+        return "POST";
     }
 
     private function load_object()
@@ -550,12 +578,13 @@ class zobject
     {
         php_logger::log("CALL GetZobjectAutoTemplate");
         //$_a = BenchTime();
-        include_once("zobject-autotemplate.php");
+        require_once("zobject-autotemplate.php");
 
         php_logger::debug($this->gid().", module=".$this->options['module']);
         $f = self::FetchSpecPart($this->options['module'], "program/control[@type='autotemplate']/@src");
-        php_logger::debug("test=".self::FetchSpecPart($this->options['module'], "program/control[@type='autotemplate']/@src"));
+        php_logger::debug("autotemplate control=$f");
         if ($f != "") $f = 'modules/' . $this->options["module"] . "/" . $f;
+        php_logger::debug("autotemplate control=$f");
 
         $t = zobject_autotemplate::autotemplate($this->name, $this->mode, $f);
 
@@ -573,9 +602,9 @@ class zobject
     function GetZObjectTemplate($FName = "", $ZName = "", $ZMode = "")
     {
         php_logger::log("CALL - $FName, $ZName, $ZMode");
-        $tf = $FName;
-        $FName = FilePath("z", $FName);
-        //print "<br/>FName=$FName";
+        if ($FName != '')
+            $FName = xml_site::resolve_file($FName, "module", $this->get_var("module"));
+        php_logger::debug("FName=$FName");
         if (!($FName == "") && !file_exists($FName)) {
             Warning("Specified Template File Does Not Exists: $FName, " . getcwd() . "," . realpath($FName), "ZObj::GetZObjectTemplate");
             $FName = "";
@@ -594,7 +623,7 @@ class zobject
             }
         }
         if ($t == "") $d = $this->GetZobjectAutoTemplate();
-        //print "<br/>GetZObjectTemplate.test=".get_class($t);
+        php_logger::debug("test=".gettype($t));
         return $d;
     }
 
@@ -837,15 +866,15 @@ class zobject
         return $N > 0 ? $X : $HREF;
     }
 
-    function FormID()
+    function form_id()
     {
-        return juniper()->AJAX ? "ajax-form" : "F" . $this->gid();
+        return self::ajax() ? "ajax-form" : "F" . $this->gid();
     }
 
     function FormAction($FormID = "", $Args = "0")
     {
-        php_logger::log("FormAction($FormID, $Args), ajax=".(juniper()->AJAX?"Yes":"No"));
-        if (juniper()->AJAX) return juniper()->ajaxURL('save-zobject') . "?_AJAX=1&_Save=1";
+        php_logger::log("FormAction($FormID, $Args), ajax=".(self::ajax()?"Yes":"No"));
+        if (self::ajax()) return juniper()->ajaxURL('save-zobject') . "?_AJAX=1&_Save=1";
         $r = "";
         //		$r = juniper()->php_hook($this->FetchObjPart($this->name, "action"));
         if ($r == "") $r = CurrentPage();
@@ -961,11 +990,11 @@ class zobject
             $a = "";
             if ($mode != "position") {
                 //if ($mode="add") print "<br/>ITEM LINK ADD Args=$Args";
-                $a = $a . "<span id='" . NewJSID() . "'>";
+                $a = $a . "<span id='" . self::new_jsid() . "'>";
                 $a = $a . "<a title='$title' class='$C $mode' onClick=\"$s\">$text</a>";
                 $a = $a . "</span>";
             } else {
-                $a = $a . "<span id='" . NewJSID() . "'>";
+                $a = $a . "<span id='" . self::new_jsid() . "'>";
                 $a = $a . "<a class='$C $mode up' title='Move Up' onClick=\"$s\" style=\"font-family:helvetica\">&#9660;</a>";
                 $a = $a . " / ";
                 $a = $a . "<a class='$C $mode down' title='Move Up' onClick=\"$s2\" style=\"font-family:helvetica\">&#9650;</a>";
@@ -993,7 +1022,7 @@ class zobject
             //print "<br/>p=$p, s=$s";
 
             $a  = "";
-            $a .= "<span id='" . NewJSID() . "'>";
+            $a .= "<span id='" . self::new_jsid() . "'>";
             $a .= "<a class='$C' href='" . str_replace("&", "&amp;", $s) . "'>$text</a>";
             $a .= "</span>";
         }
@@ -1025,6 +1054,7 @@ class zobject
     }
 
     function args64()		{	return self::encode_args($this->args);	}
+    public function get($f) { return $this->get_var($f); }
     public function get_var($VarName)
     {
         switch ($VarName) {
@@ -1037,8 +1067,10 @@ class zobject
             case "page-count":      return $this->page_count;
             case "args":            return $this->args;
             case "args64":          return $this->args64();
+            case "source64":        return $this->GetZSource64();
             case "count":           return $this->record_count;
             case "jsid":            return $this->gid();
+            default:                return $this->options[$VarName];
         }
     }
 
@@ -1082,7 +1114,7 @@ class zobject
         
     public static function InterpretFields($f, $auto_quote = false, $token = "@")
 		{
-        php_logger::log("CALL - InterpretFields($f, $auto_quote, $token)");
+        php_logger::log("CALL - $f, $auto_quote, $token");
 		$counter = 0;
 		
 		$l = strlen($token);

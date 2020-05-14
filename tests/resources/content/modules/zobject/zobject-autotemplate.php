@@ -4,8 +4,8 @@ class zobject_autotemplate
 	{
 	static function autotemplate($ZName, $ZMode, $which)
 		{
-//print "<br/>AutoTemplate($ZName, $ZMode, ".juniper_dir("/$which").")";
-		$xmlTEXT = juniper()->FetchObjDefString($ZName);
+        php_logger::log("CALL - $ZName, $ZMode, $which");
+		$xmlTEXT = zobject::FetchObjDefString($ZName);
 
 		if ($xmlTEXT=="") return "<autoTemplate unknownZName='$ZName' zmode='$ZMode'/>";
 		$xmlTEXT = str_replace("<zobjectdef ", "<zobjectdef mode='$ZMode' ", $xmlTEXT);
@@ -15,12 +15,12 @@ class zobject_autotemplate
 		$xml->loadXML($xmlTEXT);
 
 		$xsl = false;
-		if ($which!="" && file_exists(juniper_dir("/$which")))
+		if ($which!="" && file_exists(xml_site::$resource_folder . "/$which"))
 			{
-			$D = juniper()->force_unknown_document(juniper_dir("/$which"));
+			$D = xml_site::$source->force_unknown_document(xml_site::$resource_folder . "/$which");
 			$xsl = $D->Doc;
 			}
-		else $xsl = xml_file::FileToDoc(juniper_module_dir('/zobject/components/source/AutoTemplate.xsl'));
+		else $xsl = xml_file::toDoc(self::autotemplate_xsl());
 
 //print "<br/>autotemplate.type=".get_class($xsl);
 
@@ -35,6 +35,10 @@ class zobject_autotemplate
 		unset($xml);
 		unset($xsl);
 		return $result;
-		}
+        }
+        
+        private static function autotemplate_xsl() {
+            return realpath(__DIR__ . "/source/auto-template.xsl"); 
+        }
 	}
 

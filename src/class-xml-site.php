@@ -4,6 +4,7 @@ class xml_site
 {
     public static $resource_folder;
     public static $source;
+    public static $ajax = "";
 
     public static function init()
     {
