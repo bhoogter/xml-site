@@ -216,10 +216,8 @@
                                                 <xsl:attribute name='args'><xsl:value-of select='php:functionString("zobject_iobj::TransferObjectKeys", $ZName, "?m=edit")'/></xsl:attribute>
                                             </page>
                                         </xsl:if>
-                                        <xsl:if test='$CanDelete="delete"'><xsl:copy-of select='php:functionString("DelObjectButton",$ZName)'/></xsl:if>
-
                                         <xsl:if test='$ZMode="edit"'><formcontrols/></xsl:if>
-                                        <xsl:if test='$CanDelete="delete"'><xsl:copy-of select='php:functionString("DelObjectButton",$ZName)'/></xsl:if>
+                                        <xsl:if test='$CanDelete="delete"'><dellink/></xsl:if>
                                     </xsl:if>
                                     <xsl:if test='$ZMode="create"'>
                                         <formcontrols/>

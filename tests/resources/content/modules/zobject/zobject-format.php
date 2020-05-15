@@ -11,7 +11,7 @@ class zobject_format
 
     static function FormatDataField($f, $DT)
     {
-        php_logger::log("FormatDataField($f, $DT)");
+        php_logger::call();
         $N = zobject::FetchDTPart($DT, "@format");
         php_logger::log("N=$N");
         $Na = php_hook::call($N, $f);

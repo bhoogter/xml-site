@@ -82,7 +82,7 @@ class zobject
     static function FetchActRulePart($n, $r, $p = "") { return xml_site::$source->get("//MODULES/modules/module/zactiondef[@name='$n']/action[@value='$r']".($p==""?"":"/$p")); }
 
     static function handled_elements() { return xml_serve::handler_list(); }
-    static function source_document($n) { php_logger::log("CALL $n");return xml_site::$source->get_source_doc($n); }
+    static function source_document($n) { php_logger::call();return xml_site::$source->get_source_doc($n); }
 
     static function iOBJ($n = 0) { return zobject_iobj::iOBJ($n); }
     static function iOBJ2() { return zobject_iobj::iOBJ2(); }
@@ -150,7 +150,7 @@ class zobject
 
     function QueryStringSatisfied($ZN, $ZA)
     {
-        php_logger::log("QueryStringSatisfied($ZN, $ZA)");
+        php_logger::call();
 
         $kf = $this->options['keys'];
         php_logger::debug("kf=$kf");
@@ -164,13 +164,12 @@ class zobject
 
     function TranslateZName($Z)
     {
-        php_logger::log("TranslateZName($Z)");
+        php_logger::call();
         if ($Z == "") $Z = ";zname";
         else if (substr($Z, 0, 1) == ";" && ($f = @$_REQUEST[substr($Z, 1)]) != "") $Z = $f;
         $chk = $this->FetchObjPart($Z, "@name");
         php_logger::debug("Exists: " . $chk ? "YES" : "NO");
         if (!$chk) throw new Exception("[$Z] is not a valid Object.");
-        php_logger::log("---");
         $this->module = $this->FetchObjPart($Z, "../@name");
         php_logger::debug("module: $this->module");
         return $this->name = $Z;
@@ -178,7 +177,7 @@ class zobject
 
     function TranslateZMode($ZN, $ZM, $ZA = "")
     {
-        php_logger::log("TranslateZMode($ZN, $ZM, $ZA)");
+        php_logger::call();
         if ($ZM == "") $ZM = ";m";
         if ($ZM[0] == ";" && ($f = @$_REQUEST[substr($ZM, 1)]) != "") {
             $ZM = $f;
@@ -239,28 +238,29 @@ class zobject
 
         //print "<br/>zmode=$ZM, NT=".$this->named_template;
         //log_file("zobject", "<br/>ZM=$ZM");
-        //			if ($ZM=="delete" && CheckObjectAccess($ZN,$ZM)!="delete") $ZM="none";
-        //			if ($ZM=="create" && CheckObjectAccess($ZN,$ZM)!="create") $ZM="none";
-        //			if ($ZM=="list-edit" && CheckObjectAccess($ZN,$ZM)!="list-edit") $ZM="list";
-        //			if ($ZM=="list" && CheckObjectAccess($ZN,$ZM)!="list") $ZM="none";
+        //            if ($ZM=="delete" && CheckObjectAccess($ZN,$ZM)!="delete") $ZM="none";
+        //            if ($ZM=="create" && CheckObjectAccess($ZN,$ZM)!="create") $ZM="none";
+        //            if ($ZM=="list-edit" && CheckObjectAccess($ZN,$ZM)!="list-edit") $ZM="list";
+        //            if ($ZM=="list" && CheckObjectAccess($ZN,$ZM)!="list") $ZM="none";
         //
-        //			if ($ZM=="build" && CheckObjectAccess($ZN,$ZM)!="build") $ZM="display";
-        //			if ($ZM=="edit" && CheckObjectAccess($ZN,$ZM)!="edit") $ZM="display";
-        //			if (($ZM=="display" || $ZM=="form") && CheckObjectAccess($ZN,$ZM)!="display") $ZM="none";
-        //	//log_file("zobject", "<br/>ZM=$ZM");
+        //            if ($ZM=="build" && CheckObjectAccess($ZN,$ZM)!="build") $ZM="display";
+        //            if ($ZM=="edit" && CheckObjectAccess($ZN,$ZM)!="edit") $ZM="display";
+        //            if (($ZM=="display" || $ZM=="form") && CheckObjectAccess($ZN,$ZM)!="display") $ZM="none";
+        //    //log_file("zobject", "<br/>ZM=$ZM");
 
         if ($ZM == "") $ZM = "display";
-        php_logger::log("zmode=$ZM, NT=" . $this->named_template);
+        php_logger::result("zmode=$ZM", "NT=" . $this->named_template);
         return $this->mode = $ZM;
     }
 
     function TranslateZArgs($ZName, $ZArgs)
     {
-        php_logger::log("TranslateZArgs($ZName, $ZArgs)");
+        php_logger::call();
         if ($ZArgs == "") $ZArgs = @$_SERVER["QUERY_STRING"];            //  this should be the ONLY place zobject directly references the query string...
         $ZArgs = self::InterpretFields($ZArgs);
         $ZArgs = str_replace("'", "", $ZArgs);
         $ZArgs = $this->TransferObjectKeys($ZName, $ZArgs);
+        php_logger::result($ZArgs);
         return $this->args = $ZArgs;
     }
 
@@ -276,7 +276,7 @@ class zobject
 
     function load_result(&$tform = null)
     {
-        php_logger::log("CALL");
+        php_logger::call();
         require_once("zobject-query.php");
 
         $resultDoc = zobject_query::get_result($this->name, $this->mode, $this->args, $this->record_count, $tform);
@@ -317,7 +317,7 @@ class zobject
 
     function render($params = null, $vArgs = "")
     {
-        php_logger::log("CALL - ", $params, $vArgs);
+        php_logger::call();
         $vName = @$params['name'];
         $vMode = @$params['mode'];
         $vPrefix = @$params['prefix'];
@@ -394,7 +394,7 @@ class zobject
 
     function save($vName, $vMode = "", $vArgs = "")
     {
-        php_logger::log("CALL $vName, $vMode, $vArgs");
+        php_logger::call();
         if (!$this->process_arguments($vName, $vMode, $vArgs, "", true)) {
             return false;
         }
@@ -424,7 +424,7 @@ class zobject
 
     function NormalizeInputField($f, $DT)
     {
-        php_logger::log("CALL - $f, $DT");
+        php_logger::call();
         $N = self::FetchDTPart($DT, "@normalize");
         //print "<br/>N=$N";
         $Na = php_hook::call($N, $f);
@@ -451,7 +451,7 @@ class zobject
 
     function TranslateKeyList($List, $Prev = "", $KeysOnly = true)
     {
-        php_logger::log("[$List], $Prev)");
+        php_logger::call();
         if ($List == "") return $List;
 
         $z = "";
@@ -533,6 +533,7 @@ class zobject
     //  Allows fields to be handled inside of things like an HREF element
     function TemplateEscapeTokens($s)
     {
+        php_logger::call();
         //if (strlen($s)<100)print "<br/>TemplateEscapeTokens($s)";else print "<br/>TemplateEscapeTokens(...)";
         while (($a = strpos($s, "{@")) !== false) {
             $b = strpos($s, "}", $a);
@@ -560,7 +561,7 @@ class zobject
 
     function GetZobjectAutoTemplate()
     {
-        php_logger::log("CALL GetZobjectAutoTemplate");
+        php_logger::call();
         //$_a = BenchTime();
         require_once("zobject-autotemplate.php");
 
@@ -585,7 +586,7 @@ class zobject
 
     function GetZObjectTemplate($FName = "", $ZName = "", $ZMode = "")
     {
-        php_logger::log("CALL - $FName, $ZName, $ZMode");
+        php_logger::call();
         if ($FName != '')
             $FName = xml_site::resolve_file($FName, "module", $this->get_var("module"));
         php_logger::debug("FName=$FName");
@@ -619,7 +620,7 @@ class zobject
 
     function TransferSourceKeys($List, $HREF)
     {
-        //print "<br/>TransferSourceKeys($List, $HREF)";
+        php_logger::call();
         $N = 0;
         $List = $this->TranslateKeyList($List, true);
         //print "<br/>List=$List";
@@ -650,7 +651,7 @@ class zobject
             else
                 $tv = $_GET[$ts];
             $X = add($X, $tf, $tv);
-            //			$X = $X . ($N>0?"&":"") . "$tf=$tv";
+            //            $X = $X . ($N>0?"&":"") . "$tf=$tv";
             $N = 1;
         }
         $r = $N > 0 ? $X : $HREF;
@@ -662,7 +663,7 @@ class zobject
 
     function TransferFields($List, $HREF)
     {
-        php_logger("TransferFields($List, $HREF)");
+        php_logger::call();
         $x = explode(";", $List);
         foreach ($x as $l) {
             $t = explode(":", $l);
@@ -684,7 +685,7 @@ class zobject
 
     function GetZobjectSQL($ZName, $type = "")
     {
-        php_logger::log("CALL GetZobjectSQL(<b><u>$ZName</u></b>, '<u>$type</u>')");
+        php_logger::call();
         $sl = $this->FetchObjPart($ZName, "sql[@type='$type']");
         //print "<br/>GetZobjectSQL: $sl";
         return $sl;
@@ -692,6 +693,7 @@ class zobject
 
     function BuildZObjectQuery($ZName, $ZMode, $Args)
     {
+        php_logger::call();
         if (($sl = GetZObjectSQL($ZName, $ZMode)) == "") return "";
         $sx = explode(";", $sl);
         //print "<br/>";print_r($sx);
@@ -779,22 +781,24 @@ class zobject
 
     function TransferObjectKeys($zn, $Args)
     {
-        php_logger::log("CALL, L=", $this->options['key-array-all']);
-        php_logger::dump("Args: ", $Args);
+        php_logger::call();
         $l = $this->options['key-array-all'];
         $l[] = zobject::ZP_PAGE;
         $l[] = zobject::ZP_PAGECOUNT;
-        foreach ($l as $m) if ($m != "" && $m[0] != '#') {
-            php_logger::log("TransferObjectKeys: m=$m");
-            $Args = querystring::add($Args, $m, self::KeyValue($m, $Args));
+        foreach ($l as $m) {
+            $v = self::KeyValue($m, $Args);
+            if ($m != "" && $m[0] != '#' && $v != '') {
+                $Args = querystring::add($Args, $m, $v);
+                php_logger::debug("m=$m, Args=$Args");
+            }
         }
-        php_logger::debug("TransferObjectKeys: $Args");
+        php_logger::result("TransferObjectKeys: $Args");
         return $Args;
     }
 
     function FillInQueryStringKeys($m, $ZArgs = "", $dolast = true)
     {
-        php_logger::log("CALL - FillInQueryStringKeys($m, $ZArgs, $dolast), L=".$this->options['key'].",".$this->options['key-field-optional']);
+        php_logger::call("L=".$this->options['key'].",".$this->options['key-field-optional']);
         $k = $this->options['key'];
         //print "<br/>FillInQueryStringKeys field=".implode(",",$this->options['key-array-all']);
         foreach ($this->options['key-array-all'] as $l)
@@ -808,7 +812,7 @@ class zobject
 
     function TransferQueryStringKeys($List, $HREF)
     {
-        php_logger::log("CALL - TransferQueryStringKeys($List, $HREF)");
+        php_logger::call();
         $N = 0;
         $List = $this->TranslateKeyList($List);
         //print "<br/>List=$List";
@@ -863,7 +867,7 @@ class zobject
         php_logger::log("FormAction($FormID, $Args), ajax=".(self::ajax()?"Yes":"No"));
         if (self::ajax()) return juniper()->ajaxURL('save-zobject') . "?_AJAX=1&_Save=1";
         $r = "";
-        //		$r = juniper()->php_hook($this->FetchObjPart($this->name, "action"));
+        //        $r = juniper()->php_hook($this->FetchObjPart($this->name, "action"));
         if ($r == "") $r = CurrentPage();
         return $r;
     }
@@ -880,7 +884,7 @@ class zobject
                 //print "<br/>KEY: key=$key, id=$id, kv=$kv";
                 $Args = querystring::add($Args, substr($key, 1), $kv);
             }
-            //			else $Args = querystring::remove_querystring_var($Args, substr($key,1));
+            //            else $Args = querystring::remove_querystring_var($Args, substr($key,1));
         }
         php_logger::log("Args=$Args");
         return $Args;
@@ -1039,7 +1043,7 @@ class zobject
         return self::encode_args($f);
     }
 
-    function args64()		{	return self::encode_args($this->args);	}
+    function args64()        {    return self::encode_args($this->args);    }
     public function get($f) { return $this->get_var($f); }
     public function get_var($VarName)
     {
@@ -1060,67 +1064,69 @@ class zobject
         }
     }
 
-	public static function args_prefix()	{	return '@@';		}
-	public static function encode_args($a)	{	return self::args_prefix().base64_encode(str_rot13($a));	}
-	public static function decode_args($a)	
-		{
-        php_logger::log("call - decode_args($a)");
-		$p = self::args_prefix();
-		$n = strlen($p);
+    public static function args_prefix()    { return '@@';        }
+    public static function encode_args($a)  { return self::args_prefix().base64_encode(str_rot13($a));    }
+    public static function decode_args($a)    
+        {
+        php_logger::call();
+        $p = self::args_prefix();
+        $n = strlen($p);
 
-			// this is the only real algorithm... as long as it matches the encode and is reversible, it is fine to change...
+            // this is the only real algorithm... as long as it matches the encode and is reversible, it is fine to change...
 //print "<br/>substr($a,0,$n)";
-		if (substr($a,0,$n)==$p) return str_rot13(base64_decode(substr($a,$n)));
+        if (substr($a,0,$n)==$p) return str_rot13(base64_decode(substr($a,$n)));
 //print "<br/>;lkj;lj.........";
-			// it may have been urlencode'd somewhere...
-		$S = urlencode($p);
-		$m = strlen($S);
-		if (substr($a,0,m)==$S) return $this->decode_args(urldecode($a));
-			// otherwise, decoding an unencoded string does nothing!
-		return $a;
-		}
+            // it may have been urlencode'd somewhere...
+        $S = urlencode($p);
+        $m = strlen($S);
+        if (substr($a,0,m)==$S) return $this->decode_args(urldecode($a));
+            // otherwise, decoding an unencoded string does nothing!
+        return $a;
+        }
 
 
     public static function KeyValue($k, $Args="", $alt="")
-		{
-        php_logger::log("CALL - KeyValue($k, $Args, $alt)");
-//		if ($k=='#USERNAME') return GetCurrentUsername();
-		$v = @$_REQUEST[$k];
-		if ($Args == "" && self::iOBJ()!=null) $Args = self::iOBJ()->args;
-        php_logger::debug("args=$Args");
-		if ($v=="" && $Args!="") $v = querystring::get($Args, $k);
-		if ($v=="" && self::iOBJ()) $v = self::iOBJ()->arg($k);
-		if ($v=="" && self::iOBJ() && method_exists(self::iOBJ(), 'result_field')) $v = self::iOBJ()->result_field($k);
-		if ($v=="" && self::iOBJ2()) $v = self::iOBJ2()->arg($k);
-		if ($v=="" && self::iOBJ2() && method_exists(self::iOBJ2(), 'result_field')) $v = self::iOBJ2()->result_field($k);		// previous object...  ?
-		if ($v=="" && $alt!="") $v=$alt;
-        php_logger::debug("KeyValue($k, $Args, $alt) == $v");
-		return $v;
+        {
+        php_logger::call();
+//        if ($k=='#USERNAME') return GetCurrentUsername();
+        $v = @$_REQUEST[$k];
+        if ($Args == "" && self::iOBJ()!=null)  {
+            $Args = self::iOBJ()->args;
+            php_logger::debug("args=$Args");
+        }
+        if ($v=="" && $Args!="") $v = querystring::get($Args, $k);
+        if ($v=="" && self::iOBJ()) $v = self::iOBJ()->arg($k);
+        if ($v=="" && self::iOBJ() && method_exists(self::iOBJ(), 'result_field')) $v = self::iOBJ()->result_field($k);
+        if ($v=="" && self::iOBJ2()) $v = self::iOBJ2()->arg($k);
+        if ($v=="" && self::iOBJ2() && method_exists(self::iOBJ2(), 'result_field')) $v = self::iOBJ2()->result_field($k);        // previous object...  ?
+        if ($v=="" && $alt!="") $v=$alt;
+        php_logger::result($v);
+        return $v;
         }
         
     public static function InterpretFields($f, $auto_quote = false, $token = "@")
-		{
-        php_logger::log("CALL - $f, $auto_quote, $token");
-		$counter = 0;
-		
-		$l = strlen($token);
-		if ($auto_quote)
-			$cb = create_function('$matches', "return \"'\".juniper()->KeyValue(substr(\$matches[0],$l)).\"'\";");
-		else
-			$cb = create_function('$matches', "return juniper()->KeyValue(substr(\$matches[0],$l));");
+        {
+        php_logger::call();
+        $counter = 0;
+        
+        $l = strlen($token);
+        if ($auto_quote)
+            $cb = create_function('$matches', "return \"'\".juniper()->KeyValue(substr(\$matches[0],$l)).\"'\";");
+        else
+            $cb = create_function('$matches', "return juniper()->KeyValue(substr(\$matches[0],$l));");
 
-		$f = preg_replace_callback('/'.$token."[a-zA-Z0-9_]+".'/i', $cb, $f);
+        $f = preg_replace_callback('/'.$token."[a-zA-Z0-9_]+".'/i', $cb, $f);
         php_logger::debug("InterpretFields: $f");
-		return $f;
+        return $f;
         }
         
     static function TransformSourceScripts($s)
         {
-//print "<br/>TransformSourceScripts($s)";
+        php_logger::call();
         static $Cache;
         if (!php_hook::is_hook($s)) return $s;
         if (!$Cache) $Cache = array();
         if ($t=@$Cache[$s]) return $t;
-        return $Cache[$s]=php_hook::call($s);		// returned assignment
-    	}
+        return $Cache[$s]=php_hook::call($s);        // returned assignment
+        }
 }

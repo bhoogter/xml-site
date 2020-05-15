@@ -4,6 +4,7 @@ class zobject_require_test
 {
     static function InjectVariables()
     {
+        php_logger::call();
         $s  = "";
         $s .= "<xsl:variable name='name' select='\"" . zobject_iobj::iOBJ()->name . "\"' />\n";
         $s .= "<xsl:variable name='mode' select='\"" . zobject_iobj::iOBJ()->mode . "\"' />\n";
@@ -12,7 +13,7 @@ class zobject_require_test
 
     static function test($UID, $Test, $Row)
     {
-        php_logger::log("CALL - $UID, $Test, $Row");
+        php_logger::call();
         if ($Test == "") return true;
         if (php_hook::is_hook($Test)) return php_hook::call($Test);
 

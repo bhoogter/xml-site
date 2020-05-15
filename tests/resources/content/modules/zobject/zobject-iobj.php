@@ -34,4 +34,5 @@ class zobject_iobj {
     static function require_test($c) { return !self::iOBJ() ? '' : self::iOBJ()->require_test($c); }
 
     static function TransferObjectKeys($zn, $args) { return !self::iOBJ() ? '' : self::iOBJ()->TransferObjectKeys($zn, $args); }
+    
 }

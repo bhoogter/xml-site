@@ -32,7 +32,7 @@ class xml_site
 
     protected static function init_source()
     {
-        php_logger::log("CALL");
+        php_logger::call();
         self::$source = new source();
         self::$source->add_source("SITE", self::$resource_folder . '/site.xml');
         self::$source->add_source("PAGES", self::$resource_folder . '/pages.xml');
@@ -40,6 +40,7 @@ class xml_site
 
     protected function load_modules() 
     {
+        php_logger::call();
         $modules = new xml_file();
         $f = self::resolve_files("module.xml", [], [], ["modules/*"]);
         php_logger::debug("DETECTED MODULES", $f);
@@ -74,7 +75,7 @@ class xml_site
 
     function include_support_files($module = '', $type = 'php', $mode = '', $file_id = "")
     {
-        php_logger::debug("CALL ($module, $type, $mode, $file_id)");
+        php_logger::call();
         $p = "//MODULES/modules/module/file";
         if ($file_id && $file_id != "") $p .= "[@id='$file_id']";
         if ($module && $module != "") $p .= "[@module='$module']";

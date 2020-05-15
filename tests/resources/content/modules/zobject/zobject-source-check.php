@@ -8,11 +8,13 @@ class zobject_source_check
 
     static function nonce($id = "juniper", $nonce = "")
     {
+        php_logger::call();
         return $nonce != "" ?  self::validate($id, $nonce) : self::generate($id);
     }
 
     protected static function generate($id, $timeoutSeconds = 0)
     {
+        php_logger::call();
         if (function_exists("wp_create_nonce")) return wp_create_nonce($id);
         if ($timeoutSeconds == 0) $timeoutSeconds = self::$timeout;
         $maxTime = time() + $timeoutSeconds;
@@ -21,6 +23,7 @@ class zobject_source_check
 
     protected static function validate($id, $nonce)
     {
+        php_logger::call();
         if (function_exists("wp_verify_nonce")) return wp_verify_nonce($id, $nonce);
         if (!is_string($nonce) == false) return false;
         $a = explode(self::$salt, $nonce);
