@@ -20,7 +20,7 @@ php_logger::set_log_level('zobject_query::GetZObjectCreateQuery', 'all');
 // print "<!DOCTYPE html>\n";
 print '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">' . "\n";
 
-print xml_serve::get_page($_SERVER['REQUEST_URI']);
+print xml_serve::get_page(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 
 $x = microtime(true) - $x;
 print "<h4>Elapsed time: $x</h4>";

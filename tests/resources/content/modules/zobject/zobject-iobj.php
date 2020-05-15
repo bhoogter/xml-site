@@ -33,10 +33,5 @@ class zobject_iobj {
 
     static function require_test($c) { return !self::iOBJ() ? '' : self::iOBJ()->require_test($c); }
 
-    /*
-    <xsl:variable name='ZS64' select='php:functionString("GetZSource64")'/>
-    <xsl:variable name='ZA64' select='php:functionString("GetZArgs64")'/>
-    <xsl:variable name='AJAX' select='php:functionString("ForAjax")'/>
-    <xsl:variable name='FSC' select='php:functionString("juniper_form_source_check")'/>
-*/
+    static function TransferObjectKeys($zn, $args) { return !self::iOBJ() ? '' : self::iOBJ()->TransferObjectKeys($zn, $args); }
 }

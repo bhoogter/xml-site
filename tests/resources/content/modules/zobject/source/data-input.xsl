@@ -149,7 +149,7 @@
 						<xsl:otherwise><xsl:copy-of select='$nValue' /></xsl:otherwise>
 					</xsl:choose>
 				</xsl:variable>
-				<xsl:variable name='pval' select='php:functionString("PrettyValue", $dispval)'/>
+				<xsl:variable name='pval' select='php:functionString("zobject_format::PrettyValue", $dispval)'/>
 				<xsl:choose>
 					<xsl:when test='string($iDataTypes/*/typedef[@name=$datatype]/@output-escape)!=""'>
 						<xsl:value-of disable-output-escaping='no' select='$pval' />

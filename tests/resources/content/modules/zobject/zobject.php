@@ -260,7 +260,7 @@ class zobject
         if ($ZArgs == "") $ZArgs = @$_SERVER["QUERY_STRING"];            //  this should be the ONLY place zobject directly references the query string...
         $ZArgs = self::InterpretFields($ZArgs);
         $ZArgs = str_replace("'", "", $ZArgs);
-        $ZArgs = $this->TransferObjectKeys($ZArgs);
+        $ZArgs = $this->TransferObjectKeys($ZName, $ZArgs);
         return $this->args = $ZArgs;
     }
 
@@ -424,7 +424,7 @@ class zobject
 
     function NormalizeInputField($f, $DT)
     {
-        //print "<br/>NormalizeInputField($f, $DT)";
+        php_logger::log("CALL - $f, $DT");
         $N = self::FetchDTPart($DT, "@normalize");
         //print "<br/>N=$N";
         $Na = php_hook::call($N, $f);
@@ -451,7 +451,7 @@ class zobject
 
     function TranslateKeyList($List, $Prev = "", $KeysOnly = true)
     {
-        php_logger::log("TranslateKeyList([$List], $Prev)");
+        php_logger::log("[$List], $Prev)");
         if ($List == "") return $List;
 
         $z = "";
@@ -777,7 +777,7 @@ class zobject
     /////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////
 
-    function TransferObjectKeys($Args)
+    function TransferObjectKeys($zn, $Args)
     {
         php_logger::log("CALL, L=", $this->options['key-array-all']);
         php_logger::dump("Args: ", $Args);
@@ -882,14 +882,13 @@ class zobject
             }
             //			else $Args = querystring::remove_querystring_var($Args, substr($key,1));
         }
-        //print "<br/>zobject::LinkArgs - Args=$Args";
+        php_logger::log("Args=$Args");
         return $Args;
     }
 
     function ItemLink($field, $mode = "create", $text = "", $ajax = "", $C = "", $T = "")
     {
         php_logger::log("ItemLink($field, $mode, $text, $ajax, $C, $T)");
-        //print "<br/>gid=$this->gid(), args=$this->args";
 
         if (($TN = $this->name) == "") return "";
         //print "<br/>name=$TN";
@@ -993,14 +992,14 @@ class zobject
             $s = querystring::add($s, '_ZM', $this->mode);
 
             switch ($mode) {
-                case "display":                    $s = querystring::add($s, 'display', $this->name);                    break;
-                case "create":                    $s = querystring::add($s, 'add', $this->name);                    break;
-                case "edit":                    $s = querystring::add($s, 'edit', '1');                    break;
-                case "delete":                    $s = querystring::add($s, 'delete', '1');                    break;
-                case "position":                    $s = querystring::add($s, 'pos', '1');                    break;
-                case "upposition":                    $s = querystring::add($s, 'pos', '1');                    break;
-                case "dnposition":                    $s = querystring::add($s, 'pos', '1');                    break;
-                default:                    $s = "";                    break;
+                case "display":        $s = querystring::add($s, 'display', $this->name);                    break;
+                case "create":         $s = querystring::add($s, 'add', $this->name);                    break;
+                case "edit":           $s = querystring::add($s, 'edit', '1');                    break;
+                case "delete":         $s = querystring::add($s, 'delete', '1');                    break;
+                case "position":       $s = querystring::add($s, 'pos', '1');                    break;
+                case "upposition":     $s = querystring::add($s, 'pos', '1');                    break;
+                case "dnposition":     $s = querystring::add($s, 'pos', '1');                    break;
+                default:               $s = "";                    break;
             }
 
             $p = self::FetchSpecPart($this->options['module'], 'program/control[@type="page"]/@src');

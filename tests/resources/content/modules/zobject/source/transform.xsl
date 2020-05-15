@@ -30,7 +30,8 @@
     <xsl:variable name='jsid' select='php:functionString("zobject_iobj::transform_var", "jsid")' />
 
     <xsl:variable name='ZDef' select='$DEFS//modules/module/zobjectdef[@name=$ZName]' />
-    <xsl:variable name='ZSrc' select='$ZDef/source' />
+    <xsl:variable name='ZSrc' select='$ZDef/@source' />
+    <xsl:variable name='TDef' select='$DEFS//modules/module/ztabledef[@name=$ZSrc]' />
     <xsl:variable name='obj' select='//.' />
 
     <xsl:variable name='mode' select='php:functionString("zobject_access::check", string($ZName), string($requested-object-mode))' />
@@ -125,10 +126,6 @@
             <xsl:when test='name()="value"'><xsl:call-template name='value'/></xsl:when>
             <xsl:when test='name()="editor"'><xsl:call-template name='editor'/></xsl:when>
 
-            <xsl:when test='name()="page"'><xsl:call-template name='page'/></xsl:when>
-            <xsl:when test='name()="a" or name()="A"'><xsl:call-template name='a'/></xsl:when>
-            <xsl:when test='name()="img" or name()="IMG"'><xsl:call-template name='img'/></xsl:when>
-
             <xsl:when test='$HasNodeHandler'><xsl:copy-of select='php:function("juniper_render_node", $N, current())' /></xsl:when>
 
             <xsl:when test='name()="startform"'><xsl:call-template name='startform'/></xsl:when>
@@ -140,7 +137,6 @@
             <xsl:when test='name()="fielddesc"'><xsl:call-template name='fielddesc'/></xsl:when>
 
             <xsl:when test='name()="row"'><xsl:call-template name='row'/></xsl:when>
-            <xsl:when test='name()="pagelist"'><xsl:call-template name='pagelist'/></xsl:when>
             <xsl:when test='name()="formcommands"'><xsl:call-template name='form-commands'/></xsl:when>
             <xsl:when test='name()="addlink"'><xsl:call-template name='addlink'/></xsl:when>
             <xsl:when test='name()="dellink"'><xsl:call-template name='dellink'/></xsl:when>
@@ -150,9 +146,7 @@
             <xsl:when test='name()="uppositionlink"'><xsl:call-template name='uppositionlink'/></xsl:when>
             <xsl:when test='name()="dnpositionlink"'><xsl:call-template name='dnpositionlink'/></xsl:when>
             <xsl:otherwise>
-                <xsl:copy>
-                    <xsl:apply-templates select="@*|node()"/>
-                </xsl:copy>
+                <xsl:copy><xsl:apply-templates select="@*|node()"/></xsl:copy>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -360,7 +354,7 @@
 		<xsl:variable name='addargs1' select='php:functionString("add_querystring_var", $ZArgs, "_SUBZ", "1")'/>
 			<xsl:variable name='addargs' select='php:functionString("add_querystring_var", $addargs1, $addkey, $addval)'/>
 -->
-                <xsl:variable name='newargs' select='php:functionString("TransferObjectKeys", $ZName, $ZArgs)'/>
+                <xsl:variable name='newargs' select='php:functionString("zobject_iobj::TransferObjectKeys", $ZName, $ZArgs)'/>
                 <xsl:variable name='newmode'>
                     <xsl:choose>
                         <xsl:when test='$mode="edit" and $fDef/@mode="list"'>list-edit</xsl:when>
@@ -419,11 +413,9 @@
         <xsl:variable name='dCap' select='$fid' />
         <xsl:variable name='specificZN' select='@zname' />
         <xsl:variable name='specificCap'>
-            <xsl:if test='string-length($specificZN)!=0'>
-                <xsl:value-of select='$DEFS/*/zobjectdef[@name=$specificZN]/fielddefs/fielddef[@id=$fid]/@caption'/>
-            </xsl:if>
+            <xsl:if test='string-length($specificZN)!=0'><xsl:value-of select='$ZDef/fielddefs/fielddef[@id=$fid]/@caption'/></xsl:if>
         </xsl:variable>
-        <xsl:variable name='tCap' select='$ZDef/fielddefs/fielddef[@id=$fid]/@caption' />
+        <xsl:variable name='tCap' select='$TDef/fielddefs/fielddef[@id=$fid]/@caption' />
         <xsl:variable name='bCap'>
             <xsl:choose>
                 <xsl:when test='string-length($specificCap)!=0'><xsl:value-of select= '$specificCap'/></xsl:when>
@@ -449,7 +441,7 @@
 
     <xsl:template name='fieldhelp'>
         <xsl:variable name='fid' select='@id' />
-        <xsl:variable name='bCap' select='$DEFS/*/ztabledef[@name=$ZSrc]/fielddefs/fielddef[@id=$fid]/help' />
+        <xsl:variable name='bCap' select='$TDef/fielddefs/fielddef[@id=$fid]/@help' />
         <div class='capex'>
             <xsl:copy-of select='php:functionString("zobject_format::PrettyCaptionHelp", string($bCap))' />
         </div>
@@ -457,7 +449,7 @@
 
     <xsl:template name='fielddesc'>
         <xsl:variable name='fid' select='@id' />
-        <xsl:variable name='bCap' select='$DEFS/*/ztabledef[@name=$ZSrc]/fielddefs/fielddef[@id=$fid]/description' />
+        <xsl:variable name='bCap' select='$TDef/fielddefs/fielddef[@id=$fid]/@description' />
         <xsl:copy-of select='php:functionString("zobject_format::PrettyCaptionHelp", string($bCap))' />
     </xsl:template>
 
@@ -537,10 +529,6 @@
         </li>
     </xsl:template>
 
-    <xsl:template name='pagelist'>
-        <xsl:copy-of select='php:function("PageList", string($ZCount), string($ZPageCount), string($ZPage), string(@prefix), string(@postfix))'/>
-    </xsl:template>
-
     <xsl:template name='addlink'>
         <xsl:variable name='ntext'>
             <xsl:choose>
@@ -615,62 +603,4 @@
             </xsl:for-each>
         </div>
     </xsl:template>
-
-    <xsl:template name='editor'>
-        <xsl:copy-of select='php:function("WYSIWYG",string(@name),"")'/>
-    </xsl:template>
-
-    <!-- this extends image paths, when not specified, allowing for template image auto-supplantation -->
-    <!-- It also works to guarantee better standards conformance by enforcing both @alt and @title, with default of "Image" -->
-    <xsl:template name='img'>
-        <xsl:variable name='Nalt'>
-            <xsl:choose>
-                <xsl:when test='string-length(@alt)!=0'><xsl:value-of select='string(@alt)' /></xsl:when>
-                <xsl:when test='string-length(@title)!=0'><xsl:value-of select='string(@title)' /></xsl:when>
-                <xsl:otherwise>Image</xsl:otherwise>
-            </xsl:choose>
-        </xsl:variable>
-        <xsl:variable name='Ntitle'>
-            <xsl:choose>
-                <xsl:when test='string-length(@alt)!=0'><xsl:value-of select='string(@title)' /></xsl:when>
-                <xsl:when test='string-length(@title)!=0'><xsl:value-of select='string(@alt)' /></xsl:when>
-                <xsl:otherwise>Image</xsl:otherwise>
-            </xsl:choose>
-        </xsl:variable>
-
-        <xsl:variable name='asrc' select='php:functionString("TemplateEscapeTokens", string(@src))'/>
-        <xsl:variable name='nsrc' select='php:functionString("ExtendURL",$asrc,"i","", 1)'/>
-        <img>
-            <xsl:for-each select='@*'><xsl:copy-of select='.'/></xsl:for-each>
-            <xsl:attribute name='src'><xsl:value-of select='$nsrc'/></xsl:attribute>
-            <xsl:attribute name='alt'><xsl:value-of select='$Nalt'/></xsl:attribute>
-            <xsl:attribute name='title'><xsl:value-of select='$Ntitle'/></xsl:attribute>
-        </img>
-    </xsl:template>
-
-    <xsl:template name='a'>
-        <xsl:variable name='aHREF' select='php:functionString("TemplateEscapeTokens", string(@href))'/>
-        <xsl:variable name='nHREF' select='php:functionString("ExtendURL", $aHREF, "a", "", 1)'/>
-        <!-- [href=<xsl:value-of select='@href'/>] [aHREF=<xsl:value-of select='$aHREF'/>] [nHREF=<xsl:value-of select='$nHREF'/>]
--->
-        <a>
-            <xsl:for-each select='@*'>
-                <xsl:choose>
-                    <xsl:when test='name()="href"'>
-                        <xsl:attribute name='href'>
-                            <xsl:value-of select='$nHREF'/>
-                        </xsl:attribute>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:apply-templates select='.'/>
-                    </xsl:otherwise>
-                </xsl:choose>
-            </xsl:for-each>
-            <xsl:for-each select='node()'>
-                <xsl:apply-templates select='.'/>
-            </xsl:for-each>
-        </a>
-    </xsl:template>
-
-
 </xsl:stylesheet>

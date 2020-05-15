@@ -33,7 +33,7 @@ class zobject_query
 
 	static function get_result($ZName, $ZMode, $ZArgs, &$rc, &$tform)
 		{
-        php_logger::log("call", $ZName, $ZMode, $ZArgs);
+        php_logger::log("CALL ", $ZName, $ZMode, $ZArgs);
 		
         $data_mode = self::data_mode($ZName);
         php_logger::debug("get_result, ZMode=$ZMode, data_mode=$data_mode");
@@ -160,7 +160,7 @@ class zobject_query
 						if (!$f)
 							{
 							$f = php_hook::call($d);
-							if (is_string($f)) $f = xml_site::$sourceforce_unknown_document($f);
+							if (is_string($f)) $f = xml_site::$source->force_unknown_document($f);
 							}
 						$bse = $o->FillInQueryStringKeys($bse, '', true);
 //self::save_log("b=$b");
@@ -554,13 +554,14 @@ function pre_save_result($v)
 
 	static function GetXMLFile($ZName, $ZArgs, &$Lst="", &$Bse="", &$d="")
 		{
-        php_logger::log("CALL - GetXMLFile($ZName, $ZArgs, &$Lst, &$Bse, &$d)");
+        php_logger::log("CALL: ", $ZName, $ZArgs, $Lst, $Bse, $d);
 
 		$id = self::FetchObjPart($ZName, 'xmlfile/@src');
         php_logger::debug("id=$id");
 		if (php_hook::is_hook($id))
 			{
-			$Lst = self::FetchObjPart($ZName, 'xmlfile/@list');
+            php_logger::debug("HOOK");
+            $Lst = self::FetchObjPart($ZName, 'xmlfile/@list');
 			$Bse = self::FetchObjPart($ZName, 'xmlfile/@base');
 			}
 		else
@@ -577,7 +578,8 @@ function pre_save_result($v)
 				$Lst = ChooseBest(self::FetchObjPart($ZName, 'xmlfile/@list'), self::FetchDSPart($id, '@list'));
 				$Bse = ChooseBest(self::FetchObjPart($ZName, 'xmlfile/@base'), self::FetchDSPart($id, '@base'));
 				$M = self::FetchDSPart($id, '@module');
-				if (file_exists(WP_PLUGIN_DIR . "/zobjects/modules/$M/$d")) $d = WP_PLUGIN_DIR . "/zobjects/modules/$M/$d";
+                // if (file_exists(WP_PLUGIN_DIR . "/zobjects/modules/$M/$d")) $d = WP_PLUGIN_DIR . "/zobjects/modules/$M/$d";
+                php_logger::debug("DATASOURCE: ", $d, $Lst, $Bse, $M);
 				}
 			}
 
@@ -614,7 +616,7 @@ function pre_save_result($v)
 	static function GetZObjectXmlFile($ZName, $ZMode, $ZArgs, &$rc)
 		{
         php_logger::log("CALL - $ZName, $ZMode, $ZArgs");
-		if ($ZName=="") {Warning("<font style='font-weight:bold;font-size:20'>DIE:</font> <u>No ZName in GetZObjectXmlFile</u>");die();}
+        if ($ZName=="") throw new Exception("No ZName in GetZObjectXmlFile.");
 
 		$rc = 1;
 		$x = self::recordset_header($ZName, $ZMode, 1, "");
@@ -624,7 +626,7 @@ function pre_save_result($v)
 		if (!$D)
 			{
 			$D = php_hook::call($d);
-			if (is_string($D)) $D = xml_site::$sourceforce_unknown_document($D);
+			if (is_string($D)) $D = xml_site::$source->force_unknown_document($D);
 			}
 
 		$b = self::iOBJ()->FillInQueryStringKeys($b, $ZArgs);
@@ -688,46 +690,46 @@ function pre_save_result($v)
 		
 	static function GetZObjectMultiXmlFile($ZName, $ZMode, $ZArgs, &$rc)
 		{
-//print "<br/>GetZObjectMultiXmlFile($ZName, $ZMode, $ZArgs)";
+        php_logger::log("CALL - GetZObjectMultiXmlFile($ZName, $ZMode, $ZArgs");
 		if ($ZName=="") throw new Excpetion("<span style='font-weight:bold;font-size:20'>DIE:</span> <u>No ZName in GetZObjectXmlFile</u>");
 
 		$x = "";
 		$rx = $x . "<?xml version='1.0' encoding='ISO-8859-1'?>\n";
 
-		$D = self::GetXMLFile($ZName, $ZArgs, $listpath, $itempath, $F);
-//print "<br/>GetZObjectMultiXmlFile: F=$F";
+        $D = self::GetXMLFile($ZName, $ZArgs, $listpath, $itempath, $F);
+        php_logger::debug("F=$F");
 
 		$fl = self::FetchObjFields($ZName);		// field list
-		$fc = count($fl);
-//print "<br/>Field List (n=$fc):";print_r($fl);
+        $fc = count($fl);
+        php_logger::debug("Field List: ", $fl);
 
-//print "<br/>listpath=$listpath";
+        php_logger::debug("listpath=", $listpath);
 		$listpath = php_hook::call($listpath, $ZArgs);
-//print "<br/>";print_r($listpath);
+        php_logger::debug("listpath=", $listpath);
 		if (is_array($listpath)) $f = $listpath;  // php_hook returned an array!
 		else 
 			{
 			if (isset($D)) $lD = $D;
 			if (!isset($lD) && php_hook::is_hook($F)) 
 				{
-//print "<br/>F=$F, td=$td";
-				$td = php_hook::call($F,'');
-//print "<br/>F=$F, td=$td";
-				if (is_string($F)) $lD = xml_site::$sourceforce_unknown_document($td);
+                php_logger::trace("F=$F, td=$td");
+                $td = php_hook::call($F,'');
+                php_logger::trace("F=$F, td=$td");
+				if (is_string($F)) $lD = xml_site::$source->force_unknown_document($td);
 				else if (is_object($F)) $lD = $F;
 				}
-//print "<br/>ld=$lD";
+                php_logger::trace("ld=$lD");
 			if (isset($lD))
 				{
-//print "<br/><b>listpath</b> = $listpath, <b>itempath</b>=$itempath";
+                php_logger::trace("<b>listpath</b> = $listpath, <b>itempath</b>=$itempath");
 				$listpath = self::iOBJ()->FillInQueryStringKeys($listpath, $ZArgs, false);
 				$itempath = self::iOBJ()->FillInQueryStringKeys($itempath, $ZArgs, false);
-//print "<br/><b><u>Altered:</u></b> <b>listpath =</b> $listpath, <b>itempath=</b>$itempath";
+                php_logger::trace("<b><u>Altered:</u></b> <b>listpath =</b> $listpath, <b>itempath=</b>$itempath");
 		
 				$oix = self::iOBJ()->options['index'];
 				if ($oix=="position()" || $oix == "")
 					{
-//print "<br/>Positioned elements: $ZName";
+                    php_logger::debug("Positioned elements: $ZName");
 					$nn = $lD->count_parts($listpath);
 					for ($f=array(),$i=1;$i<=$nn;$i++) $f[$i]=$i;
 					}
@@ -736,7 +738,7 @@ function pre_save_result($v)
 				}
 			}
 
-//print "<br/>f: ";print_r($f);
+        php_logger::dump("F: ", $f);
 		$rc = count($f);
 		$x = self::recordset_header($ZName, $ZMode, count($f));
 
@@ -744,37 +746,37 @@ function pre_save_result($v)
 
 		foreach($fl as $fld)
 			{
-//print "<br/>i=$i, fl[i]=".$fl[$i]."  ";print_r($fl);
+            php_logger::dump("i=$i, fl[i]=".$fl[$i]."  ", print_r($fl));
 			$tmp = array();
 			$tmp["datatype"] = self::FetchObjFieldPart($ZName, $fld, "@datatype");
 			$tmp["default"] = self::FetchObjFieldPart($ZName, $fld, "@default");
 			$tmp["multiple"] = YesNoVal(self::FetchObjFieldPart($ZName, $fld, "@multiple"),false);
 			$tmp["access"] = self::FetchObjFieldPart($ZName, $fld, "@access");
 			$fieldinfo[$fld] = $tmp;
-			}
-//print "<br/>field defs: ";print_r($fieldinfo);
+            }
+        php_logger::debug("field defs: ", print_r($fieldinfo));
 
 		$key = '@'.self::iOBJ()->options['key'];
-		$index = self::iOBJ()->options['index'];
-//print "<br/>key=$key, index=$index";
+        $index = self::iOBJ()->options['index'];
+        php_logger::debug("key=$key, index=$index");
 
 		foreach($f as $rowx)
 			{
 			$tA = querystring::add($ZArgs, substr($key, 1), $rowx);
 			if (php_hook::is_hook($F))
 				{
-//print "<br/>F=$F";
-//print "<br/>tA=<b>$tA</b>, F=<b><u>$F</u></b>, actual file=<b>".php_hook::call($F, $tA)."</b>";
+                    php_logger::debug("F=$F");
+                php_logger::debug("tA=<b>$tA</b>, F=<b><u>$F</u></b>, actual file=<b>".php_hook::call($F, $tA)."</b>");
 				unset($D);
 				$Did = xml_site::$source->add_file(php_hook::call($F));
 				$D = xml_site::$source->get_source($Did);
-//print "<br/>isset(D)=".(isset($D)?'y':'n');
+                php_logger::debug("isset(D)=".(isset($D)?'y':'n'));
 				}
 
-//print "<br/>index=$index, key=$key, rowx=$rowx, itempath=$itempath";
+            php_logger::log("index=$index, key=$key, rowx=$rowx, itempath=$itempath");
 			$x = $x . "  <row>\n";
-			$tp = str_replace($key, $rowx, $itempath);
-//print "<br/>tp=$tp";
+            $tp = str_replace($key, $rowx, $itempath);
+            php_logger::log("tp=$tp");
 
 			foreach($fl as $l)
 				{
@@ -824,7 +826,7 @@ function pre_save_result($v)
 		if (!$D)
 			{
 			$D = php_hook::call($d);
-			if (is_string($D)) $D = xml_site::$sourceforce_unknown_document($D);
+			if (is_string($D)) $D = xml_site::$source->force_unknown_document($D);
 			}
 
 //self::save_log("base=$base, Args=$ZArgs, key=".$o->options['key'].", index=".$o->options['index'].", KV=".zobject::KeyValue($o->options['index']));
