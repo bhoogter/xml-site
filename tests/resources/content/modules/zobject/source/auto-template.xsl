@@ -211,13 +211,10 @@
                                     <xsl:variable name='CanEdit' select='php:functionString("zobject_access::access", $ZName, "edit")'/>
                                     <xsl:variable name='CanDelete' select='php:functionString("zobject_access::access", $ZName, "delete")'/>
                                     <xsl:if test='$ZMode="display"'>
-                                        <xsl:if test='$CanEdit="edit"'>
-                                            <page text='Edit Values' asButton='1'>
-                                                <xsl:attribute name='args'><xsl:value-of select='php:functionString("zobject::TransferObjectKeys", $ZName, "?m=edit")'/></xsl:attribute>
-                                            </page>
-                                        </xsl:if>
+                                        <xsl:if test='$CanEdit="edit"'><editlink/></xsl:if>
                                         <xsl:if test='$ZMode="edit"'><formcontrols/></xsl:if>
                                         <xsl:if test='$CanDelete="delete"'><dellink/></xsl:if>
+                                                <!-- <xsl:attribute name='args'><xsl:value-of select='php:functionString("zobject::TransferObjectKeys", $ZName, "?m=edit")'/></xsl:attribute> -->
                                     </xsl:if>
                                     <xsl:if test='$ZMode="create"'>
                                         <formcontrols/>

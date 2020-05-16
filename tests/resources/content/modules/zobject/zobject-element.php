@@ -152,6 +152,15 @@ class zobject_element
         php_logger::debug("QSSatisfied($ZN): " . ($Sat ? "Yes" : "No"));
 
         php_logger::log("ZM=$ZM");
+        if ($ZM == '') {
+            if (querystring::get('display') != '') $ZM = '0';
+            if (querystring::get('add') != '') $ZM = 'x';
+            if (querystring::get('edit') != '') $ZM = '1';
+            if (querystring::get('delete') != '') $ZM = 'x';
+            if (querystring::get('position') != '') $ZM = 'p';
+            if (querystring::get('upposition') != '') $ZM = '<';
+            if (querystring::get('dnposition') != '') $ZM = '>';
+        }
         if ($ZM == "delete") $ZM = "x";
         if ($ZM == "dnposition") $ZM = ">";
         if ($ZM == "upposition") $ZM = "<";
@@ -165,7 +174,8 @@ class zobject_element
             case "-":  case "h": $ZM = "list-edit"; break;
             case "+":  case "j": $ZM = "list-create"; break;
             case "^":  case "f": $ZM = "find"; break;
-            case '<': $ZM = 'upposition'; break;            case '>': $ZM = 'dnposition'; break;
+            case '<': $ZM = 'upposition'; break;
+            case '>': $ZM = 'dnposition'; break;
             case "p": $ZM = 'position'; break;
             case "x": $ZM = "delete"; break;
             case "&": $ZM = 'data'; break;
@@ -831,7 +841,7 @@ class zobject_element
 
     function LinkArgs($Mode, $TN, $Args)
     {
-        php_logger::log("LinkArgs($Mode, $TN, $Args)");
+        php_logger::call();
         $key = "@" . $this->options["key"];
 
         if ($key != "") {
@@ -843,13 +853,13 @@ class zobject_element
             }
             //            else $Args = querystring::remove_querystring_var($Args, substr($key,1));
         }
-        php_logger::log("Args=$Args");
+        php_logger::result("Args=$Args");
         return $Args;
     }
 
     function ItemLink($field, $mode = "create", $text = "", $ajax = "", $C = "", $T = "")
     {
-        php_logger::log("ItemLink($field, $mode, $text, $ajax, $C, $T)");
+        php_logger::call();
 
         if (($TN = $this->name) == "") return "";
         //print "<br/>name=$TN";
@@ -865,14 +875,14 @@ class zobject_element
             //print "<br/>TN=$TN";
         }
         if ($text == "") switch ($mode) {
-            case "display":                $text = "@";                break;
-            case "create":                $text = "*";                break;
-            case "edit":                $text = "#";                break;
-            case "delete":                $text = "X";                break;
-            case "position":                $text = "Pos";                break;
-            case "upposition":                $text = "-";                break;
-            case "dnposition":                $text = "+";                break;
-            default:                $text = "[??? mode]";                break;
+            case "display":         $text = "@";                break;
+            case "create":          $text = "*";                break;
+            case "edit":            $text = "#";                break;
+            case "delete":          $text = "X";                break;
+            case "position":        $text = "Pos";              break;
+            case "upposition":      $text = "-";                break;
+            case "dnposition":      $text = "+";                break;
+            default:                $text = "[??? mode]";       break;
         }
         $text = zobject::InterpretFields($text);
         if ($text == "") $text = "[???]";
@@ -888,6 +898,7 @@ class zobject_element
         $params = "{ '_AJAX' : 1, '_Save' : 1, '_ZA' : '" . $this->get("args64") . "' }";
 
         if ($ajax != "") {
+            php_logger::log("== Ajax ==");
             $Args = querystring::add($Args, '_ZN', $this->name);
             $Args = querystring::add($Args, '_ZM', ($T == "") ? $mode : "$mode;$T");
             $Args64 = zobject::encode_args($Args);
@@ -948,25 +959,26 @@ class zobject_element
                 $a = $a . "</span>";
             }
         } else {
-            $s = $Args;
-            $s = querystring::add($s, '_ZN', $this->name);
-            $s = querystring::add($s, '_ZM', $this->mode);
+            php_logger::log("== Regular ==");
+            $s = querystring::aqm($Args);
+            // $s = querystring::add($s, '_ZN', $this->name);
+            // $s = querystring::add($s, '_ZM', $this->mode);
 
             switch ($mode) {
-                case "display":        $s = querystring::add($s, 'display', $this->name);                    break;
-                case "create":         $s = querystring::add($s, 'add', $this->name);                    break;
-                case "edit":           $s = querystring::add($s, 'edit', '1');                    break;
-                case "delete":         $s = querystring::add($s, 'delete', '1');                    break;
-                case "position":       $s = querystring::add($s, 'pos', '1');                    break;
-                case "upposition":     $s = querystring::add($s, 'pos', '1');                    break;
-                case "dnposition":     $s = querystring::add($s, 'pos', '1');                    break;
-                default:               $s = "";                    break;
+                case "display":        $s = querystring::add($s, 'display', $this->name);   break;
+                case "create":         $s = querystring::add($s, 'add', $this->name);       break;
+                case "edit":           $s = querystring::add($s, 'edit', '1');              break;
+                case "delete":         $s = querystring::add($s, 'delete', '1');            break;
+                case "position":       $s = querystring::add($s, 'pos', '1');               break;
+                case "upposition":     $s = querystring::add($s, 'pos', '1');               break;
+                case "dnposition":     $s = querystring::add($s, 'pos', '1');               break;
+                default:               $s = "";                                             break;
             }
 
             $p = zobject::FetchSpecPart($this->options['module'], 'program/control[@type="page"]/@src');
             //print "<br/>p=$p";
             if ($p != "") $s = php_hook::call($p, array(":" . $this->name, $s), true);
-            //print "<br/>p=$p, s=$s";
+            php_logger::log("p=$p, s=$s");
 
             $a  = "";
             $a .= "<span id='" . zobject::new_jsid() . "'>";
@@ -977,6 +989,7 @@ class zobject_element
 
         //print $a;
         //die($a);
+        php_logger::result($a);
         $D = new DOMDocument;
         $D->loadXML($a);
         return $D;

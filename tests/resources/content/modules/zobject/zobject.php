@@ -43,6 +43,33 @@ class zobject
         return (new zobject_element())->save($zName);
     }
 
+    static function formcontrols() {
+// <xsl:variable name='AJAX' select='php:functionString("zobject::ajax")'/>
+// <xsl:variable name='formid' select='php:functionString("zobject::form_id")'/>
+// <xsl:if test='string-length($AJAX)=0 and ($mode="edit" or $mode="create")'>
+//     <xsl:variable name='value'>
+//         <xsl:choose>
+//             <xsl:when test='string-length(@value)!=0'><xsl:value-of select='string(@value)'/></xsl:when>
+//             <xsl:when test='string-length(@text)!=0'><xsl:value-of select='string(@text)'/></xsl:when>
+//             <xsl:otherwise>Submit</xsl:otherwise>
+//         </xsl:choose>
+//     </xsl:variable>
+//     <xsl:variable name='ty' select='substring(@type, 1, 1)'/>
+//     <xsl:if test='$ty="s" or $ty=""'>
+//         <input type='submit'>
+//             <xsl:attribute name='value'><xsl:value-of select='$value'/></xsl:attribute>
+//             <xsl:attribute name='class'><xsl:value-of select='@class'/></xsl:attribute>
+//         </input>
+//     </xsl:if>
+// </xsl:if>
+        return xml_serve::xml_content("<span>--EDIT--</span>");
+
+    }
+
+    static function itemlink() {
+        
+    }
+
     static function transform() { return realpath(__DIR__ . "/source/transform.xsl"); }
 
     static function ObjectList() {return xml_site::$source->lst("//MODULES/modules/module/zobjectdef/@name");}

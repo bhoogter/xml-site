@@ -70,7 +70,11 @@ class xml_site
             $render = $e->getAttribute("render");
             $src = $e->getAttribute("src");
             php_logger::trace("ADD HANDLER", $name, $render, $src);
-            xml_serve::add_handler($name, "$render::render");
+
+            if (is_callable($render)) 
+                xml_serve::add_handler($name, $render);
+            else
+                xml_serve::add_handler($name, "$render::render");
         }
     }
 

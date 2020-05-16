@@ -1,4 +1,6 @@
 <?xml version='1.0' ?>
 <options>
     <option userid='3' name='george' option1='2' option2='3' option3='4' />
+    <option userid='5' name='bill' option1='22' option2='33' option3='4444' />
+    <option userid='19' name='pete' option1='1' option2='2' option3='3' />
 </options>

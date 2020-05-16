@@ -126,7 +126,7 @@
             <xsl:when test='name()="value"'><xsl:call-template name='value'/></xsl:when>
             <xsl:when test='name()="editor"'><xsl:call-template name='editor'/></xsl:when>
 
-            <xsl:when test='$HasNodeHandler'><xsl:copy-of select='php:function("juniper_render_node", $N, current())' /></xsl:when>
+            <xsl:when test='$HasNodeHandler'><xsl:copy-of select='php:function("xml_serve::handle_element", $N, current())' /></xsl:when>
 
             <xsl:when test='name()="startform"'><xsl:call-template name='startform'/></xsl:when>
             <xsl:when test='name()="endform"'><xsl:call-template name='endform'/></xsl:when>
