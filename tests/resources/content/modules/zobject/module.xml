@@ -10,7 +10,7 @@
             </description>
 
             <components>
-                <element name='zobject' render='zobject_render' src='zo-render' definition="zobjectdef/@name" />
+                <element name='zobject' render='zobject' src='zo' definition="zobjectdef/@name" />
                 <element name='zaction' render='zobject_action' src='zo-class-zaction' definition="zactiondef/@name" />
 
                 <ajax action='validate' render='php:juniper_zobject_validate' />
@@ -25,15 +25,15 @@
             </program>
         </specification>
 
-        <file id='zo-render' type='php' src='zobject-render.php' mode='startup' />
-        <file id='zo-iobj' type='php' src='zobject-iobj.php' mode='startup' />
+        <file id='zo' type='php' src='zobject.php' mode='startup' />
+        <file id='zo-element' type='php' src='zobject-element.php' mode='startup' />
+        <file id='zo-query' type='php' src='zobject-query.php' mode='startup' />
         <file id='zo-bench' type='php' src='zobject-bench.php' mode='startup' />
         <file id='zo-access' type='php' src='zobject-access.php' mode='startup' />
         <file id='zo-autotemplate' type='php' src='zobject-autotemplate.php' mode='startup' />
         <file id='zo-format' type='php' src='zobject-format.php' mode='startup' />
         <file id='zo-validation' type='php' src='zobject-validation.php' mode='startup' />
         <file id='zo-source-check' type='php' src='zobject-source-check.php' mode='startup' />
-        <file id="zoobject" type="php" src="zobject.php" mode='startup' />
         <file id="zo-datatypes" type="php" src="zobject-datatypes.php" mode='startup' />
 
         <file id='zo-class-zaction' type='php' src='zaction.php'	/>

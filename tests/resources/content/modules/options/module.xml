@@ -10,12 +10,18 @@
             </description>
         </specification>
 
-        <file id='options' type='php' src='options.php' mode='startup' />
+        <api type='rest' loc='/api/v2/option'       method='GET'    target='options_api::get_option_by_id' />
+        <api type='rest' loc='/api/v2/option'       method='POST'   target='options_api::post_option_by_id' />
 
+        <api type='ajax' loc='/api/v2/option/ajax'  method='GET'    target='options_api::ajax_get_option' />
+        <api type='ajax' loc='/api/v2/option/ajax'  method='POST'   target='options_api::ajax_post_option' />
+
+        <file id='options' type='php' src='options.php' mode='startup' />
+        <file id='options-api' type='php' src='options-api.php' mode='startup' />
 
         <datasource name='OPTIONS_XML' src='options.xml' />
     
-        <zobjectdef name="options" key-field="userid" index="id" allow-display="[!]" SOURCE='OPTIONS_XML'>
+        <zobjectdef name="options" key-field="userid" index="userid" allow-display="[!]" SOURCE='OPTIONS_XML'>
             <style>
                 <caption>Options</caption>
                 <class>user-options</class>
@@ -39,8 +45,7 @@
 
     <ztabledef name='def-options'>
         <fielddefs>
-            <fielddef id='name' datatype='string' access="@name" caption='ID' />
+            <fielddef id='name' datatype='string' access="@" caption='ID' />
         </fielddefs>
     </ztabledef>
-
 </modules>

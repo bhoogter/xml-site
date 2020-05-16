@@ -31,7 +31,7 @@
                                 <th>#</th>
                             </xsl:if>
                             <xsl:for-each select='/*/fielddefs/*'>
-                                <xsl:variable name='fmode' select='php:functionString("zobject_iobj::field_mode", $ZName, @id, $ZMode)'/>
+                                <xsl:variable name='fmode' select='php:functionString("zobject::field_mode", $ZName, @id, $ZMode)'/>
                                 <xsl:if test='$fmode="list-edit" or $fmode="list" or $fmode="create"'>
                                     <th><xsl:value-of select='php:functionString("PrettyHeader", @id)'/></th>
                                 </xsl:if>
@@ -52,8 +52,8 @@
                                         <editlink/> / <dellink/> / <positionlink/>
                                     </td>
                                 </xsl:if>
-                                <xsl:variable name='lid' select='php:functionString("zobject_iobj::FetchObjPart", $ZName, "@list-index")'/>
-                                <xsl:variable name='oid' select='php:functionString("zobject_iobj::FetchObjPart", $ZName, "@index")'/>
+                                <xsl:variable name='lid' select='php:functionString("zobject::FetchObjPart", $ZName, "@list-index")'/>
+                                <xsl:variable name='oid' select='php:functionString("zobject::FetchObjPart", $ZName, "@index")'/>
                                 <xsl:variable name='OID'>
                                     <xsl:choose>
                                         <xsl:when test='string-length($lid) != 0'><xsl:value-of select='$lid'/></xsl:when>
@@ -62,7 +62,7 @@
                                 </xsl:variable>
                                 <xsl:for-each select='/*/fielddefs/*'>
                                     <xsl:variable name='fid' select='@id'/>
-                                    <xsl:variable name='fmode' select='php:functionString("zobject_iobj::field_mode", $ZName, $fid, $ZMode)'/>
+                                    <xsl:variable name='fmode' select='php:functionString("zobject::field_mode", $ZName, $fid, $ZMode)'/>
                                     <xsl:if test='$fmode="list-edit" or $fmode="list" or $fmode="create"'>
                                         <td>
                                             <xsl:variable name='SUBZ' select='php:functionString("ForSubZ")'/>
@@ -213,7 +213,7 @@
                                     <xsl:if test='$ZMode="display"'>
                                         <xsl:if test='$CanEdit="edit"'>
                                             <page text='Edit Values' asButton='1'>
-                                                <xsl:attribute name='args'><xsl:value-of select='php:functionString("zobject_iobj::TransferObjectKeys", $ZName, "?m=edit")'/></xsl:attribute>
+                                                <xsl:attribute name='args'><xsl:value-of select='php:functionString("zobject::TransferObjectKeys", $ZName, "?m=edit")'/></xsl:attribute>
                                             </page>
                                         </xsl:if>
                                         <xsl:if test='$ZMode="edit"'><formcontrols/></xsl:if>

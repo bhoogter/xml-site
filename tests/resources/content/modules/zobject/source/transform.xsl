@@ -16,18 +16,18 @@
     <xsl:variable name='HandledElements' select='php:functionString("zobject::handled_elements")'/>
     <!-- NOTE:  $PS for page-file, via page.xsl -->
 
-    <xsl:variable name='ZName' select='php:functionString("zobject_iobj::transform_var", "name")' />
-    <xsl:variable name='requested-object-mode' select='php:functionString("zobject_iobj::transform_var", "mode")' />
-    <xsl:variable name='login-key' select='php:functionString("zobject_iobj::transform_var", "login-key")' />
-    <xsl:variable name='OID' select='php:functionString("zobject_iobj::transform_var", "uid")' />
-    <xsl:variable name='ZPage' select='php:functionString("zobject_iobj::transform_var", "page")' />
-    <xsl:variable name='ZPageCount' select='php:functionString("zobject_iobj::transform_var", "page-count")' />
-    <xsl:variable name='ZCount' select='php:functionString("zobject_iobj::transform_var", "count")' />
-    <xsl:variable name='ZArgs' select='php:functionString("zobject_iobj::transform_var", "args")' />
-    <xsl:variable name='ZArgs64' select='php:functionString("zobject_iobj::transform_var", "args64")' />
+    <xsl:variable name='ZName' select='php:functionString("zobject::transform_var", "name")' />
+    <xsl:variable name='requested-object-mode' select='php:functionString("zobject::transform_var", "mode")' />
+    <xsl:variable name='login-key' select='php:functionString("zobject::transform_var", "login-key")' />
+    <xsl:variable name='OID' select='php:functionString("zobject::transform_var", "uid")' />
+    <xsl:variable name='ZPage' select='php:functionString("zobject::transform_var", "page")' />
+    <xsl:variable name='ZPageCount' select='php:functionString("zobject::transform_var", "page-count")' />
+    <xsl:variable name='ZCount' select='php:functionString("zobject::transform_var", "count")' />
+    <xsl:variable name='ZArgs' select='php:functionString("zobject::transform_var", "args")' />
+    <xsl:variable name='ZArgs64' select='php:functionString("zobject::transform_var", "args64")' />
     <xsl:variable name='ZPrefix' select='c' />
 
-    <xsl:variable name='jsid' select='php:functionString("zobject_iobj::transform_var", "jsid")' />
+    <xsl:variable name='jsid' select='php:functionString("zobject::transform_var", "jsid")' />
 
     <xsl:variable name='ZDef' select='$DEFS//modules/module/zobjectdef[@name=$ZName]' />
     <xsl:variable name='ZSrc' select='$ZDef/@source' />
@@ -40,7 +40,7 @@
         <div>
             <xsl:attribute name='id'><xsl:value-of select='$jsid'/></xsl:attribute>
             <xsl:variable name='benchstart' select='php:functionString("zobject_bench::time")'/>
-            <xsl:variable name='named_template' select='php:functionString("zobject_iobj::named_template")'/>
+            <xsl:variable name='named_template' select='php:functionString("zobject::named_template")'/>
             <xsl:variable name='specific_template' select='$ZDef/render[@type=$mode]/@src'/>
             <xsl:variable name='alt_template'>
                 <xsl:choose>
@@ -62,7 +62,7 @@
                     <xsl:otherwise><xsl:value-of select='string($general_template)' /></xsl:otherwise>
                 </xsl:choose>
             </xsl:variable>
-            <xsl:variable name='docTemplate' select='php:function("zobject_iobj::get_template", string($docTemplateFile), string($ZName), string($mode))' />
+            <xsl:variable name='docTemplate' select='php:function("zobject::get_template", string($docTemplateFile), string($ZName), string($mode))' />
 
             <xsl:if test='php:function("zobject::DEBUG_TRANSFORM")'>
                 <table class='DEBUG'>
@@ -93,7 +93,7 @@
                 </table>
             </xsl:if>
 
-            <xsl:variable name='resetRecNo' select='php:functionString("zobject_iobj::recno", "1")'/>
+            <xsl:variable name='resetRecNo' select='php:functionString("zobject::recno", "1")'/>
             <xsl:apply-templates select="$docTemplate/*" />
             <xsl:if test='number($BenchmarkTRANSFORM)>0'>
                 <xsl:value-of select='php:functionString("zobject_bench::report", $benchstart, "zobject transform")'/>
@@ -110,7 +110,7 @@
                     <xsl:value-of select='.'/>
                 </xsl:variable>
                 <xsl:attribute name='{$aname}'>
-                    <xsl:value-of select='php:functionString("zobject_iobj::template_escape_tokens", string($atext))'/>
+                    <xsl:value-of select='php:functionString("zobject::template_escape_tokens", string($atext))'/>
                 </xsl:attribute>
             </xsl:otherwise>
         </xsl:choose>
@@ -153,7 +153,7 @@
 
     <xsl:template name='require'>
         <xsl:variable name='test' select='@test' />
-        <xsl:variable name='rn' select='php:functionString("zobject_iobj::recno")'/>
+        <xsl:variable name='rn' select='php:functionString("zobject::recno")'/>
         <xsl:variable name='result' select='php:functionString("zobject_require_test::test", string($OID), string($test), string($rn))'/>
         <xsl:if test='$result!="0"'>
             <xsl:apply-templates select="node()"/>
@@ -165,16 +165,16 @@
     </xsl:template>
 
     <xsl:template name='value'>
-        <xsl:variable name='rn' select='php:functionString("zobject_iobj::recno")'/>
+        <xsl:variable name='rn' select='php:functionString("zobject::recno")'/>
         <xsl:if test='@select!=""'>
             <xsl:value-of disable-output-escaping='yes' select='php:functionString("valueSelect", string($OID), string(@select), string($rn))'/>
         </xsl:if>
     </xsl:template>
 
     <xsl:template name='startform'>
-        <xsl:variable name='formid' select='php:functionString("zobject_iobj::form_id")'/>
-        <xsl:variable name='action' select='php:functionString("zobject_iobj::form_action", $ZName, $formid, $ZArgs)'/>
-        <xsl:variable name='ZS64' select='php:functionString("zobject_iobj::get", "source64")'/>
+        <xsl:variable name='formid' select='php:functionString("zobject::form_id")'/>
+        <xsl:variable name='action' select='php:functionString("zobject::form_action", $ZName, $formid, $ZArgs)'/>
+        <xsl:variable name='ZS64' select='php:functionString("zobject::get", "source64")'/>
         <xsl:variable name='ZA64' select='$ZArgs64'/>
         <xsl:variable name='AJAX' select='php:functionString("zobject::ajax")'/>
         <xsl:variable name='FSC' select='php:functionString("zobject_source_check::nonce", $formid)'/>
@@ -209,7 +209,7 @@
     </xsl:template>
 
     <xsl:template name='endform'>
-        <xsl:variable name='formid' select='php:functionString("zobject_iobj::form_id")'/>
+        <xsl:variable name='formid' select='php:functionString("zobject::form_id")'/>
         <xsl:if test='$mode="edit" or $mode="create"'>
             <xsl:text disable-output-escaping="yes">&lt;/form&gt;</xsl:text>
             <script>jQuery(document).ready(function(){jQuery("#<xsl:value-of select='$formid'/>").validate();});</script>
@@ -220,7 +220,7 @@
 
     <xsl:template name='formcontrols'>
         <xsl:variable name='AJAX' select='php:functionString("zobject::ajax")'/>
-        <xsl:variable name='formid' select='php:functionString("zobject_iobj::form_id")'/>
+        <xsl:variable name='formid' select='php:functionString("zobject::form_id")'/>
         <xsl:if test='string-length($AJAX)=0 and ($mode="edit" or $mode="create")'>
             <xsl:variable name='value'>
                 <xsl:choose>
@@ -241,7 +241,7 @@
 
     <xsl:template name='field'>
         <xsl:variable name='F' select='.' />
-        <xsl:variable name='rn' select='php:functionString("zobject_iobj::recno")'/>
+        <xsl:variable name='rn' select='php:functionString("zobject::recno")'/>
         <xsl:variable name='fid' select='@id' />
         <xsl:variable name='fDef' select='$ZDef/fielddefs/fielddef[@id=$fid]' />
         <xsl:variable name='ixf' select='$ZDef/@index'/>
@@ -354,7 +354,7 @@
 		<xsl:variable name='addargs1' select='php:functionString("add_querystring_var", $ZArgs, "_SUBZ", "1")'/>
 			<xsl:variable name='addargs' select='php:functionString("add_querystring_var", $addargs1, $addkey, $addval)'/>
 -->
-                <xsl:variable name='newargs' select='php:functionString("zobject_iobj::TransferObjectKeys", $ZName, $ZArgs)'/>
+                <xsl:variable name='newargs' select='php:functionString("zobject::TransferObjectKeys", $ZName, $ZArgs)'/>
                 <xsl:variable name='newmode'>
                     <xsl:choose>
                         <xsl:when test='$mode="edit" and $fDef/@mode="list"'>list-edit</xsl:when>
@@ -468,7 +468,7 @@
         <xsl:for-each select='$obj/row'>
             <xsl:if test='position() &gt;= $rangeFrom and position() &lt;= $rangeTo'>
                 <xsl:variable name='rowstart' select='php:functionString("zobject_bench::time")'/>
-                <xsl:variable name='setRecNo' select='php:functionString("zobject_iobj::recno", string(position()))'/>
+                <xsl:variable name='setRecNo' select='php:functionString("zobject::recno", string(position()))'/>
                 <xsl:for-each select='$row/*'>
                     <xsl:apply-templates select='.' />
                 </xsl:for-each>
@@ -481,7 +481,7 @@
 
     <xsl:template match='tr'>
         <xsl:variable name='C' select='@class'/>
-        <xsl:variable name='R' select='php:functionString("zobject_iobj::recno", "")'/>
+        <xsl:variable name='R' select='php:functionString("zobject::recno", "")'/>
         <xsl:variable name='alt_ext'>
             <xsl:if test='(number($R) mod 2) = 0'>-alt</xsl:if>
         </xsl:variable>
@@ -506,7 +506,7 @@
 
     <xsl:template match='li'>
         <xsl:variable name='C' select='@class'/>
-        <xsl:variable name='R' select='php:functionString("zobject_iobj::recno", "")'/>
+        <xsl:variable name='R' select='php:functionString("zobject::recno", "")'/>
         <xsl:variable name='alt_ext'>
             <xsl:if test='(number($R) mod 2) = 0'>-alt</xsl:if>
         </xsl:variable>
@@ -536,7 +536,7 @@
                 <xsl:otherwise>Add</xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
-        <xsl:copy-of select='php:function("ItemLink", string(@field), "create", string($ntext), string(@ajax), string(@class), string(@template))'/>
+        <xsl:copy-of select='php:function("zobject::item_link", string(@field), "create", string($ntext), string(@ajax), string(@class), string(@template))'/>
     </xsl:template>
 
     <xsl:template name='displaylink'>
@@ -546,7 +546,7 @@
                 <xsl:otherwise>@</xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
-        <xsl:copy-of select='php:function("ItemLink", string(@field), "display", string($ntext), string(@ajax), string(@class), string(@template))' disable-output-escaping='yes'/>
+        <xsl:copy-of select='php:function("zobject::item_link", string(@field), "display", string($ntext), string(@ajax), string(@class), string(@template))' disable-output-escaping='yes'/>
     </xsl:template>
 
     <xsl:template name='editlink'>
@@ -556,7 +556,7 @@
                 <xsl:otherwise>#</xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
-        <xsl:copy-of select='php:function("ItemLink", string(@field), "edit", string($ntext), string(@ajax), string(@class), string(@template))' disable-output-escaping='yes'/>
+        <xsl:copy-of select='php:function("zobject::item_link", string(@field), "edit", string($ntext), string(@ajax), string(@class), string(@template))' disable-output-escaping='yes'/>
     </xsl:template>
 
     <xsl:template name='dellink'>
@@ -566,12 +566,12 @@
                 <xsl:otherwise>X</xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
-        <xsl:copy-of select='php:function("ItemLink", string(@field), "delete", string($ntext), string(@ajax), string(@class))'/>
+        <xsl:copy-of select='php:function("zobject::item_link", string(@field), "delete", string($ntext), string(@ajax), string(@class))'/>
     </xsl:template>
 
     <xsl:template name='positionlink'>
         <xsl:variable name='najax' select='@ajax' />
-        <xsl:copy-of select='php:function("ItemLink", string(@field), "position", "", string(@ajax), string(@class))'/>
+        <xsl:copy-of select='php:function("zobject::item_link", string(@field), "position", "", string(@ajax), string(@class))'/>
     </xsl:template>
 
     <xsl:template name='uppositionlink'>
@@ -581,7 +581,7 @@
                 <xsl:otherwise>-</xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
-        <xsl:copy-of select='php:function("ItemLink", string(@field), "upposition", string($ntext), string(@ajax), string(@class))'/>
+        <xsl:copy-of select='php:function("zobject::item_link", string(@field), "upposition", string($ntext), string(@ajax), string(@class))'/>
     </xsl:template>
 
     <xsl:template name='dnpositionlink'>
@@ -591,7 +591,7 @@
                 <xsl:otherwise>+</xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
-        <xsl:copy-of select='php:function("ItemLink", string(@field), "dnposition", string($ntext), string(@ajax), string(@class))'/>
+        <xsl:copy-of select='php:function("zobject::item_link", string(@field), "dnposition", string($ntext), string(@ajax), string(@class))'/>
     </xsl:template>
 
 

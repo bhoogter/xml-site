@@ -31,48 +31,33 @@ class juniper_action
 	private function get_args()
 		{
 		$args = "";
-		foreach($_REQUEST as $a=>$b) $args = juniper_querystring::add_querystring_var($args, $a, $b);
+		foreach($_REQUEST as $a=>$b) $args = querystring::add($args, $a, $b);
 		if (strlen($args)>0) $Args = "?" . $args;
 
 		return $args;
 		}
 
-	private function part($p)          {return juniper()->FetchActPart($this->ID, $p);}
-	private function rule_part($r, $p) {return juniper()->FetchActRulePart($this->ID, $r, $p);}
-
-	private function log($m, $r = "")
-		{
-//return;
-		if ($_SERVER['SCRIPT_FILENAME']==__FILE__)
-			{
-			print "<br>".$m;
-			if ($r != "") print_r($r);
-			}
-		else
-			{
-			log_file("zaction",$m);
-			if ($r != "") log_r($r);
-			}
-		}
+	private function part($p)          {return zobject::FetchActPart($this->ID, $p);}
+	private function rule_part($r, $p) {return zobject::FetchActRulePart($this->ID, $r, $p);}
 
 	function execute($aID="", $aValue="", $aRef="", $args="")
 		{
-//$this->log("zaction::execute($aID, $aValue, $aRef, $args), REQ:", $_REQUEST);
+        php_logger::call("REQ: $_REQUEST");
 		$aID = $this->get_val("id", $aID);
 		$aValue = $this->get_val("value", $aValue);
 		$aRef = $this->get_val("ref", $aRef);
 		$args = $this->get_val("args", $args);
 		
-//$this->log("PerformZAction(): action=$aID, actionv=$aValue, action=$aRef, args=$args
+        php_logger::log("PerformZAction(): action=$aID, actionv=$aValue, action=$aRef, args=$args");
 
 		$t = $this->part("@rule-type");
-//$this->log("t=[$t], ".$this->rule_part("*", "@value"));
+        php_logger::debug("t=[$t], ".$this->rule_part("*", "@value"));
 
 		if ($this->rule_part($aValue, "@value")!="") $rref = $aValue;
 		else if ($this->rule_part("*", "@value")!="") $rref = "*";
 		else return;
 		
-//$this->log("t=[$t], rref=$rref");
+        php_logger::debug("t=[$t], rref=$rref");
 		switch($t)
 			{
 			case 'sql':
@@ -80,19 +65,19 @@ class juniper_action
 				$i = zobject_keys::TranslateKeyList($i);
 				$a = $this->rule_part($rref, "text()");
 				$a = str_replace("@@Value", $aValue, $a);
-//$this->log(":: i=$i, a=$a");
+                php_logger::trace(":: i=$i, a=$a");
 				foreach(explode(',',$i) as $l)
 					{
-//$this->log("::: l=$l");
+                        php_logger::trace("::: l=$l");
 					$val = $KeyValue($l, $args);
 					$a = str_replace("@$l", $val, $a);
-//$this->log("::: a=$a");
+                    php_logger::trace("::: a=$a");
 					}
 				DBExecute($a);
 				break;
 			case 'php':
 				$cmd = trim($this->rule_part($rref, ""));
-//$this->log("php command($aID, $rref): $cmd");
+                php_logger::trace("php command($aID, $rref): $cmd");
 				if ($cmd!="")
 					{
 					$f = "$cmd('$aValue', '$args');";
@@ -107,26 +92,3 @@ class juniper_action
 		if ($aRef != "") die(header("Location: $aRef")); 
 		}		
 	}
-
-function class_zaction_test_output($r="")
-	{
-print "<br/>CZTO: $r";
-	}
-
-function class_zaction_test()
-	{
-	include_once('module_test.php');
-	zobject_test_header("ZACTION");
-
-	$testname = "Create Object";
-	$Z = new zobject_action("testaction", "", "", "");
-	$testresult = $Z->execute();
-	$testexpect = "";
-	$testok = ($testresult == $testexpect);
-	zobject_test_result($testname, $testresult, $testok, $A);
-	
-	zobject_test_footer();
-	}
-
-if (($_SERVER['SCRIPT_FILENAME']==__FILE__)) class_zaction_test();
-

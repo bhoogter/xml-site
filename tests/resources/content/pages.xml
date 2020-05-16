@@ -35,7 +35,7 @@
         <pagedef text='Duck Duck Go' loc='ext3' href='https://www.duckduckgo.com' linklists="external" />
         <pagedef text='Subway' loc='extsub' href='https://www.subway.com' linklists="external,sub" />
 
-        <pagedef text='More Glory' loc='moreglory' href='http://www.moreglory.org/' linklists='sites' />
+        <pagedef text='More Glory' loc='moreglory' href='http://www.moreglory.net/' linklists='sites' />
         <pagedef text='Church of the Beyond' loc='moreglory' href='http://www.churchofthebeyond.com/' linklists='sites,main' />
 
         <pagedef text='Blog #1' loc='blog' extension='simple-blog' linklists="blogs" />

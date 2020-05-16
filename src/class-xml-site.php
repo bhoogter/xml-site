@@ -38,7 +38,7 @@ class xml_site
         self::$source->add_source("PAGES", self::$resource_folder . '/pages.xml');
     }
 
-    protected function load_modules() 
+    protected static function load_modules() 
     {
         php_logger::call();
         $modules = new xml_file();
@@ -51,29 +51,50 @@ class xml_site
         self::include_startup_files();
     }
 
-    protected function read_modules()
+    protected static function read_modules()
     {
         $modules = self::$source->nds("//MODULES/modules/module");
         php_logger::dump("MODULES: ", $modules);
         foreach ($modules as $m) {
             $module = xml_file::toXmlFile($m);
-            $elements = $module->nds("/module/specification/components/element");
-            foreach ($elements as $e) {
-                $name = $e->getAttribute("name");
-                $render = $e->getAttribute("render");
-                $src = $e->getAttribute("src");
-                php_logger::trace("ADD HANDLER", $name, $render, $src);
-                xml_serve::add_handler($name, "$render::render");
-            }
+            self::load_element_handlers($module);
+            self::load_extensions($module);
         }
     }
 
-    function include_startup_files()
+    protected static function load_element_handlers($module) 
+    {
+        $elements = $module->nds("/module/specification/components/element");
+        foreach ($elements as $e) {
+            $name = $e->getAttribute("name");
+            $render = $e->getAttribute("render");
+            $src = $e->getAttribute("src");
+            php_logger::trace("ADD HANDLER", $name, $render, $src);
+            xml_serve::add_handler($name, "$render::render");
+        }
+    }
+
+    protected static function load_extensions($module) 
+    {
+        $extensions = $module->nds("/module/api");
+        foreach ($extensions as $e) {
+            $type = $e->getAttribute("type");
+            $loca = $e->getAttribute("loc");
+            $meth = $e->getAttribute("method");
+            $targ = $e->getAttribute("target");
+
+
+            php_logger::trace("ADD PATH EXTENSION", $type, $loca, $meth, $targ);
+            xml_path_handlers::add($loca, $meth, $targ);
+        }
+    }
+
+    static function include_startup_files()
     {
         return self::include_support_files('', '', 'startup', '');
     }
 
-    function include_support_files($module = '', $type = 'php', $mode = '', $file_id = "")
+    static function include_support_files($module = '', $type = 'php', $mode = '', $file_id = "")
     {
         php_logger::call();
         $p = "//MODULES/modules/module/file";
@@ -89,7 +110,7 @@ class xml_site
             $module = $ff->parentNode->getAttribute("name");
             $f = self::resolve_file($src, "module", $module);
             if ($f == "") throw new Exception("Could not find file for module.  Module=$module, src=$src");
-            // print "\n=========\nsrc=$src, module=$module, f=$f\n";
+            php_logger::scan("src=$src, module=$module, f=$f");
             switch ($type) {
                 case 'css': break;
                 case 'js':break;
@@ -101,7 +122,7 @@ class xml_site
         }
     }
 
-    function get_styles()
+    static function get_styles()
     {
         $s = '<list>';
         foreach (self::$source->nds("//SYS/*/file[@type='css']") as $n) {
