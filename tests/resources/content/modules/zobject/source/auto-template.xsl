@@ -101,11 +101,9 @@
                     </xsl:variable>
                     <xsl:variable name='TabID' select='php:functionString("zobject::new_jsid")'/>
 
-                    <!--
-                                        <xsl:if test='$ZMode="display"'>
-                                            <formcommands/>
-                                        </xsl:if>
-                    -->
+                    <xsl:if test='$ZMode="display"'>
+                        <formcommands/>
+                    </xsl:if>
                     <startform/>
                     <xsl:if test='$Categories!=0'>
                         <xsl:text disable-output-escaping='yes'>&lt;div id='tabs' class='tabs'&gt;</xsl:text>
@@ -214,7 +212,9 @@
                                         <xsl:if test='$CanEdit="edit"'><editlink/></xsl:if>
                                         <xsl:if test='$ZMode="edit"'><formcontrols/></xsl:if>
                                         <xsl:if test='$CanDelete="delete"'><dellink/></xsl:if>
-                                                <!-- <xsl:attribute name='args'><xsl:value-of select='php:functionString("zobject::TransferObjectKeys", $ZName, "?m=edit")'/></xsl:attribute> -->
+                                    </xsl:if>
+                                    <xsl:if test='$ZMode="edit"'>
+                                        <savelink/><cancellink />
                                     </xsl:if>
                                     <xsl:if test='$ZMode="create"'>
                                         <formcontrols/>

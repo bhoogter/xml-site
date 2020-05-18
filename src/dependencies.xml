@@ -2,8 +2,8 @@
 <modules>
     <module>
         <dependencies>
-            <dependency group="bhoogter" name="xml-modules" version="0.1.8" />
-            <dependency group="bhoogter" name="xml-serve" version="0.1.30" />
+            <dependency group="bhoogter" name="xml-modules" version="0.1.9" />
+            <dependency group="bhoogter" name="xml-serve" version="0.1.31" />
             <dependency group="bhoogter" name="querystring" version="1.0.0" />
             <dependency group="bhoogter" name="php-hook" version="1.0.0" />
         </dependencies>

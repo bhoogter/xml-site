@@ -60,7 +60,14 @@ class zobject_element
     }
 
     public function form_action() {
-        return "POST";
+        php_logger::call();
+        $a = $this->options['action'];
+        if ($a == '') $a = 'zo-save';
+        $defined = zobject::FetchApiPart($a, '@name') != '';
+        php_logger::debug("a=$a, defined=$defined");
+        $result = !$defined ? $a : zobject::FetchApiPart($a, '@loc'); 
+        php_logger::result($result);
+        return $result;
     }
 
     private function load_object()
@@ -76,6 +83,7 @@ class zobject_element
         $this->options['key-field']         = $this->TranslateKeyList(zobject::FetchObjPart($n, "@key-field"));
         $this->options['key-field-optional']= $this->TranslateKeyList(zobject::FetchObjPart($n, "@key-field-optional"));
         $this->options['keys']              = $this->options['key-field'];
+        $this->options['action']            = zobject::FetchObjPart($n, '@action');
 
         $this->options['prefix']            = '';
 
@@ -222,6 +230,7 @@ class zobject_element
     {
         php_logger::call();
         if ($ZArgs == "") $ZArgs = @$_SERVER["QUERY_STRING"];            //  this should be the ONLY place zobject directly references the query string...
+        $ZArgs = zobject::decode_args($ZArgs);
         $ZArgs = zobject::InterpretFields($ZArgs);
         $ZArgs = str_replace("'", "", $ZArgs);
         $ZArgs = $this->TransferObjectKeys($ZName, $ZArgs);
@@ -323,8 +332,9 @@ class zobject_element
 
         php_logger::log("Loading result set");
         if (!$this->load_result($tform)) {
-            php_logger::trace("================ TFORM");
-            $D = ($tform == "") ? $this->empty_render() : new xml_file($tform);
+            php_logger::log("================ TFORM ================");
+            php_logger::debug($tform);
+            $D = ($tform == "") ? xml_serve::empty_content() : xml_file::toDoc($tform);
             return $D;
         }
 
@@ -359,6 +369,19 @@ class zobject_element
         return $s;
     }
 
+    function default_save_redirect($vName, $vArgs) {
+        php_logger::call();
+        $s = parse_url(zobject::decode_args($_REQUEST['_ZO']), PHP_URL_PATH);
+        $a = $this->TransferObjectKeys($vName, $vArgs);
+        $a = querystring::remove($a, "edit");
+        $a = querystring::remove($a, "delete");
+        $a = querystring::remove($a, "create");
+        if ($a != '') $a = querystring::aqm($a);
+        $result = "$s$a";
+        php_logger::result($result);
+        return $result;
+    }
+
     function save($vName, $vMode = "", $vArgs = "")
     {
         php_logger::call();
@@ -366,18 +389,20 @@ class zobject_element
             return false;
         }
 
-        //print "<br/>ZName=$this->name<br/>ZMode=$this->mode, named_template=$this->named_template<br/>vArgs=$this->args";
+        php_logger::log("SAVE ZOBJECT: ZName=$this->name, $this->mode, named_template=$this->named_template, vArgs=$this->args");
         $this->args = zobject::decode_args($this->args);
 
         xml_site::include_support_files($this->options['module']);        // this is what this particular objects has requested..  required for save and load
 
-        include_once("class-zobject-query.php");
+        include_once("zobject-query.php");
         zobject_query::save_form();
 
         //print "<br/>".juniper()->FetchSpecPart($this->options['module'], "program/control[@type='page']/@src");
         $Target = php_hook::call(zobject::FetchSpecPart($this->options['module'], "program/control[@type='page']/@src"), array("save_object::" . $this->name, "action"), true);
-        if (!$Target) $Target = php_hook::call(zobject::FetchObjPart($this->name, "action"));
+        if (!$Target) $Target = php_hook::call(zobject::FetchObjPart($this->name, "@redirect"));
+        if (!$Target) $Target = $this->default_save_redirect($vName, $vArgs);
 
+        php_logger::result($Target);
         return $Target;
     }
 
@@ -750,9 +775,12 @@ class zobject_element
     {
         php_logger::call();
         $l = $this->options['key-array-all'];
+        php_logger::trace($l);
         $l[] = zobject::ZP_PAGE;
         $l[] = zobject::ZP_PAGECOUNT;
         foreach ($l as $m) {
+            if ($m == '' || $m == null) continue;
+            php_logger::trace("m=$m, Args=$Args");
             $v = zobject::KeyValue($m, $Args);
             if ($m != "" && $m[0] != '#' && $v != '') {
                 $Args = querystring::add($Args, $m, $v);
@@ -875,6 +903,8 @@ class zobject_element
             //print "<br/>TN=$TN";
         }
         if ($text == "") switch ($mode) {
+            case "cancel":          $text = "\\";                break;
+            case "save":            $text = ".";                break;
             case "display":         $text = "@";                break;
             case "create":          $text = "*";                break;
             case "edit":            $text = "#";                break;
@@ -961,17 +991,24 @@ class zobject_element
         } else {
             php_logger::log("== Regular ==");
             $s = querystring::aqm($Args);
+            $s = querystring::remove($s, 'edit');   
+            $s = querystring::remove($s, 'delete');
+            $s = querystring::remove($s, 'add');
+            $s = querystring::remove($s, 'pos');
             // $s = querystring::add($s, '_ZN', $this->name);
             // $s = querystring::add($s, '_ZM', $this->mode);
+            php_logger::debug("s=$s, mode=$mode");
 
             switch ($mode) {
+                case "save":           $s = 'javascript:'.zobject::form_id().'.submit();'; break;
+                case "cancel":         break;
                 case "display":        $s = querystring::add($s, 'display', $this->name);   break;
                 case "create":         $s = querystring::add($s, 'add', $this->name);       break;
                 case "edit":           $s = querystring::add($s, 'edit', '1');              break;
                 case "delete":         $s = querystring::add($s, 'delete', '1');            break;
                 case "position":       $s = querystring::add($s, 'pos', '1');               break;
-                case "upposition":     $s = querystring::add($s, 'pos', '1');               break;
-                case "dnposition":     $s = querystring::add($s, 'pos', '1');               break;
+                case "upposition":     $s = querystring::add($s, 'upposition', '1');        break;
+                case "dnposition":     $s = querystring::add($s, 'dnposition', '1');        break;
                 default:               $s = "";                                             break;
             }
 

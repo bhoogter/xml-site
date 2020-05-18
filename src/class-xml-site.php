@@ -45,20 +45,36 @@ class xml_site
         $f = self::resolve_files("module.xml", [], [], ["modules/*"]);
         php_logger::debug("DETECTED MODULES", $f);
         $modules->merge($f, "modules", "module", realpath(self::$resource_folder . "/content/generated/modules.xml"));
-
+        
         self::$source->add_source("MODULES", $modules);
         self::read_modules();
         self::include_startup_files();
     }
-
+    
     protected static function read_modules()
     {
+        php_logger::call();
         $modules = self::$source->nds("//MODULES/modules/module");
         php_logger::dump("MODULES: ", $modules);
         foreach ($modules as $m) {
             $module = xml_file::toXmlFile($m);
+            self::load_datasources($module);
             self::load_element_handlers($module);
             self::load_extensions($module);
+        }
+    }
+
+    protected static function load_datasources($module) 
+    {
+        $sources = $module->nds("/module/datasource");
+        foreach ($sources as $e) {
+            $name = $e->getAttribute("name");
+            $type = $e->getAttribute("type");
+            $src = $e->getAttribute("src");
+            
+            $file = self::$resource_folder . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . $src;
+            php_logger::trace("ADD DATASOURCE", $name, $type, $src, "file=$file");
+            self::$source->add_source($name, $file);
         }
     }
 

@@ -30,6 +30,12 @@ class zobject
         return (new zobject_element())->render($params, $vArgs);
     }
 
+    static function render_object($n, $params = [], $vArgs = "") 
+    {
+        php_logger::call();
+        return self::render(xml_file::toDoc("<$n />")->documentElement, ['name' => $n]);
+    }
+
     static function query($zname, $vArgs = [])
     {
         php_logger::call();
@@ -38,9 +44,16 @@ class zobject
         return self::render(xml_file::toDoc("<element />"), $params, $vArgs);
     }
 
-    static function save($zName, $params = [])
+    static function post($zName, $params = [])
     {
-        return (new zobject_element())->save($zName);
+        // Turns off all logging for save/redirect.  Comment out the level set to debug save.
+        php_logger::clear_log_levels('none');
+        php_logger::call();
+        php_logger::dump($_POST);
+        $target =  (new zobject_element())->save($_POST['_ZN'], $_POST['_ZM']);
+        php_logger::alert("REDIRECT-TARGET: " . $target);
+        xml_serve::redirect($target);
+        // died.
     }
 
     static function transform() { return realpath(__DIR__ . "/source/transform.xsl"); }
@@ -71,6 +84,8 @@ class zobject
     static function FetchActPart($n, $p = "") { return xml_site::$source->get("//MODULES/modules/module/zactiondef[@name='$n']".($p==""?"":"/$p")); }
     static function FetchActRulePart($n, $r, $p = "") { return xml_site::$source->get("//MODULES/modules/module/zactiondef[@name='$n']/action[@value='$r']".($p==""?"":"/$p")); }
 
+    static function FetchApiPart($n, $p = "") { return xml_site::$source->get("//MODULES/modules/module/api[@name='$n']".($p==""?"":"/$p")); }
+
     static function handled_elements() { return xml_serve::handler_list(); }
     static function source_document($n) { php_logger::call();return xml_site::$source->get_source_doc($n); }
 
@@ -79,6 +94,7 @@ class zobject
     static function admin() { return ""; }
     static function ajax() { return xml_site::$ajax; }
     static function ajax_url() { return "http://localhost/ajax.php"; }
+    static function origin() { return self::encode_args($_SERVER['REQUEST_URI']); }
 
     static function args_prefix()    { return '@@';        }
     static function encode_args($a)  { return self::args_prefix().base64_encode(str_rot13($a));    }
@@ -95,7 +111,7 @@ class zobject
             // it may have been urlencode'd somewhere...
         $S = urlencode($p);
         $m = strlen($S);
-        if (substr($a,0,m)==$S) return self::decode_args(urldecode($a));
+        if (substr($a,0,$m)==$S) return self::decode_args(urldecode($a));
             // otherwise, decoding an unencoded string does nothing!
         return $a;
         }
@@ -126,12 +142,12 @@ class zobject
         
         $l = strlen($token);
         if ($auto_quote)
-            $cb = create_function('$matches', "return \"'\".juniper()->KeyValue(substr(\$matches[0],$l)).\"'\";");
+            $cb = function($matches) use ($l) { return "'".self::KeyValue(substr($matches[0], $l))."'"; };
         else
-            $cb = create_function('$matches', "return juniper()->KeyValue(substr(\$matches[0],$l));");
+            $cb = function($matches) use ($l) { return self::KeyValue(substr($matches[0], $l)); };
 
         $f = preg_replace_callback('/'.$token."[a-zA-Z0-9_]+".'/i', $cb, $f);
-        php_logger::debug("InterpretFields:", $f);
+        php_logger::result($f);
         return $f;
         }
         
@@ -185,4 +201,6 @@ class zobject
     static function TransferObjectKeys($zn, $args) { return !self::iOBJ() ? '' : self::iOBJ()->TransferObjectKeys($zn, $args); }
 
     static function item_link($field, $mode = "create", $text = "", $ajax = "", $C = "", $T = "") { return !self::iOBJ() ? '' : self::iOBJ()->ItemLink($field, $mode, $text, $ajax, $C, $T); }
+
+    static function YesNoVal($v) { if (!is_string($v)) return false; $v = strtolower($v); return $v != '' && ($v[0] == 'y' || $v[0] == 't' || $v[0] == '1'); }
 }

@@ -25,6 +25,8 @@
             </program>
         </specification>
 
+        <api name='zo-save' loc='/zobject/save' type='form' method='POST' target='zobject::post' />
+
         <file id='zo' type='php' src='zobject.php' mode='startup' />
         <file id='zo-element' type='php' src='zobject-element.php' mode='startup' />
         <file id='zo-query' type='php' src='zobject-query.php' mode='startup' />

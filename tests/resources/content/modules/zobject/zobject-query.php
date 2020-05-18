@@ -147,20 +147,21 @@ class zobject_query
         $data_mode = self::data_mode($o->name);
         if ($o->mode != "pos" && $o->mode != "upposition" && $o->mode != "dnposition")
             $v = self::pre_save($o->name, $o->mode);
-        //self::save_log("ZName=$o->name, ZMode=$o->mode, Args=$o->args, datamode=$data_mode");
-        //print_r($_REQUEST);
-        //die();
+
+
+        php_logger::note("ZName=$o->name, ZMode=$o->mode, Args=$o->args, datamode=$data_mode");
         switch ($o->mode) {
             case "delete":
                 switch ($data_mode) {
                     case "xml":
                         $f = self::GetXMLFile($o->name, $o->args, $lst, $bse, $d);
+                        php_logger::debug("Deleting from XML: $f");
                         if (!$f) {
                             $f = php_hook::call($d);
                             if (is_string($f)) $f = xml_site::$source->force_unknown_document($f);
                         }
                         $bse = $o->FillInQueryStringKeys($bse, '', true);
-                        //self::save_log("b=$b");
+                        php_logger::debug("b=$b");
                         $f->delete_node($bse);        // will be saved later, automatically
                         //die();
                         break;
@@ -293,7 +294,7 @@ class zobject_query
         $found = false;
         foreach (zobject::FetchObjFields($ZName) as $fid) {
             php_logger::trace("FID=$fid");
-            if (!zobject_access::zobject_field_access($ZName, $fid, $ZMode)) continue;
+            if (!zobject_access::access($ZName, $fid, $ZMode)) continue;
 
             $dt = zobject::FetchObjFieldPart($ZName, $fid, "@datatype");
             if ($dt == "") $dt = "string";
@@ -307,7 +308,7 @@ class zobject_query
                     //					$pfx = GetSubPrefix($ZName, $px);
                     //					$res = SaveZObjectToXMLFile($D, substr($dt, 1), $ZMode, $ZArgs, $pfx);
                 } else {
-                    $mult = YesNoVal(zobject::FetchObjFieldPart($ZName, $fid, "@multiple"), false);
+                    $mult = zobject::YesNoVal(zobject::FetchObjFieldPart($ZName, $fid, "@multiple"), false);
                     if ($mult) {
                         //self::save_log("Multi-Field Set: $fid";
                         $v[$fid] = array();
@@ -317,7 +318,7 @@ class zobject_query
                         while ($m < 25) {
                             $n++;
                             $tfix = $px . $fid . "___" . $n;
-                            $r = $this->arg($tfix);
+                            $r = $o->arg($tfix);
                             if ($r != "") $m = 0;                            // basically, try 25 after last sequential.. then stop looking
                             $val = $this->MakePOSTValueReady($tfix, $dt, $o->mRecNo, "XML");
                             //self::save_log("tfix=$tfix, dt=$dt, r=$r,	-----------------> multivalue ===> $val");
@@ -331,7 +332,8 @@ class zobject_query
                             //self::save_log("Returning False");
                             return false;
                         }
-                        if (count($o->arg($tfix)) != 0) $found = true;
+                        $arg_tfix = $o->arg($tfix);
+                        if (is_array($arg_tfix) && count($o->arg($tfix)) != 0) $found = true;
                         if ($fid == $ix)
                             $val = $nkv;
                         else
@@ -343,12 +345,13 @@ class zobject_query
                 if (($m++) == 0 || !$res) break;
             }
         }
-        //print "<br/>class_zobject_query::pre_save result: ";print_r($v);die();
+        php_logger::result($v);
         return self::pre_save_result($v);
     }
 
     function pre_save_result($v)
     {
+        php_logger::call();
         $s  = self::recordset_header(zobject::iOBJ()->name, zobject::iOBJ()->mode, 1);
         $s .= "<row>\n";
         foreach ($v as $a => $b)
@@ -379,7 +382,7 @@ class zobject_query
     }
     static function GetMultiValuesFromDoc($D, $p)
     {
-        php_logger::log("CALL - GetMultiValuesFromDoc(..., $p)");
+        php_logger::call();
         $r = FetchDocList($D, $p);
         $r = array_values(array_map("GetMultiValuesFromDoc_Map", $r));
         return implode(",", $r);
@@ -389,8 +392,8 @@ class zobject_query
 
     static function GetZObjectEmptyQuery($Index, $ZName, $ZMode, $ZArgs, $Key, $prefix)
     {
-        php_logger::log("CALL - ($Index, $ZName, $ZMode, $ZArgs, $Key, $prefix, $AsList)");
-        $ixf = FetchObjPart($ZName, "@index");
+        php_logger::call();
+        $ixf = zobject::FetchObjPart($ZName, "@index");
 
         if ($ixf == "")
             $X = self::recordset_header($ZName, $ZMode, 1, $ixf, true, true);
@@ -405,7 +408,7 @@ class zobject_query
 
     static function GetZObjectCreateQuery($Index, $ZName, $ZMode, $ZArgs, $Key, $prefix, &$rc)
     {
-        php_logger::log("CALL - $Index, $ZName, $ZMode, $ZArgs, $Key, $prefix");
+        php_logger::call();
         $ixf = zobject::FetchObjPart($ZName, "@index");
         php_logger::log("ixf=$ixf");
 
@@ -438,7 +441,7 @@ class zobject_query
 
     static function GetZObjectSQL($ZName, $ZMode, $ZArgs)
     {
-        //print "<br/>GetZObjectSQL($ZName, $ZMode, $ZArgs)";
+        php_logger::call();
         $sql = zobject::FetchObjPart($ZName, "sql[@type='$ZMode']");
         if ($sql == "") print "<br/>No SQL for requested operation: $ZMode";
         //print "<br/>sql[@type='$ZMode']: $sql";
@@ -449,8 +452,7 @@ class zobject_query
 
     static function SaveZObjectQuery($ZName, $ZMode, $ZArgs, $v, $new_key = "")
     {
-        //log_file("zobject", "GetZObjectQuery($ZName, $ZMode, $ZArgs, ..., $new_key)");
-        //print "<br/>SaveZObjectQuery($ZName, $ZMode, $ZArgs, ..., $new_key)";
+        php_logger::call();
 
         switch (self::data_mode($ZName)) {
             case "wpdb":
@@ -492,8 +494,7 @@ class zobject_query
 
     static function GetZObjectQuery($ZName, $ZMode, $ZArgs, $Key = "", $Ix = "", $prefix = "", $rc = "")
     {
-        //log_file("zobject", "GetZObjectQuery($ZName, $ZMode, $ZArgs, $Key, $Ix, $prefix)");
-        //print "<br/>GetZObjectQuery($ZName, $ZMode, $ZArgs, $Key, $Ix, $prefix)";
+        php_logger::call();
 
         $Extras = "zname='$ZName' zmode='$ZMode' ixf='$ixf'";
 
@@ -538,7 +539,7 @@ class zobject_query
 
     static function GetZObjectMultiQuery($ZName, $ZMode, $ZArgs, $Key, $prefix, &$rc)
     {
-        //print "<br/>GetZObjectMultiQuery($ZName, $ZMode, $ZArgs, $Key, $prefix, $AsList)";
+        php_logger::call();
         $S1 = zobject::FetchObjPart($ZName, "sql[@type='$ZMode']");
         $S2 = zobject::FetchObjPart($ZName, "sql[@type='list']");
         $S3 = zobject::FetchObjPart($ZName, "sql");
@@ -574,7 +575,7 @@ class zobject_query
 
     static function GetXMLFile($ZName, $ZArgs, &$Lst = "", &$Bse = "", &$d = "")
     {
-        php_logger::log("CALL: ", $ZName, $ZArgs, $Lst, $Bse, $d);
+        php_logger::call();
 
         $id = zobject::FetchObjPart($ZName, 'xmlfile/@src');
         php_logger::debug("id=$id");
@@ -591,8 +592,10 @@ class zobject_query
             } else                    // prob id
             {
                 $d = zobject::FetchDSPart($id, '@src');
-                $Lst = ChooseBest(zobject::FetchObjPart($ZName, 'xmlfile/@list'), zobject::FetchDSPart($id, '@list'));
-                $Bse = ChooseBest(zobject::FetchObjPart($ZName, 'xmlfile/@base'), zobject::FetchDSPart($id, '@base'));
+                $Lst = zobject::FetchObjPart($ZName, 'xmlfile/@list');
+                if ($Lst == '') $Lst = zobject::FetchDSPart($id, '@list');
+                $Bse = zobject::FetchObjPart($ZName, 'xmlfile/@base');
+                if ($Bse == '') $Bse = zobject::FetchDSPart($id, '@base');
                 $M = zobject::FetchDSPart($id, '@module');
                 // if (file_exists(WP_PLUGIN_DIR . "/zobjects/modules/$M/$d")) $d = WP_PLUGIN_DIR . "/zobjects/modules/$M/$d";
                 php_logger::debug("DATASOURCE: ", $d, $Lst, $Bse, $M);
@@ -602,8 +605,7 @@ class zobject_query
         $Lst = php_hook::call($Lst, $ZArgs);
         if ($Bse[strlen($Bse) - 1] != '/') $Bse = $Bse . "/";
 
-
-        //print "<br/>src=$id, lst=$Lst, Bse=$Bse";
+        php_logger::debug("src=$id, lst=$Lst, Bse=$Bse");
         if ($Lst == "") throw new Exception("No listpath for $ZName. (OBJFILE::/zobjectdefs/zobjectdef[@id='$ZName']/xmlfile/@list");
         if ($Bse == "") throw new Exception("No basepath for $ZName. (OBJFILE::/zobjectdefs/zobjectdef[@id='$ZName']/xmlfile/@base");
 
@@ -611,15 +613,17 @@ class zobject_query
 
         //		if (!file_exists($d)) $d = ZOSOURCE_DIR . $d;
 
-        //print "<br/>query-xmlfile id=$id, d=$d";
+        php_logger::debug("query-xmlfile id=$id, d=$d");
         if (!php_hook::is_hook($id)) return xml_site::$source->force_document($id, $d);
+
         $d = $id;
+        php_logger::result("RESOLVED TO HOOK: ", "(byref)", $d);
         return null;
     }
 
     function GetXMLAutoNumber()
     {
-        php_logger::log("CALL - FIX ME");
+        php_logger::call("FIX ME");
         $D = self::GetXMLFile(zobject::iOBJ()->name, zobject::iOBJ()->args, $L);
         $L = zobject::iOBJ()->FillInQueryStringKeys($L, zobject::iOBJ()->args);
         //log_r("XMLAutoNumber", $L);
@@ -631,7 +635,7 @@ class zobject_query
 
     static function GetZObjectXmlFile($ZName, $ZMode, $ZArgs, &$rc)
     {
-        php_logger::log("CALL - $ZName, $ZMode, $ZArgs");
+        php_logger::call();
         if ($ZName == "") throw new Exception("No ZName in GetZObjectXmlFile.");
 
         $rc = 1;
@@ -643,6 +647,8 @@ class zobject_query
             $D = php_hook::call($d);
             if (is_string($D)) $D = xml_site::$source->force_unknown_document($D);
         }
+
+        php_logger::debug("D=$D");
 
         $b = zobject::IOBJ() ? zobject::iOBJ()->FillInQueryStringKeys($b, $ZArgs) : $b;
 
@@ -667,14 +673,13 @@ class zobject_query
             if ($l == $index)
                 $v = $ixval;
             else {
-                //print "<br/>l=<b>$l</b>";
+                php_logger::trace("querying field: $l");
                 $m = xml_file::extend_path($b, $l, zobject::FetchObjFieldPart($ZName, $l, "@access"));
-                //print "<br/>m=$m";
+                php_logger::trace("querying field: m=$m");
                 //				$M = TrueFalseVal(zobject::FetchObjFieldPart($ZName, $l, "@multiple"), false);
                 $M = zobject::FetchObjFieldPart($ZName, $l, "@multiple") == "1";
-                //print "<br/>Multiple? " . YesNo($M);
                 $d = zobject::FetchObjFieldPart($ZName, $l, "@datatype");
-                //print "<br/>field datatype=$d";
+                php_logger::trace("Field $l: DT=$d, Multiple=$M");
                 if (substr($d, 0, 1) == ":") $v = "";
                 else $v = $M ? self::GetMultiValuesFromDoc($D, $m) : $v = $D->fetch_part($m);
             }
@@ -701,7 +706,7 @@ class zobject_query
 
     static function GetZObjectMultiXmlFile($ZName, $ZMode, $ZArgs, &$rc)
     {
-        php_logger::log("CALL - GetZObjectMultiXmlFile($ZName, $ZMode, $ZArgs");
+        php_logger::call();
         if ($ZName == "") throw new Excpetion("<span style='font-weight:bold;font-size:20'>DIE:</span> <u>No ZName in GetZObjectXmlFile</u>");
 
         $x = "";
@@ -821,53 +826,58 @@ class zobject_query
 
     private function SaveZObjectToXMLFile($ZName, $ZMode, $v)
     {
-        $o = zobject::iOBJ();                            // zobject
+        php_logger::call();
+        $o = zobject::iOBJ();
         $ZArgs = $o->args;
         $D = self::GetXMLFile($ZName, $o->args, $l, $base, $d);
+        php_logger::log("Saving to XML File: $d");
+
         if (!$D) {
+            php_logger::log("Calling hook: $d");
             $D = php_hook::call($d);
             if (is_string($D)) $D = xml_site::$source->force_unknown_document($D);
+            php_logger::debug("D=$D");
         }
 
-        //self::save_log("base=$base, Args=$ZArgs, key=".$o->options['key'].", index=".$o->options['index'].", KV=".zobject::KeyValue($o->options['index']));
+        php_logger::log("setup save: base=$base, Args=$ZArgs, key=".$o->options['key'].", index=".$o->options['index'].", KV=".zobject::KeyValue($o->options['index']));
 
         $nkv = zobject::KeyValue($ix = $o->options['index']);
         if ($nkv == "") {
             $def = zobject::FetchObjFieldPart($ZName, $ix, "@default");
-            //self::save_log("def=$def");
+            php_logger::log("def=$def");
             $nkv = zobject::iOBJ()->NormalizeInputField(php_hook::call($def, $ZArgs), zobject::FetchObjFieldPart($ZName, $ix, "@datatype"));
         }
 
         if ($ZMode == "create") {
             $base = str_replace('@' . $o->options['key'], $nkv, $base);
-            //self::save_log("index=$index, nkv=$nkv, def=$def, base=$base");
+            php_logger::log("index=$index, nkv=$nkv, def=$def, base=$base");
             $ZArgs = querystring::add($ZArgs, $ix, $nkv);
         } else
             $base = str_replace('@' . $o->options['key'], zobject::KeyValue($o->options['key'], $ZArgs), $base);
 
-        //self::save_log("ix=$ix, nkv=$nkv, base=$base, args=".zobject::iOBJ()->args);
+        php_logger::log("Base Calculated: ix=$ix, nkv=$nkv, base=$base, args=".zobject::iOBJ()->args);
 
         $base = $o->FillInQueryStringKeys($base);
 
-        //self::save_log("ix=$ix, nkv=$nkv, base=$base");
+        php_logger::log("filled in qs: ix=$ix, nkv=$nkv, base=$base");
 
         $found = false;
         foreach (zobject::FetchObjFields($ZName) as $fid) {
-            //self::save_log("FID=$fid");
-            if (!zobject_access::zobject_field_access($ZName, $fid, $ZMode)) continue;
+            php_logger::trace("FID=$fid");
+            if (!zobject_access::access($ZName, $fid, $ZMode)) continue;
 
             $fa = zobject::FetchObjFieldPart($ZName, $fid, "@access");
             if ($fa == "-") continue;
             if ($fa == "@") $fa = "@" . $fid;
             if ($fa == "")  $fa = $fid;
-            //self::save_log("fa=$fa");
+            php_logger::trace("Save Target: fa=$fa");
 
             $fv = $v[$fid];
-            //self::save_log("FId=$fid, fa=$fa, fv=$fv");
+            php_logger::trace("FId=$fid, fa=$fa, fv=$fv");
             if (!is_array($fv)) {
-                //self::save_log("SET: $base$fa ===> $fv");
+                php_logger::trace("SET: $base$fa ===> $fv");
                 $D->set_part($base . $fa, $fv);
-                //print "<br/>mod=".$D->modified;
+                // php_logger::trace("mod=".$D->modified);
             } else {
                 $n = 0;
                 $deleted = 0;
@@ -895,8 +905,7 @@ class zobject_query
 
     static function GetZObjectPHP($ZName, $ZMode, $ZArgs, $prefix = "", &$rc = 0)
     {
-        //log_file("zobject", "GetZObjectPHP($ZName, $ZMode, $ZArgs, $Key, $Ix, $prefix)");
-        //print "<br/>GetZObjectPHP($ZName, $ZMode, $ZArgs, $prefix)";
+        php_logger::call();
         $rc = 1;
         $f = zobject::FetchObjPart($ZName, "phpsource/@item");
 
@@ -928,8 +937,7 @@ class zobject_query
 
     static function GetZObjectMultiPHP($ZName, $ZMode, $ZArgs, &$rc)
     {
-        //log_file("zobject", "GetZObjectMultiPHP($ZName, $ZMode, $ZArgs)");
-        //print "<br/>GetZObjectMultiPHP($ZName, $ZMode, $ZArgs)";
+        php_logger::call();
         $l = zobject::FetchObjPart($ZName, "phpsource/@list");
         //log_file("zobject", "list hook=$l");
         //print "<br/>list hook=$l";
@@ -977,8 +985,7 @@ class zobject_query
 
     static function SaveZObjectToPHP($ZName, $ZMode, $val)
     {
-        //log_file("zobject", "SaveZObjectToPHP($ZName, $ZMode, $ZArgs)");
-        //print "<br/>SaveZObjectToPHP($ZName, $ZMode, $ZArgs)";
+        php_logger::call();
 
         $s = zobject::FetchObjPart($ZName, "phpsource/@save");
         $r = php_hook::call($s, $val);
@@ -993,7 +1000,7 @@ class zobject_query
 
     static function GetZObjectWPOQuery($ZName, $ZMode, $ZArgs, &$rc)
     {
-        //print "<br/>GetZObjectWPOQuery...";
+        php_logger::call();
         if (!function_exists("get_option")) return self::empty_recordset();        // wp tie-in
 
         $s  = self::recordset_header($ZName, $ZMode, 1);
@@ -1012,7 +1019,7 @@ class zobject_query
 
     static function SaveZObjectToWPO($ZName, $ZMode, $ZArgs)
     {
-        //print "<br/>SaveZObjectToWPO($ZName, $ZMode, $ZArgs)";
+        php_logger::call();
         if (!function_exists("update_option")) return false;
         foreach (zobject::FetchObjFields($ZName) as $f) {
             //print "<br/>field=$f, val=" . $_REQUEST[$f];

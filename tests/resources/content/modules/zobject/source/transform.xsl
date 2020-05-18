@@ -137,11 +137,13 @@
             <xsl:when test='name()="fielddesc"'><xsl:call-template name='fielddesc'/></xsl:when>
 
             <xsl:when test='name()="row"'><xsl:call-template name='row'/></xsl:when>
-            <xsl:when test='name()="formcommands"'><xsl:call-template name='form-commands'/></xsl:when>
+            <xsl:when test='name()="formcommands"'><xsl:call-template name='formcontrols'/></xsl:when>
             <xsl:when test='name()="addlink"'><xsl:call-template name='addlink'/></xsl:when>
             <xsl:when test='name()="dellink"'><xsl:call-template name='dellink'/></xsl:when>
             <xsl:when test='name()="displaylink"'><xsl:call-template name='displaylink'/></xsl:when>
             <xsl:when test='name()="editlink"'><xsl:call-template name='editlink'/></xsl:when>
+            <xsl:when test='name()="savelink"'><xsl:call-template name='savelink'/></xsl:when>
+            <xsl:when test='name()="cancellink"'><xsl:call-template name='cancellink'/></xsl:when>
             <xsl:when test='name()="positionlink"'><xsl:call-template name='positionlink'/></xsl:when>
             <xsl:when test='name()="uppositionlink"'><xsl:call-template name='uppositionlink'/></xsl:when>
             <xsl:when test='name()="dnpositionlink"'><xsl:call-template name='dnpositionlink'/></xsl:when>
@@ -178,6 +180,7 @@
         <xsl:variable name='ZA64' select='$ZArgs64'/>
         <xsl:variable name='AJAX' select='php:functionString("zobject::ajax")'/>
         <xsl:variable name='FSC' select='php:functionString("zobject_source_check::nonce", $formid)'/>
+        <xsl:variable name='Origin' select='php:functionString("zobject::origin")'/>
 
         <xsl:if test='$mode="edit" or $mode="create"'>
             <xsl:text disable-output-escaping="yes">&lt;form method="POST" action="</xsl:text>
@@ -198,6 +201,7 @@
             </xsl:if>
 
             <input type='hidden' name='_Save' value='1'/>
+            <input type='hidden' name='_ZO' value='{$Origin}'/>
             <input type='hidden' name='_ZN' value='{$ZName}'/>
             <input type='hidden' name='_ZM' value='{$mode}'/>
             <input type='hidden' name='_ZA' value='{$ZA64}'/>
@@ -215,8 +219,6 @@
             <script>jQuery(document).ready(function(){jQuery("#<xsl:value-of select='$formid'/>").validate();});</script>
         </xsl:if>
     </xsl:template>
-
-
 
     <xsl:template name='formcontrols'>
         <xsl:variable name='AJAX' select='php:functionString("zobject::ajax")'/>
@@ -567,6 +569,26 @@
             </xsl:choose>
         </xsl:variable>
         <xsl:copy-of select='php:function("zobject::item_link", string(@field), "delete", string($ntext), string(@ajax), string(@class))'/>
+    </xsl:template>
+
+    <xsl:template name='savelink'>
+        <xsl:variable name='ntext'>
+            <xsl:choose>
+                <xsl:when test='string-length(@text)!=0'><xsl:value-of select='string(@text)' /></xsl:when>
+                <xsl:otherwise>Submit</xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+        <xsl:copy-of select='php:function("zobject::item_link", string(@field), "save", string($ntext), string(@ajax), string(@class))'/>
+    </xsl:template>
+
+    <xsl:template name='cancellink'>
+        <xsl:variable name='ntext'>
+            <xsl:choose>
+                <xsl:when test='string-length(@text)!=0'><xsl:value-of select='string(@text)' /></xsl:when>
+                <xsl:otherwise>Cancel</xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+        <xsl:copy-of select='php:function("zobject::item_link", string(@field), "cancel", string($ntext), string(@ajax), string(@class))'/>
     </xsl:template>
 
     <xsl:template name='positionlink'>
