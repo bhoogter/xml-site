@@ -4,3 +4,4 @@ xml-modules.phar
 vendor/
 phars/
 composer.lock
+*.log

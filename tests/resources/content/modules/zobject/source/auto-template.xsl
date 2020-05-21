@@ -15,6 +15,8 @@
 
                 <!-- Object List -->
                 <xsl:when test='$ZMode="list" or $ZMode="list-edit"'>
+                    <xsl:variable name='TClass' select='php:functionString("zobject::FetchObjPart", $ZName, "style/class")' />
+
                     <xsl:choose>
                         <xsl:when test='string(//style/class) != ""'><xsl:value-of select='string(//style/class)'/></xsl:when>
                         <xsl:otherwise><xsl:value-of select='string(//style/class)'/>zdefault-list
@@ -33,7 +35,7 @@
                             <xsl:for-each select='/*/fielddefs/*'>
                                 <xsl:variable name='fmode' select='php:functionString("zobject::field_mode", $ZName, @id, $ZMode)'/>
                                 <xsl:if test='$fmode="list-edit" or $fmode="list" or $fmode="create"'>
-                                    <th><xsl:value-of select='php:functionString("PrettyHeader", @id)'/></th>
+                                    <th><xsl:value-of select='php:functionString("zobject_format::PrettyHeader", @id)'/></th>
                                 </xsl:if>
                             </xsl:for-each>
                             <xsl:if test='string-length(//style/commands/@list)!=0'>
@@ -65,9 +67,9 @@
                                     <xsl:variable name='fmode' select='php:functionString("zobject::field_mode", $ZName, $fid, $ZMode)'/>
                                     <xsl:if test='$fmode="list-edit" or $fmode="list" or $fmode="create"'>
                                         <td>
-                                            <xsl:variable name='SUBZ' select='php:functionString("ForSubZ")'/>
+                                            <xsl:variable name='SUBZ' select='"0"'/>
                                             <xsl:choose>
-                                                <xsl:when test='@id=$OID and ($ZMode="list" or $ZMode="list-edit") and $SUBZ="0"'><xsl:copy-of select='php:function("AutoPageLinkByID", string($ZName), concat("@",$OID))'/></xsl:when>
+                                                <xsl:when test='@id=$OID and ($ZMode="list" or $ZMode="list-edit") and $SUBZ="0"'><xsl:copy-of select='php:function("zobject::AutoPageLinkByID", string($ZName), concat("@",$OID))'/></xsl:when>
                                                 <xsl:otherwise><field><xsl:attribute name='id'><xsl:value-of select='@id'/></xsl:attribute></field></xsl:otherwise>
                                             </xsl:choose>
                                         </td>

@@ -461,13 +461,14 @@
         <xsl:variable name='rangeTo' select='$ZPage * $ZPageCount'/>
         <xsl:if test='php:function("zobject::DEBUG_TRANSFORM_ROW")'>
             <table class='DEBUG'>
-                <tr><td class='title' colspan='2'>TRANSFORM.XSL - row</td></tr>
+                <tr><td class='title' colspan='2'>TRANSFORM.XSL - ROW DEBUG</td></tr>
                 <tr><th>Var</th><th>Val</th></tr>
                 <tr><td>rangeFrom</td><td><xsl:value-of select='$rangeFrom'/></td></tr>
                 <tr><td>rangeTo</td><td><xsl:value-of select='$rangeTo'/></td></tr>
             </table>
         </xsl:if>
         <xsl:for-each select='$obj/row'>
+        Position: <xsl:value-of select='position()' />
             <xsl:if test='position() &gt;= $rangeFrom and position() &lt;= $rangeTo'>
                 <xsl:variable name='rowstart' select='php:functionString("zobject_bench::time")'/>
                 <xsl:variable name='setRecNo' select='php:functionString("zobject::recno", string(position()))'/>
@@ -483,7 +484,7 @@
 
     <xsl:template match='tr'>
         <xsl:variable name='C' select='@class'/>
-        <xsl:variable name='R' select='php:functionString("zobject::recno", "")'/>
+        <xsl:variable name='R' select='php:functionString("zobject::recno")'/>
         <xsl:variable name='alt_ext'>
             <xsl:if test='(number($R) mod 2) = 0'>-alt</xsl:if>
         </xsl:variable>
@@ -508,7 +509,7 @@
 
     <xsl:template match='li'>
         <xsl:variable name='C' select='@class'/>
-        <xsl:variable name='R' select='php:functionString("zobject::recno", "")'/>
+        <xsl:variable name='R' select='php:functionString("zobject::recno")'/>
         <xsl:variable name='alt_ext'>
             <xsl:if test='(number($R) mod 2) = 0'>-alt</xsl:if>
         </xsl:variable>

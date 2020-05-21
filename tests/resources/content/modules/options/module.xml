@@ -23,7 +23,7 @@
 
         <datasource name='OPTIONS_XML' type='xml' src='options.xml' />
     
-        <zobjectdef name="options" key-field="id" index="userid" allow-display="[!]" SOURCE='OPTIONS_XML' action='options-save'>
+        <zobjectdef name="options" key-field="id" index="userid" allow-display="[!]" source='OPTIONS_XML' action='options-save'>
             <style>
                 <caption>Options</caption>
                 <class>user-options</class>
@@ -34,7 +34,7 @@
             <render name="wp-list" type="list" src="templates/zobjects-wp-admin-action-list.xml" />
             <render name="wp-edit" type="edit" src="templates/zobjects-wp-admin-action-edit.xml" />
             <!-- <render name="wp-edit" type="create" src="templates/zobjects-wp-admin-action-create.xml" /> -->
-            <xmlfile src="php:options_xml_file" list="/*/option/@id" base="/*/option[@userid='@id']/" />
+            <xmlfile src="php:options_xml_file" list="/*/option/@userid" base="/*/option[@userid='@id']/" />
             <fielddefs>
                 <fielddef id="userid" datatype="string" access="@" required="1" allow-edit="[-]" remote="php:zwpadmin_verify_zaction_name" />
                 <fielddef id="name" datatype="string" access="@" required="1" remote="php:zwpadmin_verify_zaction_name" />

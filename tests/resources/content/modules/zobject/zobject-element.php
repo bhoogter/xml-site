@@ -54,7 +54,8 @@ class zobject_element
 
     public function RecNo($N = "")
     {
-        if ($N != "") $this->mRecNo = $N;
+        php_logger::call();
+        if ($N != "" && $N != null) $this->mRecNo = $N;
         if ($this->mRecNo == "") $this->mRecNo = "1";
         return $this->mRecNo;
     }

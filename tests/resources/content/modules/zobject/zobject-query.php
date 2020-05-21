@@ -37,11 +37,11 @@ class zobject_query
             case "list":
             case "list-edit":
                 switch ($data_mode) {
-                    case "wpdb": return zobject::GetZObjectMultiQuery($ZName, $ZMode, $ZArgs, $ZKey, $prefix, $rc);
-                    case "mysql": return zobject::GetZObjectMultiQuery($ZName, $ZMode, $ZArgs, $ZKey, $prefix, $rc);
-                    case "xml": return zobject::GetZObjectMultiXmlFile($ZName, $ZMode, $ZArgs, $rc);
-                    case "php": return zobject::GetZObjectMultiPHP($ZName, $ZMode, $ZArgs, $rc);
-                    default: return zobject::empty_recordset($ZName, $ZMode, $rc);
+                    case "wpdb": return self::GetZObjectMultiQuery($ZName, $ZMode, $ZArgs, $ZKey, $prefix, $rc);
+                    case "mysql": return self::GetZObjectMultiQuery($ZName, $ZMode, $ZArgs, $ZKey, $prefix, $rc);
+                    case "xml": return self::GetZObjectMultiXmlFile($ZName, $ZMode, $ZArgs, $rc);
+                    case "php": return self::GetZObjectMultiPHP($ZName, $ZMode, $ZArgs, $rc);
+                    default: return self::empty_recordset($ZName, $ZMode, $rc);
                 }
 
             case "create":
@@ -49,7 +49,7 @@ class zobject_query
                 $ixf = zobject::FetchObjPart($ZName, "@key");
                 $Index = zobject::KeyValue($ixf);
                 php_logger::debug("ixf=$ixf, Index=$Index");
-                return zobject::GetZObjectCreateQuery($Index, $ZName, $ZMode, $ZArgs, zobject::iOBJ()->options['key'], zobject::iOBJ()->options['prefix'], $rc);
+                return self::GetZObjectCreateQuery($Index, $ZName, $ZMode, $ZArgs, zobject::iOBJ()->options['key'], zobject::iOBJ()->options['prefix'], $rc);
                 break;
 
 
@@ -85,7 +85,7 @@ class zobject_query
                     if ($rc != 0) $ZMode = "edit";
                     else {
                         $ZMode = "create";
-                        return zobject::GetZObjectCreateQuery($Index, $ZName, $ZMode, $ZArgs, $ZKey, $prefix, $rc);
+                        return self::GetZObjectCreateQuery($Index, $ZName, $ZMode, $ZArgs, $ZKey, $prefix, $rc);
                     }
                 }
                 
@@ -745,7 +745,9 @@ class zobject_query
                     $nn = $lD->count_parts($listpath);
                     for ($f = array(), $i = 1; $i <= $nn; $i++) $f[$i] = $i;
                 } else
+                    php_logger::debug("Straight list: $ZName, listpath=$listpath");
                     $f = $lD->fetch_list($listpath);
+                    php_logger::trace("List: ", $f);
             }
         }
 
@@ -755,12 +757,13 @@ class zobject_query
 
         $fieldinfo = array();
 
+        php_logger::dump($fl);
         foreach ($fl as $fld) {
-            php_logger::dump("i=$i, fl[i]=" . $fl[$i] . "  ", print_r($fl));
+            php_logger::trace("fld=$fld");
             $tmp = array();
             $tmp["datatype"] = zobject::FetchObjFieldPart($ZName, $fld, "@datatype");
             $tmp["default"] = zobject::FetchObjFieldPart($ZName, $fld, "@default");
-            $tmp["multiple"] = YesNoVal(zobject::FetchObjFieldPart($ZName, $fld, "@multiple"), false);
+            $tmp["multiple"] = zobject::YesNoVal(zobject::FetchObjFieldPart($ZName, $fld, "@multiple"), false);
             $tmp["access"] = zobject::FetchObjFieldPart($ZName, $fld, "@access");
             $fieldinfo[$fld] = $tmp;
         }
@@ -771,37 +774,41 @@ class zobject_query
         php_logger::debug("key=$key, index=$index");
 
         foreach ($f as $rowx) {
+            php_logger::debug("rowx=$rowx");
             $tA = querystring::add($ZArgs, substr($key, 1), $rowx);
             if (php_hook::is_hook($F)) {
                 php_logger::debug("F=$F");
-                php_logger::debug("tA=<b>$tA</b>, F=<b><u>$F</u></b>, actual file=<b>" . php_hook::call($F, $tA) . "</b>");
+                $tV = php_hook::call($F);
+                php_logger::debug("tA=<b>$tA</b>, F=<b><u>$F</u></b>, actual file=<b>$tV</b>");
                 unset($D);
-                $Did = xml_site::$source->add_file(php_hook::call($F));
+                $Did = xml_site::$source->add_file($tV);
                 $D = xml_site::$source->get_source($Did);
                 php_logger::debug("isset(D)=" . (isset($D) ? 'y' : 'n'));
             }
 
-            php_logger::log("index=$index, key=$key, rowx=$rowx, itempath=$itempath");
+            php_logger::trace("index=$index, key=$key, rowx=$rowx, itempath=$itempath");
             $x = $x . "  <row>\n";
             $tp = str_replace($key, $rowx, $itempath);
-            php_logger::log("tp=$tp");
+            php_logger::debug("tp=$tp");
 
             foreach ($fl as $l) {
+                php_logger::trace("Data [$l]:");
                 //				if ($l == substr($key,1))
                 if ($l == $index)
                     $x .= "    <field id='$l'><![CDATA[$rowx]]></field>\n";
                 else {
-                    //print "<br/><b>l=$l</b>";
+                    php_logger::trace("tp=$tp, <b>l=$l</b>, <u>" . $fieldinfo[$l]["access"] . "</u>");
                     $m = xml_file::extend_path($tp, $l, $fieldinfo[$l]["access"]);
+                    php_logger::trace("Extended path: $m");
                     //print "<br/>m=$m";
                     $M = $fieldinfo[$l]['multiple'];
                     //print "<br/>Multiple? " . YesNo($M);
-                    //print "<br/>field datatype=".$fieldinfo[$l]["datatype"];
+                    php_logger::trace("field datatype=".$fieldinfo[$l]["datatype"]);
                     if (substr($fieldinfo[$l]["datatype"], 0, 1) == ":") $v = "";
                     else $v = $M ? GetMultiValuesFromDoc($D, $m) : $v = $D->fetch_part($m);
                     if ($v == "") $v = php_hook::call($fieldinfo[$l]["default"], $tA);
                     if ($v == "") $v = php_hook::call(zobject::FetchDTPart($fieldinfo[$l]["datatype"], "@default"), $tA);
-                    //print "<br/>v=<u>$v</u>";
+                    php_logger::debug("<b>field value</b>=<u>$v</u>");
 
                     $x .= "    <field id='$l'><![CDATA[$v]]></field>\n";
                 }
@@ -810,6 +817,8 @@ class zobject_query
             $x .= "  </row>\n";
         }
         $x .= "</recordset>\n";
+
+        php_logger::result($x);
         //die($x);
 
         //print "<br/>ZArgs=$ZArgs";

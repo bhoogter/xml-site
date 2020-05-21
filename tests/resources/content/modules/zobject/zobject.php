@@ -56,6 +56,28 @@ class zobject
         // died.
     }
 
+    static function get_ajax($a, $b, $c)
+    {
+        php_logger::clear_log_levels();
+        php_logger::call();
+        try {
+            $object = querystring::get(@$_SERVER['QUERY_STRING'], '_ZN');
+            $result = zobject::render_object($object);
+           if ($result != null) $result = $result->saveXML();
+        } catch(Exception $e) {
+            die(header("Status: 400 Bad Request", true, 400));
+        }
+        return $result;
+    }
+
+    static function validate()
+    {
+        // Turns off all logging for save/redirect.  Comment out the level set to debug save.
+        // php_logger::clear_log_levels('none');
+        php_logger::$log_file = __DIR__ . '/validate.log';
+        php_logger::call();
+    }
+
     static function transform() { return realpath(__DIR__ . "/source/transform.xsl"); }
 
     static function ObjectList() {return xml_site::$source->lst("//MODULES/modules/module/zobjectdef/@name");}
@@ -188,7 +210,7 @@ class zobject
     static function get_template($f, $n, $m) { return !self::iOBJ() ? '' : self::iOBJ()->GetZObjectTemplate($f, $n, $m); }
     static function template_escape_tokens($s) { return !self::iOBJ() ? '' : self::iOBJ()->TemplateEscapeTokens($s); }
 
-    static function recno($reset = 1) { return !self::iOBJ() ? '' : self::iOBJ()->RecNo($reset); }
+    static function recno($reset = "") { return !self::iOBJ() ? '' : self::iOBJ()->RecNo($reset); }
 
     static function form_id() { return !self::iOBJ() ? '' : self::iOBJ()->form_id(); }
     static function form_action() { return !self::iOBJ() ? '' : self::iOBJ()->form_action(); }
@@ -201,6 +223,7 @@ class zobject
     static function TransferObjectKeys($zn, $args) { return !self::iOBJ() ? '' : self::iOBJ()->TransferObjectKeys($zn, $args); }
 
     static function item_link($field, $mode = "create", $text = "", $ajax = "", $C = "", $T = "") { return !self::iOBJ() ? '' : self::iOBJ()->ItemLink($field, $mode, $text, $ajax, $C, $T); }
+    static function AutoPageLinkByID($zname, $oid) { }
 
     static function YesNoVal($v) { if (!is_string($v)) return false; $v = strtolower($v); return $v != '' && ($v[0] == 'y' || $v[0] == 't' || $v[0] == '1'); }
 }

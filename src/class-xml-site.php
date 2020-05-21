@@ -96,6 +96,8 @@ class xml_site
 
     protected static function load_extensions($module) 
     {
+        xml_path_handlers::add("/ajax/handler/{elementName}", "GET", "xml_site::handle_element");
+
         $extensions = $module->nds("/module/api");
         foreach ($extensions as $e) {
             $type = $e->getAttribute("type");
@@ -107,6 +109,14 @@ class xml_site
             php_logger::trace("ADD PATH EXTENSION", $type, $loca, $meth, $targ);
             xml_path_handlers::add($loca, $meth, $targ);
         }
+    }
+
+    static function handle_element($params, $method, $path) {
+        php_logger::$log_file = __DIR__ . "/handle_element.log";
+        php_logger::clear_log_levels();
+        php_logger::call();
+        $n = $params['elementName'];
+        return xml_file::toXmlFile(xml_serve::handle_element($n, xml_file::toDoc("<$n />")->documentElement))->saveXML();
     }
 
     static function include_startup_files()

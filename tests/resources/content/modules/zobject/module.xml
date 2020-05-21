@@ -12,9 +12,6 @@
             <components>
                 <element name='zobject' render='zobject' src='zo' definition="zobjectdef/@name" />
                 <element name='zaction' render='zobject_action' src='zo-class-zaction' definition="zactiondef/@name" />
-
-                <ajax action='validate' render='php:juniper_zobject_validate' />
-                <ajax action='zobject-auth' render='php:juniper_zobject_auth' />
             </components>
 
             <program>
@@ -26,6 +23,8 @@
         </specification>
 
         <api name='zo-save' loc='/zobject/save' type='form' method='POST' target='zobject::post' />
+        <api name='zo-validate' loc='/zobject/save' type='form' method='GET' target='zobject::validate' />
+        <api name='zo-ajax' loc='/zobject/ajax' type='form' method='GET' target='zobject::get_ajax' />
 
         <file id='zo' type='php' src='zobject.php' mode='startup' />
         <file id='zo-element' type='php' src='zobject-element.php' mode='startup' />
