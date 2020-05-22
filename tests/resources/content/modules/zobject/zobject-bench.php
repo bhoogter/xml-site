@@ -2,14 +2,18 @@
 
 class zobject_bench
 {
-    public static function time()
+    private static $record = [];
+
+    public static function time($unit = '')
     {
-        return microtime(TRUE);
+        return (self::$record[$unit] = microtime(TRUE));
     }
 
-    public static function report($n, $cap = "")
+    public static function report($n, $cap = '')
     {
         $x = microtime(TRUE);
-        return "TOTAL TIME" . ($cap == "" ? "" : "[$cap]") . ":" . ($x - $n);
+        $diff = is_string($n) ? @self::$record[$n] : $x - $n;
+        if ($cap == '' && is_string($n)) $cap = strtoupper($n);
+        return "TOTAL TIME" . (is_string($n) ? "" : " [$n]") . ": {$diff}s";
     }
 }

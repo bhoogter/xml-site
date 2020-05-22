@@ -12,6 +12,9 @@ class zobject
     static function DEBUG_TRANSFORM_FIELD() { return ""; }
     static function DEBUG_TRANSFORM_DATA_FIELD() { return ""; }
 
+    static function BENCHMARK_TRANSFORM() { return ""; }
+    static function BENCHMARK_ROWS() { return ""; }
+
     static function render($el, $params = [], $vArgs = "")
     {
         php_logger::call();

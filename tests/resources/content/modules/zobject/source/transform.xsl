@@ -8,10 +8,6 @@
     >
     <xsl:import href="data-input.xsl" />
 
-    <xsl:variable name='BenchmarkTRANSFORM' select='0'/>
-    <xsl:variable name='BenchmarkROWS' select='0'/>
-
-
     <xsl:variable name='DEFS' select='php:function("zobject::source_document","MODULES")'/>
     <xsl:variable name='HandledElements' select='php:functionString("zobject::handled_elements")'/>
     <!-- NOTE:  $PS for page-file, via page.xsl -->
@@ -42,7 +38,7 @@
             <xsl:attribute name='id'><xsl:value-of select='$jsid'/></xsl:attribute>
             <xsl:attribute name='zrefresh'><xsl:value-of select='$zrefresh'/></xsl:attribute>
 
-            <xsl:variable name='benchstart' select='php:functionString("zobject_bench::time")'/>
+            <xsl:variable name='benchstart' select='php:functionString("zobject_bench::time", "transform")'/>
             <xsl:variable name='named_template' select='php:functionString("zobject::named_template")'/>
             <xsl:variable name='specific_template' select='$ZDef/render[@type=$mode]/@src'/>
             <xsl:variable name='alt_template'>
@@ -100,8 +96,8 @@
 
             <xsl:variable name='resetRecNo' select='php:functionString("zobject::recno", "1")'/>
             <xsl:apply-templates select="$docTemplate/*" />
-            <xsl:if test='number($BenchmarkTRANSFORM)>0'>
-                <xsl:value-of select='php:functionString("zobject_bench::report", $benchstart, "zobject transform")'/>
+            <xsl:if test='php:function("zobject::BENCHMARK_TRANSFORM")'>
+                <xsl:value-of select='php:functionString("zobject_bench::report", $benchstart, "ZObject Transform")'/>
             </xsl:if>
         </div>
     </xsl:template>
@@ -475,13 +471,13 @@
         </xsl:if>
         <xsl:for-each select='$obj/row'>
             <xsl:if test='position() &gt;= $rangeFrom and position() &lt;= $rangeTo'>
-                <xsl:variable name='rowstart' select='php:functionString("zobject_bench::time")'/>
+                <xsl:variable name='rowstart' select='php:functionString("zobject_bench::time", "rowstart")'/>
                 <xsl:variable name='setRecNo' select='php:functionString("zobject::recno", string(position()))'/>
                 <xsl:for-each select='$row/*'>
                     <xsl:apply-templates select='.' />
                 </xsl:for-each>
-                <xsl:if test='number($BenchmarkROWS)>0'>
-                    <xsl:value-of select='php:functionString("zobject_bench::report", string($rowstart), "Rows")'/>
+                <xsl:if test='php:function("zobject::BENCHMARK_ROWS")'>
+                    <xsl:value-of select='php:functionString("zobject_bench::report", "rowstart", "Rows")'/>
                 </xsl:if>
             </xsl:if>
         </xsl:for-each>

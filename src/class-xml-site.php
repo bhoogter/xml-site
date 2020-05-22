@@ -3,6 +3,7 @@
 class xml_site 
 {
     public static $resource_folder;
+    public static $http_root;
     public static $source;
     public static $ajax = "";
 
@@ -11,13 +12,14 @@ class xml_site
         $n = func_num_args();
         $a = func_get_args();
         php_logger::log("CONSTRUCT", $n, $a);
-        self::$resource_folder = $n >= 1 ? $a[0] : null;
+        self::$resource_folder = $n >= 1 ? realpath($a[0]) : null;
+        self::$http_root = $n >= 1 ? realpath(dirname($a[0])) : null;
         php_logger::log("FOLDER=" . self::$resource_folder);
 
         self::init_source();
         xml_serve::init(
-            realpath(self::$resource_folder),
-            realpath(dirname(self::$resource_folder)),
+            self::$resource_folder,
+            self::$http_root,
             self::$source->get_source("PAGES"),
             self::$source->get_source("SITE")
         );
@@ -132,35 +134,34 @@ class xml_site
         if ($module && $module != "") $p .= "[@module='$module']";
         if ($type && $type != "")   $p .= "[@type='$type']";
         if ($mode && $mode != "")   $p .= "[@mode='$mode']";
+        php_logger::trace("support files path: ", $p);
         $files = self::$source->nds($p);
         php_logger::dump("support files: ", $files);
 
         foreach ($files as $ff) {
             $src = $ff->getAttribute("src");
             $module = $ff->parentNode->getAttribute("name");
+            $fType = $ff->getAttribute('type');
+            if ($fType == '') $fType = pathinfo($src, PATHINFO_EXTENSION);
+            if ($fType == '') $fType = $type;
             $f = self::resolve_file($src, "module", $module);
             if ($f == "") throw new Exception("Could not find file for module.  Module=$module, src=$src");
-            php_logger::scan("src=$src, module=$module, f=$f");
-            switch ($type) {
-                case 'css': break;
-                case 'js':break;
+            php_logger::scan("src=$src, module=$module, type=$fType, f=$f");
+            switch ($fType) {
+                case 'css':  case 'js':
+                    $r = self::resolve_ref($src, 'module', $module);
+                    php_logger::debug("SUPPORT FILE " . strtoupper($fType) . ": $r ($f)");
+                    if (file_exists(realpath(self::$http_root . $r)))
+                        if ($fType == 'css') xml_serve::$additional_css[] = $r;
+                        if ($fType == 'js')  xml_serve::$additional_scripts[] = $r;
+                    else
+                        php_logger::warn(strtoupper($fType) . " Not found: $r");
+                    break;
                 default:
                     php_logger::debug("SUPPORT FILE: $f");
                     include_once($f);
                     break;
             }
         }
-    }
-
-    static function get_styles()
-    {
-        $s = '<list>';
-        foreach (self::$source->nds("//SYS/*/file[@type='css']") as $n) {
-            $f = $n->getAttribute('src');
-            $m = $n->getAttribute('module');
-            $s .= "<link type='text/css' rel='stylesheet' href='" . ExtendURL(juniper_module_url("$m/$f"), '', true) . "' />\n";
-        }
-        $s .= "</list>";
-        return xml_file::XMLToDoc($s);
     }
 }
