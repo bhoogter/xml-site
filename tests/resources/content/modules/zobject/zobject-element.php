@@ -1033,6 +1033,22 @@ class zobject_element
         return $D;
     }
 
+    function refresh_link() {
+        php_logger::call();
+        $r = $this->get('args');
+        $r = querystring::add($r, '_ZN', $this->name);
+        $r = querystring::add($r, '_ZM', $this->mode);
+        if (isset($this->module))
+            $r = querystring::add($r, '_Zmod', $this->module);
+        if (isset($this->prefix))
+            $r = querystring::add($r, '_Zprefix', $this->prefix);
+        if (isset($this->named_template))
+            $r = querystring::add($r, '_Ztemp', $this->named_template);
+        php_logger::dump("r=$r");
+    
+        return zobject::encode_args($r);
+    }
+
     function MultiAddLink($a, $b)
     {
         php_logger::call();

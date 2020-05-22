@@ -29,7 +29,7 @@ class zobject_autotemplate
 		$xh->importStyleSheet($xsl);
 		$result = $xh->transformToXML($xml);	// Start the transformation
 
-//die($result);
+        // die($result);
 
 		unset($xh);
 		unset($xml);

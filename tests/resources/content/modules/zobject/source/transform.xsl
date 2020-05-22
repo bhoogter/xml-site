@@ -28,6 +28,7 @@
     <xsl:variable name='ZPrefix' select='c' />
 
     <xsl:variable name='jsid' select='php:functionString("zobject::transform_var", "jsid")' />
+    <xsl:variable name='zrefresh' select='php:functionString("zobject::refresh_link")' />
 
     <xsl:variable name='ZDef' select='$DEFS//modules/module/zobjectdef[@name=$ZName]' />
     <xsl:variable name='ZSrc' select='$ZDef/@source' />
@@ -39,6 +40,8 @@
     <xsl:template match='/'>
         <div>
             <xsl:attribute name='id'><xsl:value-of select='$jsid'/></xsl:attribute>
+            <xsl:attribute name='zrefresh'><xsl:value-of select='$zrefresh'/></xsl:attribute>
+
             <xsl:variable name='benchstart' select='php:functionString("zobject_bench::time")'/>
             <xsl:variable name='named_template' select='php:functionString("zobject::named_template")'/>
             <xsl:variable name='specific_template' select='$ZDef/render[@type=$mode]/@src'/>
@@ -76,6 +79,8 @@
 
                     <tr><td colspan='2' style='background-color: black;'>_</td></tr>
                     <tr><td>uid</td><td><xsl:value-of select='$OID'/></td></tr>
+                    <tr><td>jsid</td><td><xsl:value-of select='$jsid'/></td></tr>
+                    <tr><td>zr</td><td><xsl:value-of select='$zrefresh'/></td></tr>
                     <tr><td>zpage</td><td><xsl:value-of select='$ZPage'/></td></tr>
                     <tr><td>zpagecount</td><td><xsl:value-of select='$ZPageCount'/></td></tr>
 
@@ -147,6 +152,7 @@
             <xsl:when test='name()="positionlink"'><xsl:call-template name='positionlink'/></xsl:when>
             <xsl:when test='name()="uppositionlink"'><xsl:call-template name='uppositionlink'/></xsl:when>
             <xsl:when test='name()="dnpositionlink"'><xsl:call-template name='dnpositionlink'/></xsl:when>
+
             <xsl:otherwise>
                 <xsl:copy><xsl:apply-templates select="@*|node()"/></xsl:copy>
             </xsl:otherwise>
@@ -468,7 +474,6 @@
             </table>
         </xsl:if>
         <xsl:for-each select='$obj/row'>
-        Position: <xsl:value-of select='position()' />
             <xsl:if test='position() &gt;= $rangeFrom and position() &lt;= $rangeTo'>
                 <xsl:variable name='rowstart' select='php:functionString("zobject_bench::time")'/>
                 <xsl:variable name='setRecNo' select='php:functionString("zobject::recno", string(position()))'/>

@@ -36,6 +36,13 @@ class zobject
         return self::render(xml_file::toDoc("<$n />")->documentElement, ['name' => $n]);
     }
 
+    static function refresh_object($token) 
+    {
+        $args = self::decode_args($token);
+        $n = querystring::get($token, '_ZN');
+        return self::render_object($n, [], $args);
+    }
+
     static function query($zname, $vArgs = [])
     {
         php_logger::call();
@@ -223,7 +230,9 @@ class zobject
     static function TransferObjectKeys($zn, $args) { return !self::iOBJ() ? '' : self::iOBJ()->TransferObjectKeys($zn, $args); }
 
     static function item_link($field, $mode = "create", $text = "", $ajax = "", $C = "", $T = "") { return !self::iOBJ() ? '' : self::iOBJ()->ItemLink($field, $mode, $text, $ajax, $C, $T); }
+    static function refresh_link() { return !self::iOBJ() ? '' : self::iOBJ()->refresh_link(); }
     static function AutoPageLinkByID($zname, $oid) { }
 
-    static function YesNoVal($v) { if (!is_string($v)) return false; $v = strtolower($v); return $v != '' && ($v[0] == 'y' || $v[0] == 't' || $v[0] == '1'); }
+    static function YesNoVal($v) { $v = strtolower("$v"); return $v != '' && ($v[0] == 'y' || $v[0] == 't' || $v[0] == '1'); }
+    static function TrueFalse($v) { return self::YesNoVal("$v") ? 'true' : 'false'; }
 }

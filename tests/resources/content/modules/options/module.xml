@@ -20,6 +20,7 @@
 
         <file id='options' type='php' src='options.php' mode='startup' />
         <file id='options-api' type='php' src='options-api.php' mode='startup' />
+        <file id='options-css' type='css' src='options.css' mode='startup' />
 
         <datasource name='OPTIONS_XML' type='xml' src='options.xml' />
     

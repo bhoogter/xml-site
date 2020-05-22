@@ -310,7 +310,7 @@ class zobject_query
                 } else {
                     $mult = zobject::YesNoVal(zobject::FetchObjFieldPart($ZName, $fid, "@multiple"), false);
                     if ($mult) {
-                        //self::save_log("Multi-Field Set: $fid";
+                        php_logger::debug("Multi-Field Set: $fid");
                         $v[$fid] = array();
                         $n = 0;
                         $m = 0;
@@ -321,15 +321,15 @@ class zobject_query
                             $r = $o->arg($tfix);
                             if ($r != "") $m = 0;                            // basically, try 25 after last sequential.. then stop looking
                             $val = $this->MakePOSTValueReady($tfix, $dt, $o->mRecNo, "XML");
-                            //self::save_log("tfix=$tfix, dt=$dt, r=$r,	-----------------> multivalue ===> $val");
+                            php_logger::debug("tfix=$tfix, dt=$dt, r=$r,	-----------------> multivalue ===> $val");
                             $v[$fid][] = $val;
                         }
                     } else {
                         $tfix = $px . $fid;
-                        //self::save_log("tfix=$tfix, is_array(tfix)=" . TrueFalse(is_array($this->arg($tfix))) . ", COUNT=" . count($this->arg($tfix)));
+                        php_logger::debug("tfix=$tfix, is_array(tfix)=" . zobject::TrueFalse(is_array($this->arg($tfix))) . ", COUNT=" . count($this->arg($tfix)));
 
                         if ((is_array($o->arg($tfix)) && $o->mRecNo > count($o->arg($tfix)))) {
-                            //self::save_log("Returning False");
+                            php_logger::debug("Returning False");
                             return false;
                         }
                         $arg_tfix = $o->arg($tfix);
@@ -338,7 +338,7 @@ class zobject_query
                             $val = $nkv;
                         else
                             $val = self::MakePOSTValueReady($tfix, $dt, $o->mRecNo, "XML");
-                        //self::save_log("tfix=$tfix, dt=$dt, r=$r,	-----------------> value ===> $val");
+                        php_logger::trace("tfix=$tfix, dt=$dt, r=$r,	-----------------> value ===> $val");
                         $v[$fid] = $val;
                     }
                 }
@@ -710,13 +710,11 @@ class zobject_query
         if ($ZName == "") throw new Excpetion("<span style='font-weight:bold;font-size:20'>DIE:</span> <u>No ZName in GetZObjectXmlFile</u>");
 
         $x = "";
-        $rx = $x . "<?xml version='1.0' encoding='ISO-8859-1'?>\n";
 
         $D = self::GetXMLFile($ZName, $ZArgs, $listpath, $itempath, $F);
         php_logger::debug("F=$F");
 
         $fl = zobject::FetchObjFields($ZName);        // field list
-        $fc = count($fl);
         php_logger::debug("Field List: ", $fl);
 
         php_logger::debug("listpath=", $listpath);
@@ -726,9 +724,9 @@ class zobject_query
         else {
             if (isset($D)) $lD = $D;
             if (!isset($lD) && php_hook::is_hook($F)) {
-                php_logger::trace("F=$F, td=$td");
+                php_logger::trace("hook -- F=$F, td=$td");
                 $td = php_hook::call($F, '');
-                php_logger::trace("F=$F, td=$td");
+                php_logger::trace("hook result -- F=$F, td=$td");
                 if (is_string($F)) $lD = xml_site::$source->force_unknown_document($td);
                 else if (is_object($F)) $lD = $F;
             }

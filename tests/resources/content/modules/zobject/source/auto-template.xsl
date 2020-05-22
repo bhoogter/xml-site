@@ -67,7 +67,7 @@
                                     <xsl:variable name='fmode' select='php:functionString("zobject::field_mode", $ZName, $fid, $ZMode)'/>
                                     <xsl:if test='$fmode="list-edit" or $fmode="list" or $fmode="create"'>
                                         <td>
-                                            <xsl:variable name='SUBZ' select='"0"'/>
+                                            <xsl:variable name='SUBZ' select='"1"'/>
                                             <xsl:choose>
                                                 <xsl:when test='@id=$OID and ($ZMode="list" or $ZMode="list-edit") and $SUBZ="0"'><xsl:copy-of select='php:function("zobject::AutoPageLinkByID", string($ZName), concat("@",$OID))'/></xsl:when>
                                                 <xsl:otherwise><field><xsl:attribute name='id'><xsl:value-of select='@id'/></xsl:attribute></field></xsl:otherwise>
@@ -169,7 +169,6 @@
                                                             <xsl:attribute name='id'><xsl:value-of select='@id'/></xsl:attribute>
                                                         </field>
                                                     </td>
-
                                                 </tr>
                                             </xsl:when>
                                             <xsl:otherwise>
@@ -184,7 +183,6 @@
                                                         <field>
                                                             <xsl:attribute name='id'><xsl:value-of select='@id'/></xsl:attribute>
                                                             <xsl:attribute name='mode'>
-
                                                                 <xsl:choose>
                                                                     <xsl:when test='$ZMode="edit"'>list-edit</xsl:when>
                                                                     <xsl:otherwise>list</xsl:otherwise>
