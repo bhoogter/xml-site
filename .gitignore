@@ -3,5 +3,6 @@ class-xml-file.phar
 xml-modules.phar
 vendor/
 phars/
+ext/
 composer.lock
 *.log

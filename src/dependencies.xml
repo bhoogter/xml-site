@@ -6,8 +6,6 @@
             <dependency group="bhoogter" name="xml-serve" version="0.1.32" />
             <dependency group="bhoogter" name="querystring" version="1.0.0" />
             <dependency group="bhoogter" name="php-hook" version="1.0.0" />
-            <dependency name="jquery" type="js" url="https://code.jquery.com/jquery-3.5.1.min.js" />
-            <dependency name="jquery-ui" type="zip" url="https://jqueryui.com/resources/download/jquery-ui-1.12.1.zip" />" />
         </dependencies>
     </module>
  </modules>
