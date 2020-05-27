@@ -33,14 +33,26 @@ class zobject
         return (new zobject_element())->render($params, $vArgs);
     }
 
+    protected static function qs($k) {
+        return querystring::get(@$_SERVER['QUERY_STRING'], '_ZN');
+    }
+
+    protected static function set_log_file($n = 'api') {
+        php_logger::$log_file = __DIR__ . "/$n.log";
+        php_logger::clear_log_levels();
+    }
+
     static function render_object($n, $params = [], $vArgs = "") 
     {
         php_logger::call();
         return self::render(xml_file::toDoc("<$n />")->documentElement, ['name' => $n]);
     }
 
-    static function refresh_object($token) 
+    static function refresh_object($token = null) 
     {
+        self::set_log_file('refresh');
+        php_logger::call();
+        if ($token == null) $token = self::qs('token');
         $args = self::decode_args($token);
         $n = querystring::get($token, '_ZN');
         return self::render_object($n, [], $args);
@@ -48,6 +60,7 @@ class zobject
 
     static function query($zname, $vArgs = [])
     {
+        self::set_log_file('query');
         php_logger::call();
         $params['mode'] = 'data';
         $params['name'] = $zname;
@@ -57,6 +70,7 @@ class zobject
     static function post($zName, $params = [])
     {
         // Turns off all logging for save/redirect.  Comment out the level set to debug save.
+        self::set_log_file('post');
         php_logger::clear_log_levels('none');
         php_logger::call();
         php_logger::dump($_POST);
@@ -68,6 +82,7 @@ class zobject
 
     static function get_ajax($a, $b, $c)
     {
+        self::set_log_file('ajax');
         php_logger::clear_log_levels();
         php_logger::call();
         try {
@@ -84,6 +99,7 @@ class zobject
     {
         // Turns off all logging for save/redirect.  Comment out the level set to debug save.
         // php_logger::clear_log_levels('none');
+        self::set_log_file('validate');
         php_logger::$log_file = __DIR__ . '/validate.log';
         php_logger::call();
     }

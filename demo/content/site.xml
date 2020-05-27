@@ -7,6 +7,14 @@
         <defaulttemplate>main</defaulttemplate>
         <shortcuticon img='favicon.png' />
         <css src='global.css' />
+
+        <script src='/ext/jquery-*.min.js' />
+        <script src='/ext/jquery-ui-*/*/jquery-ui.min.js' />
+        <script src='/ext/jquery-validation-*/dist/jquery.validate.min.js' />
+        <script src='/ext/*/jquery-toast-plugin-*/dist/jquery.toast.min.js' />
+
+        <css src='/ext/jquery-ui-*/*/jquery-ui.min.css' />
+
         <url src='http://localhost' />
 	</global>
 </site>

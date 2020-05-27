@@ -151,11 +151,12 @@ class xml_site
                 case 'css':  case 'js':
                     $r = self::resolve_ref($src, 'module', $module);
                     php_logger::debug("SUPPORT FILE " . strtoupper($fType) . ": $r ($f)");
-                    if (file_exists(realpath(self::$http_root . $r)))
+                    if (file_exists(realpath(self::$http_root . $r))) {
                         if ($fType == 'css') xml_serve::$additional_css[] = $r;
                         if ($fType == 'js')  xml_serve::$additional_scripts[] = $r;
-                    else
+                    } else {
                         php_logger::warn(strtoupper($fType) . " Not found: $r");
+                    }
                     break;
                 default:
                     php_logger::debug("SUPPORT FILE: $f");

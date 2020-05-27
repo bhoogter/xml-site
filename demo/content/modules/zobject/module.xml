@@ -23,8 +23,10 @@
         </specification>
 
         <api name='zo-save' loc='/zobject/save' type='form' method='POST' target='zobject::post' />
-        <api name='zo-validate' loc='/zobject/save' type='form' method='GET' target='zobject::validate' />
+        <api name='zo-validate' loc='/zobject/validate' type='form' method='GET' target='zobject::validate' />
         <api name='zo-ajax' loc='/zobject/ajax' type='form' method='GET' target='zobject::get_ajax' />
+        <api name='zo-action' loc='/zobject/action' type='form' method='GET' target='zobject::refresh_object' />
+        <api name='zo-refresh' loc='/zobject/refresh' type='form' method='GET' target='zobject::refresh_object' />
 
         <file id='zo' type='php' src='zobject.php' mode='startup' />
         <file id='zo-element' type='php' src='zobject-element.php' mode='startup' />
@@ -40,10 +42,10 @@
         <file id='zo-class-zaction' type='php' src='zaction.php'	/>
         <!-- <file id='zo-class-zmodule' type='php' src='zmodule-display.php'	/> -->
 
-        <file id="zocss" type="css" src="css/zo-module-zobjects.css" />
-        <file id="zodatatypescss" type="css" src="css/zo-datatypes.css" />
+        <file id="zo-css" type="css" src="css/zo-module-zobjects.css" />
+        <file id="zo-datatypescss" type="css" src="css/zo-datatypes.css" />
 
-        <file id="zojs" type="js" src="zo.js" dependancies="jquery-validation,jquery-validation-additional-methods" />
+        <file id="zo-js" type="js" src="zo.js" dependancies="jquery-validation,jquery-validation-additional-methods" mode='startup' />
 
         <typedef name="y_module_program_control_type" html-type="select" db-type="varchar" maxlength="30" source="display|redirect|page|autotemplate" />
         <typedef name="y_module_program_control_source" db-type="varchar" maxlength="200" />
