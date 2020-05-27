@@ -6,11 +6,12 @@ ConfirmCmd = "";
 ConfirmTgt = "";
 ConfirmSrc = "";
 
-function zoRefresh(id) {
+function zoRefresh(id, mode) {
     if (!(el = document.getElementById(id))) return;
-    if (!(key = el.getAttribute('zrefresh'))) return;
-    url = zoRefreshURL('?token=' + key);
-    alert(url);
+    if (!(token = el.getAttribute('zrefresh'))) return;
+    ref = '?token=' + token;
+    if (!!mode) ref += "&mode=" + mode;
+    url = zoRefreshURL(ref);
     jQuery.get(url)
         .fail(function () {
             zoToast("Failed to load object.", 'error');

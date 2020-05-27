@@ -209,6 +209,7 @@
                                     <xsl:variable name='CanEdit' select='php:functionString("zobject_access::access", $ZName, "edit")'/>
                                     <xsl:variable name='CanDelete' select='php:functionString("zobject_access::access", $ZName, "delete")'/>
                                     <xsl:if test='$ZMode="display"'>
+                                        <refreshlink/>
                                         <xsl:if test='$CanEdit="edit"'><editlink/></xsl:if>
                                         <xsl:if test='$ZMode="edit"'><formcontrols/></xsl:if>
                                         <xsl:if test='$CanDelete="delete"'><dellink/></xsl:if>

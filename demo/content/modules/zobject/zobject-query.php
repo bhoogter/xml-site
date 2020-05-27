@@ -240,7 +240,7 @@ class zobject_query
 
 
 
-    function MakePOSTValueReady($key, $data_type, $n = 0, $Target = "SQL")
+    static function MakePOSTValueReady($key, $data_type, $n = 0, $Target = "SQL")
     {
         php_logger::call();
 
@@ -266,7 +266,7 @@ class zobject_query
         return $v;
     }
 
-    private function pre_save($ZName, $ZMode)
+    private static function pre_save($ZName, $ZMode)
     {
         php_logger::call();
         //die();
@@ -320,13 +320,13 @@ class zobject_query
                             $tfix = $px . $fid . "___" . $n;
                             $r = $o->arg($tfix);
                             if ($r != "") $m = 0;                            // basically, try 25 after last sequential.. then stop looking
-                            $val = $this->MakePOSTValueReady($tfix, $dt, $o->mRecNo, "XML");
+                            $val = self::MakePOSTValueReady($tfix, $dt, $o->mRecNo, "XML");
                             php_logger::debug("tfix=$tfix, dt=$dt, r=$r,	-----------------> multivalue ===> $val");
                             $v[$fid][] = $val;
                         }
                     } else {
                         $tfix = $px . $fid;
-                        php_logger::debug("tfix=$tfix, is_array(tfix)=" . zobject::TrueFalse(is_array($this->arg($tfix))) . ", COUNT=" . count($this->arg($tfix)));
+                        php_logger::debug("tfix=$tfix, is_array(tfix)=" . zobject::TrueFalse(is_array($o->arg($tfix))) . ", COUNT=" . count($o->arg($tfix)));
 
                         if ((is_array($o->arg($tfix)) && $o->mRecNo > count($o->arg($tfix)))) {
                             php_logger::debug("Returning False");
@@ -345,11 +345,12 @@ class zobject_query
                 if (($m++) == 0 || !$res) break;
             }
         }
+        $v = self::pre_save_result($v);
         php_logger::result($v);
-        return self::pre_save_result($v);
+        return $v;
     }
 
-    function pre_save_result($v)
+    static function pre_save_result($v)
     {
         php_logger::call();
         $s  = self::recordset_header(zobject::iOBJ()->name, zobject::iOBJ()->mode, 1);
@@ -367,7 +368,6 @@ class zobject_query
         $D = new DOMDocument;
         $D->loadXML($s);
         zobject::iOBJ()->set_result($D);
-
 
         return $v;
     }

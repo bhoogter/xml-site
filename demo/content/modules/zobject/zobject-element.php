@@ -150,7 +150,7 @@ class zobject_element
             $ZM = $R[0];
             $name = $R[1];
             $this->named_template = zobject::FetchObjPart($ZN, "render[@name='$name']/@src");
-            php_logger::debug("NT: " . $this->named_template);
+            php_logger::debug("NAMED TEMPLATE: " . $this->named_template);
         } else if (($nt = zobject::FetchObjPart($ZN, "render[@name='$ZM']/@type")) != "") {
             $this->named_template = zobject::FetchObjPart($ZN, "render[@name='$ZM']/@src");
             $ZM = zobject::FetchObjPart($ZN, "render[@name='$ZM']/@type");
@@ -267,6 +267,7 @@ class zobject_element
 
     function process_arguments(&$vName = "", &$vMode = "", &$vArgs = "", $vPrefix = "", $use_form = true)
     {
+        php_logger::call();
         php_logger::log("1 - ZName=$vName, ZMode=$vMode, named_template=$this->named_template, vArgs=$vArgs");
         if ($vName != "") $this->name = $vName;
         if ($use_form && $this->name == "") $this->name = @$_REQUEST['_ZN'];
@@ -913,6 +914,7 @@ class zobject_element
             case "position":        $text = "Pos";              break;
             case "upposition":      $text = "-";                break;
             case "dnposition":      $text = "+";                break;
+            case "refresh":         $text = "~";                break;
             default:                $text = "[??? mode]";       break;
         }
         $text = zobject::InterpretFields($text);
@@ -928,68 +930,71 @@ class zobject_element
         $url = zobject::ajax_url();
         $params = "{ '_AJAX' : 1, '_Save' : 1, '_ZA' : '" . $this->get("args64") . "' }";
 
-        if ($ajax != "") {
-            php_logger::log("== Ajax ==");
-            $Args = querystring::add($Args, '_ZN', $this->name);
-            $Args = querystring::add($Args, '_ZM', ($T == "") ? $mode : "$mode;$T");
-            $Args64 = zobject::encode_args($Args);
-            //print "<br/>Args=$Args";
-            //print "<br/>source=".$this->source(false);
-            //print "<br/>Args64=$Args64";
+        // if ($ajax != "") {
+            // php_logger::log("== Ajax ==");
+            // $Args = querystring::add($Args, '_ZN', $this->name);
+            // $Args = querystring::add($Args, '_ZM', ($T == "") ? $mode : "$mode;$T");
+            // $Args64 = zobject::encode_args($Args);
+            // //print "<br/>Args=$Args";
+            // //print "<br/>source=".$this->source(false);
+            // //print "<br/>Args64=$Args64";
 
-            $gid = $this->gid();
-            $src = $this->source();
+            // $gid = $this->gid();
+            // $src = $this->source();
 
-            switch ($mode) {
-                case "display":
-                    $title = "Show Item";
-                    $s = "zoGetObjToDialog('$Args64','$gid', '$src');";
-                    break;
-                case "create":
-                    $title = "Add Item";
-                    $s = "zoGetObjToDialog('$Args64','$gid', '$src');";
-                    break;
-                case "edit":
-                    $title = "Edit Item";
-                    $s = "zoGetObjToDialog('$Args64','$gid', '$src');";
-                    break;
-                case "delete":
-                    $title = "Delete Item";
-                    $s = "zoModalConfirmItem('Really Delete?','$Args64','$gid', '$src' );";
-                    break;
-                case "position":
-                    $title = "Move Item";
-                    $s = "AdjustRow('$Args64', '1');";
-                    $s2 = "AdjustRow('$Args64', '-1');";
-                    $s = "$('#$tid').load('$url', $params)";
-                    $s2 = "$('#$tid').load('$url', $params)";
-                    break;
-                case "upposition":
-                    $title = "Move Item Up";
-                    $s = "zoExecuteToItem('$Args64','$gid', '$src');";
-                    break;
-                case "dnposition":
-                    $title = "Move Item Down";
-                    $s = "zoExecuteToItem('$Args64','$gid', '$src');";
-                    break;
-                default:
-                    $s = "";
-                    break;
-            }
-            $a = "";
-            if ($mode != "position") {
-                //if ($mode="add") print "<br/>ITEM LINK ADD Args=$Args";
-                $a = $a . "<span id='" . zobject::new_jsid() . "'>";
-                $a = $a . "<a title='$title' class='$C $mode' onClick=\"$s\">$text</a>";
-                $a = $a . "</span>";
-            } else {
-                $a = $a . "<span id='" . zobject::new_jsid() . "'>";
-                $a = $a . "<a class='$C $mode up' title='Move Up' onClick=\"$s\" style=\"font-family:helvetica\">&#9660;</a>";
-                $a = $a . " / ";
-                $a = $a . "<a class='$C $mode down' title='Move Up' onClick=\"$s2\" style=\"font-family:helvetica\">&#9650;</a>";
-                $a = $a . "</span>";
-            }
-        } else {
+            // switch ($mode) {
+            //     case "display":
+            //         $title = "Show Item";
+            //         $s = "zoGetObjToDialog('$Args64','$gid', '$src');";
+            //         break;
+            //     case "create":
+            //         $title = "Add Item";
+            //         $s = "zoGetObjToDialog('$Args64','$gid', '$src');";
+            //         break;
+            //     case "edit":
+            //         $title = "Edit Item";
+            //         $s = "zoGetObjToDialog('$Args64','$gid', '$src');";
+            //         break;
+            //     case "delete":
+            //         $title = "Delete Item";
+            //         $s = "zoModalConfirmItem('Really Delete?','$Args64','$gid', '$src' );";
+            //         break;
+            //     case "position":
+            //         $title = "Move Item";
+            //         $s = "AdjustRow('$Args64', '1');";
+            //         $s2 = "AdjustRow('$Args64', '-1');";
+            //         $s = "$('#$tid').load('$url', $params)";
+            //         $s2 = "$('#$tid').load('$url', $params)";
+            //         break;
+            //     case "upposition":
+            //         $title = "Move Item Up";
+            //         $s = "zoExecuteToItem('$Args64','$gid', '$src');";
+            //         break;
+            //     case "dnposition":
+            //         $title = "Move Item Down";
+            //         $s = "zoExecuteToItem('$Args64','$gid', '$src');";
+            //         break;
+            //     case 'refresh':
+            //         $t = 'Refresh';
+            //         $s = "zoRefresh('{$this->gid()}');";
+            //     default:
+            //         $s = "";
+            //         break;
+            // }
+            // $a = "";
+            // if ($mode != "position") {
+            //     //if ($mode="add") print "<br/>ITEM LINK ADD Args=$Args";
+            //     $a = $a . "<span id='" . zobject::new_jsid() . "'>";
+            //     $a = $a . "<a title='$title' class='$C $mode' onClick=\"$s\">$text</a>";
+            //     $a = $a . "</span>";
+            // } else {
+            //     $a = $a . "<span id='" . zobject::new_jsid() . "'>";
+            //     $a = $a . "<a class='$C $mode up' title='Move Up' onClick=\"$s\" style=\"font-family:helvetica\">&#9660;</a>";
+            //     $a = $a . " / ";
+            //     $a = $a . "<a class='$C $mode down' title='Move Up' onClick=\"$s2\" style=\"font-family:helvetica\">&#9650;</a>";
+            //     $a = $a . "</span>";
+            // }
+        // } else {
             php_logger::log("== Regular ==");
             $s = querystring::aqm($Args);
             $s = querystring::remove($s, 'edit');   
@@ -1000,17 +1005,18 @@ class zobject_element
             // $s = querystring::add($s, '_ZM', $this->mode);
             php_logger::debug("s=$s, mode=$mode");
 
+            $func = false;
             switch ($mode) {
-                case "save":           $s = 'javascript:'.zobject::form_id().'.submit();'; break;
-                case "cancel":         break;
-                case "display":        $s = querystring::add($s, 'display', $this->name);   break;
-                case "create":         $s = querystring::add($s, 'add', $this->name);       break;
-                case "edit":           $s = querystring::add($s, 'edit', '1');              break;
-                case "delete":         $s = querystring::add($s, 'delete', '1');            break;
-                case "position":       $s = querystring::add($s, 'pos', '1');               break;
-                case "upposition":     $s = querystring::add($s, 'upposition', '1');        break;
-                case "dnposition":     $s = querystring::add($s, 'dnposition', '1');        break;
-                default:               $s = "";                                             break;
+                case "save":            $s = 'javascript:'.zobject::form_id().'.submit();'; break;
+                case "edit":            $func = "zoRefresh(\"{$this->gid()}\", \"edit\");"; break;
+                case "display":         $func = "zoRefresh(\"{$this->gid()}\", \"display\");"; break;
+                case "create":          $func = "zoRefresh(\"{$this->gid()}\", \"create\");"; break;
+                case "delete":          $s = querystring::add($s, 'delete', '1');            break;
+                case "position":        $s = querystring::add($s, 'pos', '1');               break;
+                case "upposition":      $s = querystring::add($s, 'upposition', '1');        break;
+                case "dnposition":      $s = querystring::add($s, 'dnposition', '1');        break;
+                case "refresh":         $func = "zoRefresh(\"{$this->gid()}\");";            break;
+                default:                $s = "";                                             break;
             }
 
             $p = zobject::FetchSpecPart($this->options['module'], 'program/control[@type="page"]/@src');
@@ -1018,11 +1024,18 @@ class zobject_element
             if ($p != "") $s = php_hook::call($p, array(":" . $this->name, $s), true);
             php_logger::log("p=$p, s=$s");
 
-            $a  = "";
-            $a .= "<span id='" . zobject::new_jsid() . "'>";
-            $a .= "<a class='$C' href='" . str_replace("&", "&amp;", $s) . "'>$text</a>";
-            $a .= "</span>";
-        }
+            if (!$func) {
+                $a  = "";
+                $a .= "<span id='" . zobject::new_jsid() . "'>";
+                $a .= "<a class='$C' href='" . str_replace("&", "&amp;", $s) . "'>$text</a>";
+                $a .= "</span>";
+            } else {
+                $a  = "";
+                $a .= "<span id='" . zobject::new_jsid() . "'>";
+                $a .= "<a class='$C' href='javascript:$func'>$text</a>";
+                $a .= "</span>";
+            }
+        // }
 
 
         //print $a;
@@ -1085,6 +1098,7 @@ class zobject_element
             case "source64":        return $this->GetZSource64();
             case "count":           return $this->record_count;
             case "jsid":            return $this->gid();
+            case "named_template":  return $this->named_template;
             default:                return $this->options[$VarName];
         }
     }

@@ -148,6 +148,7 @@
             <xsl:when test='name()="positionlink"'><xsl:call-template name='positionlink'/></xsl:when>
             <xsl:when test='name()="uppositionlink"'><xsl:call-template name='uppositionlink'/></xsl:when>
             <xsl:when test='name()="dnpositionlink"'><xsl:call-template name='dnpositionlink'/></xsl:when>
+            <xsl:when test='name()="refreshlink"'><xsl:call-template name='refreshlink'/></xsl:when>
 
             <xsl:otherwise>
                 <xsl:copy><xsl:apply-templates select="@*|node()"/></xsl:copy>
@@ -489,7 +490,9 @@
         <xsl:variable name='alt_ext'>
             <xsl:if test='(number($R) mod 2) = 0'>-alt</xsl:if>
         </xsl:variable>
+        <xsl:variable name='zrefresh' select='php:functionString("zobject::refresh_link")' />
         <tr>
+            <xsl:attribute name='zrefresh'><xsl:value-of select='$zrefresh' /></xsl:attribute>
             <xsl:for-each select='@*'>
                 <xsl:choose>
                     <xsl:when test='substring($C, 1, 1)="#" and name()="class"'>
@@ -616,6 +619,16 @@
             </xsl:choose>
         </xsl:variable>
         <xsl:copy-of select='php:function("zobject::item_link", string(@field), "dnposition", string($ntext), string(@ajax), string(@class))'/>
+    </xsl:template>
+
+    <xsl:template name='refreshlink'>
+        <xsl:variable name='ntext'>
+            <xsl:choose>
+                <xsl:when test='string-length(@text)!=0'><xsl:value-of select='string(@text)' /></xsl:when>
+                <xsl:otherwise>~</xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+        <xsl:copy-of select='php:function("zobject::item_link", string(@field), "refresh", string($ntext), string(@ajax), string(@class))'/>
     </xsl:template>
 
 

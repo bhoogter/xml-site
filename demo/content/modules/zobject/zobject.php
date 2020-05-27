@@ -4,6 +4,7 @@ class zobject
 {
     public const ZP_PAGE = 'p';
     public const ZP_PAGECOUNT = 'pp';
+    public const LOG_DIR = __DIR__ . "/../../../logs";
 
     private static $iOBJs = [];
 
@@ -34,28 +35,39 @@ class zobject
     }
 
     protected static function qs($k) {
-        return querystring::get(@$_SERVER['QUERY_STRING'], '_ZN');
+        return querystring::get(@$_SERVER['QUERY_STRING'], $k);
     }
 
-    protected static function set_log_file($n = 'api') {
-        php_logger::$log_file = __DIR__ . "/$n.log";
-        php_logger::clear_log_levels();
+    protected static function set_log_file($n = 'api', $level = 'trace', $suppress = true) {
+        php_logger::$log_folder = self::LOG_DIR;
+        php_logger::$log_file = "$n.log";
+        php_logger::clear_log_levels($level);
+        php_logger::$suppress_output = $suppress;
     }
 
     static function render_object($n, $params = [], $vArgs = "") 
     {
         php_logger::call();
-        return self::render(xml_file::toDoc("<$n />")->documentElement, ['name' => $n]);
+        $params['name'] = $n;
+        return self::render(xml_file::toDoc("<?xml version='1.0' ?>\n<$n />")->documentElement, $params, $vArgs);
     }
 
-    static function refresh_object($token = null) 
+    static function refresh_object() 
     {
-        self::set_log_file('refresh');
+        self::set_log_file('refresh', 'all');
         php_logger::call();
-        if ($token == null) $token = self::qs('token');
+        $token = self::qs('token');
+        $m = self::qs('mode');
         $args = self::decode_args($token);
-        $n = querystring::get($token, '_ZN');
-        return self::render_object($n, [], $args);
+        php_logger::debug("ARGS=$args");
+        $n = querystring::pop($args, '_ZN');
+        $params = [ 'name' => $n ];
+
+        $params['mode'] = !!$m ? $m : querystring::pop($args, '_ZM');
+        $params['module'] = querystring::pop($args, '_Zmod');
+        $params['prefix'] = querystring::pop($args, '_Zprefix');
+        querystring::del($args, '_Ztemp');
+        return xml_file::toXhtml(self::render_object($n, $params, $args));
     }
 
     static function query($zname, $vArgs = [])
@@ -146,7 +158,7 @@ class zobject
 
     static function args_prefix()    { return '@@';        }
     static function encode_args($a)  { return self::args_prefix().base64_encode(str_rot13($a));    }
-    static function decode_args($a)    
+    static function decode_args($a)
         {
         php_logger::call();
         $p = self::args_prefix();
