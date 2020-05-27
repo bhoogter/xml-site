@@ -340,8 +340,15 @@ input, textarea
 #site_content * table
 {
 padding: 0px 0px 0px 0px;
-margin: 0px 0px 0px 0px;
+margin: 10px;
+width: 95%;
 }
+
+#site_content * table * td:first-child {
+    width: 8em;
+    min-width: 3em;
+    max-width: 20%;
+  }
 
 #site_content * th
 {
@@ -354,6 +361,7 @@ font-size: 11px;
 font-size: 10px;
 border-collapse: collapse;
 border: solid 1px gray;
+    padding: 4px;
 }
 #site_content * td.form-caption
 {

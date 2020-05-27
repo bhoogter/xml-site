@@ -1,5 +1,6 @@
 function zoRefreshURL(e) { return "/zobject/refresh" + e; }
-function zoAjaxURL(e) { return "/zobject/ajax"; }
+function zoRefreshURL(e) { return "/zobject/refresh" + e; }
+function zoPostURL(e) { return "/zobject/save"; }
 function zoAjaxArgs(t, c) { return "action=zobjects&_AJAX=1&_" + t + "=1&_ZA=" + c; }
 
 ConfirmCmd = "";
@@ -18,6 +19,23 @@ function zoRefresh(id, mode) {
         }).done(function (msg) {
             jQuery('#'+id).replaceWith(msg);
         });
+}
+
+function zoPostForm(id) {
+    tag = '#' + id;
+    if (!(el = jQuery(tag))) return;
+    if (!(fr = el.find('form'))) return;
+    act = fr.attr('action');
+    if (!jQuery(tag).validate().form()) return;
+    data = fr.serialize();
+
+    jQuery
+        .post( 
+            zoPostURL(), 
+            data, 
+            function() { zoRefresh(id, 'display'); }
+        )
+        .fail(function() { zoToast('Failed to save form.'); });
 }
 
 function zoToast(msg, type, dur) {

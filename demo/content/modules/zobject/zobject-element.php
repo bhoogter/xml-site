@@ -997,7 +997,7 @@ class zobject_element
         // } else {
             php_logger::log("== Regular ==");
             $s = querystring::aqm($Args);
-            $s = querystring::remove($s, 'edit');   
+            $s = querystring::remove($s, 'edit');
             $s = querystring::remove($s, 'delete');
             $s = querystring::remove($s, 'add');
             $s = querystring::remove($s, 'pos');
@@ -1007,16 +1007,17 @@ class zobject_element
 
             $func = false;
             switch ($mode) {
-                case "save":            $s = 'javascript:'.zobject::form_id().'.submit();'; break;
-                case "edit":            $func = "zoRefresh(\"{$this->gid()}\", \"edit\");"; break;
-                case "display":         $func = "zoRefresh(\"{$this->gid()}\", \"display\");"; break;
-                case "create":          $func = "zoRefresh(\"{$this->gid()}\", \"create\");"; break;
-                case "delete":          $s = querystring::add($s, 'delete', '1');            break;
-                case "position":        $s = querystring::add($s, 'pos', '1');               break;
-                case "upposition":      $s = querystring::add($s, 'upposition', '1');        break;
-                case "dnposition":      $s = querystring::add($s, 'dnposition', '1');        break;
-                case "refresh":         $func = "zoRefresh(\"{$this->gid()}\");";            break;
-                default:                $s = "";                                             break;
+                case "save":            $func = "zoPostForm(\"{$this->gid()}\");";              break;
+                case "edit":            $func = "zoRefresh(\"{$this->gid()}\", \"edit\");";     break;
+                case "display":         $func = "zoRefresh(\"{$this->gid()}\", \"display\");";  break;
+                case "cancel":          $func = "zoRefresh(\"{$this->gid()}\", \"display\");";   break;
+                case "create":          $func = "zoRefresh(\"{$this->gid()}\", \"create\");";   break;
+                case "delete":          $s = querystring::add($s, 'delete', '1');               break;
+                case "position":        $s = querystring::add($s, 'pos', '1');                  break;
+                case "upposition":      $s = querystring::add($s, 'upposition', '1');           break;
+                case "dnposition":      $s = querystring::add($s, 'dnposition', '1');           break;
+                case "refresh":         $func = "zoRefresh(\"{$this->gid()}\");";               break;
+                default:                $s = "";                                                break;
             }
 
             $p = zobject::FetchSpecPart($this->options['module'], 'program/control[@type="page"]/@src');

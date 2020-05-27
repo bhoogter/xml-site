@@ -21,6 +21,9 @@ php_logger::set_log_level('zobject_autotemplate', 'all');
 php_logger::set_log_level('options_api', 'all');
 // php_logger::set_log_level('xml_serve', 'all');
 
+
+php_logger::clear_log_levels();
+
 $result = xml_serve::get_page(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 print $result;
 

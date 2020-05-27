@@ -54,7 +54,7 @@ class zobject
 
     static function refresh_object() 
     {
-        self::set_log_file('refresh', 'all');
+        self::set_log_file('refresh', 'trace', true);
         php_logger::call();
         $token = self::qs('token');
         $m = self::qs('mode');
@@ -82,8 +82,7 @@ class zobject
     static function post($zName, $params = [])
     {
         // Turns off all logging for save/redirect.  Comment out the level set to debug save.
-        self::set_log_file('post');
-        php_logger::clear_log_levels('none');
+        self::set_log_file('post', 'dump');
         php_logger::call();
         php_logger::dump($_POST);
         $target =  (new zobject_element())->save($_POST['_ZN'], $_POST['_ZM']);
@@ -94,7 +93,7 @@ class zobject
 
     static function get_ajax($a, $b, $c)
     {
-        self::set_log_file('ajax');
+        self::set_log_file('ajax', 'trace');
         php_logger::clear_log_levels();
         php_logger::call();
         try {
