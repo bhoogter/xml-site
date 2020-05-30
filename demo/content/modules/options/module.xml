@@ -35,9 +35,9 @@
             <render name="wp-list" type="list" src="templates/zobjects-wp-admin-action-list.xml" />
             <render name="wp-edit" type="edit" src="templates/zobjects-wp-admin-action-edit.xml" />
             <!-- <render name="wp-edit" type="create" src="templates/zobjects-wp-admin-action-create.xml" /> -->
-            <xmlfile src="php:options_xml_file" list="/*/option/@userid" base="/*/option[@userid='@id']/" />
+            <xmlfile src="php:options_xml_file" list="/*/option/@userid" base="/*/option[@userid='@id']/" sort='userid' />
             <fielddefs>
-                <fielddef id="userid" datatype="string" access="@" required="1" allow-edit="[-]" remote="php:zwpadmin_verify_zaction_name" />
+                <fielddef id="userid" datatype="string" access="@" required="1" allow-edit="[-]" allow-create="[-]" remote="php:zwpadmin_verify_zaction_name" />
                 <fielddef id="name" datatype="string" access="@" required="1" remote="php:zwpadmin_verify_zaction_name" />
                 <fielddef id="option1" datatype="string" access="@" />
                 <fielddef id="option2" datatype="string" access="@" />

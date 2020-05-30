@@ -723,7 +723,7 @@ class zobject_query
         else {
             if (isset($D)) $lD = $D;
             if (!isset($lD) && php_hook::is_hook($F)) {
-                php_logger::trace("hook -- F=$F, td=$td");
+                php_logger::trace("hook -- F=$F");
                 $td = php_hook::call($F, '');
                 php_logger::trace("hook result -- F=$F, td=$td");
                 if (is_string($F)) $lD = xml_site::$source->force_unknown_document($td);

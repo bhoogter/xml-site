@@ -1001,17 +1001,25 @@ class zobject_element
             $s = querystring::remove($s, 'delete');
             $s = querystring::remove($s, 'add');
             $s = querystring::remove($s, 'pos');
+            $s = querystring::remove($s, '_ZM');
             // $s = querystring::add($s, '_ZN', $this->name);
             // $s = querystring::add($s, '_ZM', $this->mode);
-            php_logger::debug("s=$s, mode=$mode");
+            $indexer = '';
+            if (substr($this->mode, 0, 4) == 'list') {
+                $indexer = querystring::rqm($this->TransferObjectKeys($this->name, $s));
+                $indexer = str_replace('&', '&amp;', $indexer);
+            }
+            if ($indexer != '') $indexer = "&amp;$indexer";
+            php_logger::debug("s=$s, mode=$mode, indexer=$indexer");
+            
 
             $func = false;
             switch ($mode) {
                 case "save":            $func = "zoPostForm(\"{$this->gid()}\");";              break;
-                case "edit":            $func = "zoRefresh(\"{$this->gid()}\", \"edit\");";     break;
-                case "display":         $func = "zoRefresh(\"{$this->gid()}\", \"display\");";  break;
-                case "cancel":          $func = "zoRefresh(\"{$this->gid()}\", \"display\");";   break;
-                case "create":          $func = "zoRefresh(\"{$this->gid()}\", \"create\");";   break;
+                case "edit":            $func = "zoRefresh(\"{$this->gid()}\", \"mode=edit$indexer\");";     break;
+                case "display":         $func = "zoRefresh(\"{$this->gid()}\", \"mode=display$indexer\");";  break;
+                case "cancel":          $func = "zoRefresh(\"{$this->gid()}\", \"mode=display\");";   break;
+                case "create":          $func = "zoRefresh(\"{$this->gid()}\", \"mode=create\");";   break;
                 case "delete":          $s = querystring::add($s, 'delete', '1');               break;
                 case "position":        $s = querystring::add($s, 'pos', '1');                  break;
                 case "upposition":      $s = querystring::add($s, 'upposition', '1');           break;
@@ -1047,9 +1055,14 @@ class zobject_element
         return $D;
     }
 
-    function refresh_link() {
+    function refresh_link($listrow = false) {
         php_logger::call();
         $r = $this->get('args');
+        // if ($list) {
+            // $r = querystring::add($r, '_Zlistrow', '1');
+        // }
+        // $r = querystring::add($r, zobject::ZP_PAGE, $this->page);
+        // $r = querystring::add($r, zobject::ZP_PAGECOUNT, $this->page_count);
         $r = querystring::add($r, '_ZN', $this->name);
         $r = querystring::add($r, '_ZM', $this->mode);
         if (isset($this->module))
@@ -1084,6 +1097,7 @@ class zobject_element
 
     function args64()       { return zobject::encode_args($this->args); }
     function get($f)        { return $this->get_var($f); }
+    function set($f, $v)    { return $this->options[$f] = $v; }
     function get_var($VarName)
     {
         switch ($VarName) {

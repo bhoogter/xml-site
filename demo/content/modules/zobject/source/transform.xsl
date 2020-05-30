@@ -145,9 +145,11 @@
             <xsl:when test='name()="editlink"'><xsl:call-template name='editlink'/></xsl:when>
             <xsl:when test='name()="savelink"'><xsl:call-template name='savelink'/></xsl:when>
             <xsl:when test='name()="cancellink"'><xsl:call-template name='cancellink'/></xsl:when>
+
             <xsl:when test='name()="positionlink"'><xsl:call-template name='positionlink'/></xsl:when>
             <xsl:when test='name()="uppositionlink"'><xsl:call-template name='uppositionlink'/></xsl:when>
             <xsl:when test='name()="dnpositionlink"'><xsl:call-template name='dnpositionlink'/></xsl:when>
+
             <xsl:when test='name()="refreshlink"'><xsl:call-template name='refreshlink'/></xsl:when>
 
             <xsl:otherwise>
@@ -355,9 +357,9 @@
                         </xsl:otherwise>
                     </xsl:choose>
                 </xsl:variable>
-                <!--
+<!--
 		<xsl:variable name='addargs1' select='php:functionString("add_querystring_var", $ZArgs, "_SUBZ", "1")'/>
-			<xsl:variable name='addargs' select='php:functionString("add_querystring_var", $addargs1, $addkey, $addval)'/>
+        <xsl:variable name='addargs' select='php:functionString("add_querystring_var", $addargs1, $addkey, $addval)'/>
 -->
                 <xsl:variable name='newargs' select='php:functionString("zobject::TransferObjectKeys", $ZName, $ZArgs)'/>
                 <xsl:variable name='newmode'>
@@ -490,8 +492,10 @@
         <xsl:variable name='alt_ext'>
             <xsl:if test='(number($R) mod 2) = 0'>-alt</xsl:if>
         </xsl:variable>
-        <xsl:variable name='zrefresh' select='php:functionString("zobject::refresh_link")' />
+        <xsl:variable name='rowid' select='php:functionString("zobject::new_jsid")' />
+        <xsl:variable name='zrefresh' select='php:functionString("zobject::refresh_link", true)' />
         <tr>
+            <!-- <xsl:attribute name='id'><xsl:value-of select='$rowid' /></xsl:attribute> -->
             <xsl:attribute name='zrefresh'><xsl:value-of select='$zrefresh' /></xsl:attribute>
             <xsl:for-each select='@*'>
                 <xsl:choose>

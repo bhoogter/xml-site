@@ -11,7 +11,7 @@ function zoRefresh(id, mode) {
     if (!(el = document.getElementById(id))) return;
     if (!(token = el.getAttribute('zrefresh'))) return;
     ref = '?token=' + token;
-    if (!!mode) ref += "&mode=" + mode;
+    if (!!mode) ref += "&" + mode;
     url = zoRefreshURL(ref);
     jQuery.get(url)
         .fail(function () {
