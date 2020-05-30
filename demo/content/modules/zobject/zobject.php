@@ -71,7 +71,7 @@ class zobject
         $params['module'] = querystring::pop($args, '_Zmod');
         $params['prefix'] = querystring::pop($args, '_Zprefix');
         querystring::del($args, '_Ztemp');
-        return xml_file::toXhtml(self::render_object($n, $params, $args));
+        die(xml_file::toXhtml(self::render_object($n, $params, $args)));
     }
 
     static function query($zname, $vArgs = [])
@@ -86,7 +86,7 @@ class zobject
     static function post($zName, $params = [])
     {
         // Turns off all logging for save/redirect.  Comment out the level set to debug save.
-        self::set_log_file('post', 'debug');
+        self::set_log_file('post', 'log');
         php_logger::call();
         // php_logger::dump($_POST);
         require_once('zobject-element.php');
@@ -115,7 +115,7 @@ class zobject
     {
         // Turns off all logging for save/redirect.  Comment out the level set to debug save.
         // php_logger::clear_log_levels('none');
-        self::set_log_file('validate');
+        self::set_log_file('validate', 'none');
         php_logger::call();
     }
 

@@ -6,10 +6,21 @@
 //     true
 // )
  {
-    // require_once("phar://" . realpath(__DIR__ . "/phars/bhoogter-php-logger-1-0-0.phar") . "/src/logger-stub.php");
+    require_once("phar://" . realpath(__DIR__ . "/phars/bhoogter-php-logger-1-0-0.phar") . "/src/logger-stub.php");
 }
 
 $start = microtime(true);
+
+$url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+if (false != ($k = strpos($url, '.phar/'))) {
+    $file = $_SERVER['DOCUMENT_ROOT'] . $url;
+    $ext = pathinfo($file, PATHINFO_EXTENSION);
+    $ct = content_type($ext);
+    header("Content-Type: $ct");
+    readfile("phar://$file");
+    die();
+}
 
 
 $init = microtime(true);
@@ -43,7 +54,7 @@ php_logger::set_log_level('options_api', 'all');
 // php_logger::$disable = true;
 // php_logger::$suppess_output = false;
 
-$result = xml_serve::get_page(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+$result = xml_serve::get_page($url);
 print $result;
 // die();
 
@@ -72,4 +83,33 @@ function memout()
     else if ($z < 1048576) $z = "" . round($z / 1024, 2) . "kb";
     else $z = "" . round($z / 1048576, 2) . "Mb";
     print "<h4>Memory used: $y, ($z peak)</h4>";
+}
+
+function content_type($ext)
+{
+    switch(strtolower($ext))
+    {
+        case 'jpg': $r = "image/jpg"; break;
+        case 'bmp': $r = "image/bmp"; break;
+        case 'gif': $r = "image/gif"; break;
+        case 'png': $r = "image/png"; break;
+
+        case 'ico': $r = "image/ico"; break;
+
+        case 'txt': $r = "text/plain"; break;
+
+        case 'htm': $r = "text/html"; break;
+        case 'html': $r = "text/html"; break;
+        case 'xhtml': $r = "text/xhtml"; break;
+
+        case 'css': $r = "text/css"; break;
+
+        case 'js': $r = "text/javascript"; break;
+
+        case 'xml': $r = "text/xml"; break;
+        case 'xsl': $r = "text/xml"; break;
+
+        default: $r = "application/octet-stream"; break;
+    }
+    return $r;
 }

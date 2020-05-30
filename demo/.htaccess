@@ -3,6 +3,7 @@
 RewriteEngine On
 RewriteBase /
 RewriteRule ^$ "index.php" [L]
+RewriteRule ^(.*)\.phar/(.+)$ "index.php" [L]
 RewriteRule ^(.*\.jb)$ "index.php" [L]
 RewriteRule ^([^.]*)$ "index.php" [L]
     
