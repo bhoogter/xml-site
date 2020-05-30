@@ -175,7 +175,7 @@
 		<xsl:param name='validation'/>
 		<xsl:param name='remote'/>
 		
-<xsl:if test='false()'>
+<xsl:if test='php:function("zobject::DEBUG_TRANSFORM_DATA_INPUT")'>
 	<table class='DEBUG'>
 		<tr><td colspan='2' class='title'>DATAINPUT.XSL - data-input</td></tr>
 		<tr><th>Variable</th><th>Value</th></tr>

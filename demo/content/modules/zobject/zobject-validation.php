@@ -9,6 +9,6 @@ class zobject_validation
 
     public static function remote_url()
     {
-        return "http://localhost/validation";
+        return "http://localhost/zobject/validate";
     }
 }

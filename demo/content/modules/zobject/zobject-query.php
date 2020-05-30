@@ -162,8 +162,7 @@ class zobject_query
                         }
                         $bse = $o->FillInQueryStringKeys($bse, '', true);
                         php_logger::debug("b=$b");
-                        $f->delete_node($bse);        // will be saved later, automatically
-                        //die();
+                        $f->delete_node($bse);
                         break;
                     case "wpdb": self::SaveZObjectQuery($o->name, "delete", $o->args, $v); break;
                     case "mysql": self::SaveZObjectQuery($o->name, "delete", $o->args, $v); break;
@@ -831,7 +830,7 @@ class zobject_query
 
 
 
-    private function SaveZObjectToXMLFile($ZName, $ZMode, $v)
+    private static function SaveZObjectToXMLFile($ZName, $ZMode, $v)
     {
         php_logger::call();
         $o = zobject::iOBJ();
@@ -891,16 +890,18 @@ class zobject_query
                 foreach ($fv as $fvv) {
                     $fl = xml_file::add_field_accessor($base . $fa);
                     $fl = xml_file::replace_field_accessor($fl, $n - $deleted);
-                    $D->set_part(fl, $fvv);
+                    $D->set_part($fl, $fvv);
                     if ($fvv == "") $deleted++;
                 }
             }
         }
 
-        //die();
-
+        
         //self::save_log("<font size=+3>Save to (SaveZObjectToXMLFile): <b><u>$file</u></b></font>");
         //self::save_log(""file=".(is_object($file)?"	.":$file));
+        // php_logger::headline($file->saveXML());
+        // die();
+        php_logger::result($found);
         return $found;
     }
 

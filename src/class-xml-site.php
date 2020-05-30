@@ -26,10 +26,10 @@ class xml_site
         self::load_modules();
     }
 
-    public static function resolve_files($resource, $types = [], $mappings = [], $subfolders = ['.', '*']) { return xml_serve::resource_resolver()->resolve_files($resource, $types, $mappings, $subfolders); }
-    public static function resolve_refs($resource, $types = [], $mappings = [], $subfolders = ['.', '*']) { return xml_serve::resource_resolver()->resolve_refs($resource, $types, $mappings, $subfolders); }
-    public static function resolve_file($resource, $types = [], $mappings = [], $subfolders = ['.', '*']) { return xml_serve::resource_resolver()->resolve_file($resource, $types, $mappings, $subfolders); }
-    public static function resolve_ref($resource, $types = [], $mappings = [], $subfolders = ['.', '*']) { return xml_serve::resource_resolver()->resolve_ref($resource, $types, $mappings, $subfolders); }
+    public static function resolve_files($resource, $types = [], $mappings = [], $subfolders = []) { return xml_serve::resource_resolver()->resolve_files($resource, $types, $mappings, $subfolders); }
+    public static function resolve_refs($resource, $types = [], $mappings = [], $subfolders = []) { return xml_serve::resource_resolver()->resolve_refs($resource, $types, $mappings, $subfolders); }
+    public static function resolve_file($resource, $types = [], $mappings = [], $subfolders = []) { return xml_serve::resource_resolver()->resolve_file($resource, $types, $mappings, $subfolders); }
+    public static function resolve_ref($resource, $types = [], $mappings = [], $subfolders = []) { return xml_serve::resource_resolver()->resolve_ref($resource, $types, $mappings, $subfolders); }
     public static function content_type($filename) { return xml_serve::resource_resolver()->content_type($filename); }
 
     protected static function init_source()
@@ -38,16 +38,17 @@ class xml_site
         self::$source = new source();
         self::$source->add_source("SITE", self::$resource_folder . '/site.xml');
         self::$source->add_source("PAGES", self::$resource_folder . '/pages.xml');
+        self::$source->autosave = true;
     }
 
     protected static function load_modules() 
     {
         php_logger::call();
         $modules = new xml_file();
-        $f = self::resolve_files("module.xml", [], [], ["modules/*"]);
+        $f = glob(self::$resource_folder . "/modules/*/module.xml");
         php_logger::debug("DETECTED MODULES", $f);
         $modules->merge($f, "modules", "module", realpath(self::$resource_folder . "/content/generated/modules.xml"));
-        
+
         self::$source->add_source("MODULES", $modules);
         self::read_modules();
         self::include_startup_files();

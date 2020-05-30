@@ -12,6 +12,7 @@ class zobject
     static function DEBUG_TRANSFORM_ROW() { return ""; }
     static function DEBUG_TRANSFORM_FIELD() { return ""; }
     static function DEBUG_TRANSFORM_DATA_FIELD() { return ""; }
+    static function DEBUG_TRANSFORM_DATA_INPUT() { return ""; }
 
     static function BENCHMARK_TRANSFORM() { return ""; }
     static function BENCHMARK_ROWS() { return ""; }
@@ -31,6 +32,7 @@ class zobject
 
         if (is_array($vArgs)) $vArgs = http_build_query($vArgs);
 
+        require_once('zobject-element.php');
         return (new zobject_element())->render($params, $vArgs);
     }
 
@@ -43,6 +45,8 @@ class zobject
         php_logger::$log_file = "$n.log";
         php_logger::clear_log_levels($level);
         php_logger::$suppress_output = $suppress;
+        php_logger::$timestamp = true;
+        php_logger::$nanos = true;
     }
 
     static function render_object($n, $params = [], $vArgs = "") 
@@ -54,7 +58,7 @@ class zobject
 
     static function refresh_object() 
     {
-        self::set_log_file('refresh', 'trace', true);
+        self::set_log_file('refresh', 'log');
         php_logger::call();
         $token = self::qs('token');
         $m = self::qs('mode');
@@ -72,7 +76,7 @@ class zobject
 
     static function query($zname, $vArgs = [])
     {
-        self::set_log_file('query');
+        self::set_log_file('query', 'none');
         php_logger::call();
         $params['mode'] = 'data';
         $params['name'] = $zname;
@@ -82,9 +86,10 @@ class zobject
     static function post($zName, $params = [])
     {
         // Turns off all logging for save/redirect.  Comment out the level set to debug save.
-        self::set_log_file('post', 'dump');
+        self::set_log_file('post', 'debug');
         php_logger::call();
-        php_logger::dump($_POST);
+        // php_logger::dump($_POST);
+        require_once('zobject-element.php');
         $target =  (new zobject_element())->save($_POST['_ZN'], $_POST['_ZM']);
         php_logger::alert("REDIRECT-TARGET: " . $target);
         xml_serve::redirect($target);
@@ -93,7 +98,7 @@ class zobject
 
     static function get_ajax($a, $b, $c)
     {
-        self::set_log_file('ajax', 'trace');
+        self::set_log_file('ajax', 'none');
         php_logger::clear_log_levels();
         php_logger::call();
         try {
@@ -111,7 +116,6 @@ class zobject
         // Turns off all logging for save/redirect.  Comment out the level set to debug save.
         // php_logger::clear_log_levels('none');
         self::set_log_file('validate');
-        php_logger::$log_file = __DIR__ . '/validate.log';
         php_logger::call();
     }
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <modules>
-    <module>
+    <module name='zobject'>
         <specification>
             <description>
                 <name>ZObject System Module</name>
@@ -29,13 +29,13 @@
         <api name='zo-refresh' loc='/zobject/refresh' type='form' method='GET' target='zobject::refresh_object' />
 
         <file id='zo' type='php' src='zobject.php' mode='startup' />
-        <file id='zo-element' type='php' src='zobject-element.php' mode='startup' />
-        <file id='zo-query' type='php' src='zobject-query.php' mode='startup' />
-        <file id='zo-bench' type='php' src='zobject-bench.php' mode='startup' />
+        <file id='zo-element' type='php' src='zobject-element.php' />
+        <file id='zo-query' type='php' src='zobject-query.php' />
+        <file id='zo-bench' type='php' src='zobject-bench.php' />
         <file id='zo-access' type='php' src='zobject-access.php' mode='startup' />
-        <file id='zo-autotemplate' type='php' src='zobject-autotemplate.php' mode='startup' />
+        <file id='zo-autotemplate' type='php' src='zobject-autotemplate.php' />
         <file id='zo-format' type='php' src='zobject-format.php' mode='startup' />
-        <file id='zo-validation' type='php' src='zobject-validation.php' mode='startup' />
+        <file id='zo-validation' type='php' src='zobject-validation.php' />
         <file id='zo-source-check' type='php' src='zobject-source-check.php' mode='startup' />
         <file id="zo-datatypes" type="php" src="zobject-datatypes.php" mode='startup' />
 
