@@ -150,13 +150,14 @@ class zobject_element
             $ZM = $R[0];
             $name = $R[1];
             $this->named_template = zobject::FetchObjPart($ZN, "render[@name='$name']/@src");
-            php_logger::debug("NAMED TEMPLATE: " . $this->named_template);
+            php_logger::debug("NAMED TEMPLATE (1): " . $this->named_template);
         } else if (($nt = zobject::FetchObjPart($ZN, "render[@name='$ZM']/@type")) != "") {
             $this->named_template = zobject::FetchObjPart($ZN, "render[@name='$ZM']/@src");
             $ZM = zobject::FetchObjPart($ZN, "render[@name='$ZM']/@type");
-            php_logger::debug("NAMED TEMPLATE: named_template=$this->named_template, ZMode=$ZM");
+            php_logger::debug("NAMED TEMPLATE (2): named_template=$this->named_template, ZMode=$ZM");
         }
 
+        php_logger::debug("ZM=$ZM");
         $Sat = $this->QueryStringSatisfied($ZN, $ZA);
         php_logger::debug("QSSatisfied($ZN): " . ($Sat ? "Yes" : "No"));
 
@@ -170,11 +171,14 @@ class zobject_element
             if (querystring::get('upposition') != '') $ZM = '<';
             if (querystring::get('dnposition') != '') $ZM = '>';
         }
+
         if ($ZM == "delete") $ZM = "x";
         if ($ZM == "dnposition") $ZM = ">";
         if ($ZM == "upposition") $ZM = "<";
         if ($ZM == "") $ZM = "d";
-        switch (strToLower($ZM[0])) {
+
+        php_logger::debug("switching ZM=$ZM");
+        switch (strToLower(substr($ZM, 0, 1))) {
             case "0":  case "d": if ($ZM != 'data') $ZM = $Sat ? "display" : "find"; break;
             case "1":  case "e": $ZM = $Sat ? "edit" : "find"; break;
             case "*":  case "b": $ZM = "build"; break;
@@ -188,7 +192,7 @@ class zobject_element
             case "p": $ZM = 'position'; break;
             case "x": $ZM = "delete"; break;
             case "&": $ZM = 'data'; break;
-            default: $ZM = ($Sat ? "display" : "list"); break;
+            default: $ZM = ($Sat ? "display" : "list-edit"); break;
         }
 
         switch ($ZM) {

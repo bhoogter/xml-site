@@ -33,7 +33,7 @@ function zoPostForm(id) {
         .post( 
             zoPostURL(), 
             data, 
-            function() { zoRefresh(id, 'display'); }
+            function() { zoRefresh(id, 'mode=display'); }
         )
         .fail(function() { zoToast('Failed to save form.'); });
 }

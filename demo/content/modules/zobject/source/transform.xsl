@@ -10,7 +10,6 @@
 
     <xsl:variable name='DEFS' select='php:function("zobject::source_document","MODULES")'/>
     <xsl:variable name='HandledElements' select='php:functionString("zobject::handled_elements")'/>
-    <!-- NOTE:  $PS for page-file, via page.xsl -->
 
     <xsl:variable name='ZName' select='php:functionString("zobject::transform_var", "name")' />
     <xsl:variable name='requested-object-mode' select='php:functionString("zobject::transform_var", "mode")' />
