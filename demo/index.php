@@ -6,7 +6,7 @@
 //     true
 // )
  {
-    require_once("phar://" . realpath(__DIR__ . "/phars/bhoogter-php-logger-1-0-0.phar") . "/src/logger-stub.php");
+    // require_once("phar://" . realpath(__DIR__ . "/phars/bhoogter-php-logger-1-0-0.phar") . "/src/logger-stub.php");
 }
 
 $start = microtime(true);
