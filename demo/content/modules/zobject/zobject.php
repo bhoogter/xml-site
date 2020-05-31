@@ -126,10 +126,15 @@ class zobject
 
     static function FetchObjFields($n) { return xml_site::$source->lst("//MODULES/modules/module/zobjectdef[@name='$n']/fielddefs/fielddef/@id"); }
     static function FetchObjPart($n, $p) { return xml_site::$source->get("//MODULES/modules/module/zobjectdef[@name='$n']/$p"); }
-    static function FetchObjFieldPart($n, $f, $p) { return xml_site::$source->get("//MODULES/modules/module/zobjectdef[@name='$n']/fielddefs/fielddef[@id='$f']/$p"); }
     static function FetchDTPart($n, $p) { return xml_site::$source->get("//MODULES/modules/module/typedef[@name='$n']/$p"); }
-    static function FetchObjFieldDefault($n, $f) { return self::FetchObjFieldPart($n, $f, '@default'); }
     static function FetchObjDefString($n) { return xml_site::$source->def("//MODULES/modules/module/zobjectdef[@name='$n']"); }
+    static function FetchObjFieldDefault($n, $f) { return self::FetchObjFieldPart($n, $f, '@default'); }
+    static function FetchObjFieldPart($n, $f, $p) {
+        $x = xml_site::$source->get("//MODULES/modules/module/zobjectdef[@name='$n']/fielddefs/fielddef[@id='$f']/$p"); 
+        if ('' != $x &&  '' != ($s = self::FetchObjPart($n, '@source'))) 
+            $x = xml_site::$source->get("//MODULES/modules/module/ztabledef[@name='$s']/fielddefs/fielddef[@id='$f']/$p");
+        return $x;
+    }
     static function FetchObjFieldCategories($n) 
         { 
             php_logger::log($n);

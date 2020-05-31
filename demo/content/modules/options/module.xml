@@ -44,11 +44,11 @@
                 <fielddef id="option3" datatype="string" access="@" />
             </fielddefs>
         </zobjectdef>
-    </module>
 
-    <ztabledef name='def-options'>
-        <fielddefs>
-            <fielddef id='name' datatype='string' access="@" caption='ID' />
-        </fielddefs>
-    </ztabledef>
+        <ztabledef name='def-options'>
+            <fielddefs>
+                <fielddef id='name' datatype='string' access="@" caption='ID' />
+            </fielddefs>
+        </ztabledef>
+    </module>
 </modules>

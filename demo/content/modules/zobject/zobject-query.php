@@ -679,7 +679,9 @@ class zobject_query
                 $M = zobject::FetchObjFieldPart($ZName, $l, "@multiple") == "1";
                 $d = zobject::FetchObjFieldPart($ZName, $l, "@datatype");
                 php_logger::trace("Field $l: DT=$d, Multiple=$M");
-                if (substr($d, 0, 1) == ":") $v = "";
+                $getter = zobject::FetchDTPart($d, '@getter');
+                if (php_hook::is_hook($getter)) $v = php_hook::invoke($getter, $ixval);
+                else if (substr($d, 0, 1) == ":") $v = "";
                 else $v = $M ? self::GetMultiValuesFromDoc($D, $m) : $v = $D->fetch_part($m);
             }
             if ($v == "") $v = php_hook::call(zobject::FetchObjFieldPart($ZName, $l, "@default"), $ZArgs);
@@ -759,6 +761,7 @@ class zobject_query
             php_logger::trace("fld=$fld");
             $tmp = array();
             $tmp["datatype"] = zobject::FetchObjFieldPart($ZName, $fld, "@datatype");
+            $tmp["getter"] = zobject::FetchDTPart($ZName, $fld, "@getter");
             $tmp["default"] = zobject::FetchObjFieldPart($ZName, $fld, "@default");
             $tmp["multiple"] = zobject::YesNoVal(zobject::FetchObjFieldPart($ZName, $fld, "@multiple"), false);
             $tmp["access"] = zobject::FetchObjFieldPart($ZName, $fld, "@access");
@@ -801,7 +804,8 @@ class zobject_query
                     $M = $fieldinfo[$l]['multiple'];
                     //print "<br/>Multiple? " . YesNo($M);
                     php_logger::trace("field datatype=".$fieldinfo[$l]["datatype"]);
-                    if (substr($fieldinfo[$l]["datatype"], 0, 1) == ":") $v = "";
+                    if (php_hook::is_hook($fieldinfo[$l]["getter"])) $v = php_hook::invoke($fieldinfo[$l]["getter"], $rowx);
+                    else if (substr($fieldinfo[$l]["datatype"], 0, 1) == ":") $v = "";
                     else $v = $M ? GetMultiValuesFromDoc($D, $m) : $v = $D->fetch_part($m);
                     if ($v == "") $v = php_hook::call($fieldinfo[$l]["default"], $tA);
                     if ($v == "") $v = php_hook::call(zobject::FetchDTPart($fieldinfo[$l]["datatype"], "@default"), $tA);

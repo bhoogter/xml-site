@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<modules>
+    <module name='simple-blog'>
+        <specification>
+            <description>
+                <name>Simple Blog</name>
+                <version>1.0</version>
+                <short>Blog</short>
+                <long><![CDATA[Simple Blog System]]></long>
+            </description>
+
+            <components>
+                <element name='post' render='zobject' src='zo' definition="zobjectdef/@name" />
+                <element name='comments' render='zobject_action' src='zo-class-zaction' definition="zactiondef/@name" />
+                <element name='feed' render='zobject_action' src='zo-class-zaction' definition="zactiondef/@name" />
+            </components>
+
+            <program>
+                <control type="page" src="php:sbs_page" />
+                <control type="display" src="php:sbs_display" />
+                <control type="redirect" src="php:zwpadmin_admin_panel_redirect" />
+                <control type="autotemplate" src="zo-wpadmin-AutoTemplate.xsl" />
+            </program>
+        </specification>
+
+        <file id='sbs' type='php' src='blog.php' mode='startup' />
+
+        <zobjectdef name="sbs-post-list" key-field="id" index="postid" allow-display="[!]" source='sbst-post'>
+            <style>
+                <caption>Options</caption>
+                <class>sbs-post</class>
+                <options addonlist="1" />
+            </style>
+            <action>php:zwpadmin_redirect_url</action>
+            <render name="wp-list" type="list" src="templates/zobjects-wp-admin-action-list.xml" />
+            <render name="wp-edit" type="edit" src="templates/zobjects-wp-admin-action-edit.xml" />
+            <!-- <render name="wp-edit" type="create" src="templates/zobjects-wp-admin-action-create.xml" /> -->
+            <xmlfile src="php:options_xml_file" list="/*/option/@userid" base="/*/option[@userid='@id']/" sort='userid' />
+            <fielddefs>
+                <fielddef id="postid" />
+                <fielddef id="status" />
+                <fielddef id="date" />
+                <fielddef id="author" />
+                <fielddef id="title" />
+                <fielddef id="tags" />
+            </fielddefs>
+        </zobjectdef>
+
+        <zobjectdef name="sbs-post" key-field="id" index="postid" allow-display="[!]" source='sbst-post'>
+            <style>
+                <caption>Options</caption>
+                <class>sbs-post</class>
+                <options addonlist="1" />
+            </style>
+            <action>php:zwpadmin_redirect_url</action>
+            <render name="wp-edit" type="edit" src="templates/zobjects-wp-admin-action-edit.xml" />
+            <!-- <render name="wp-edit" type="create" src="templates/zobjects-wp-admin-action-create.xml" /> -->
+            <xmlfile src="php:options_xml_file" list="/*/option/@userid" base="/*/option[@userid='@id']/" sort='userid' />
+            <fielddefs>
+                <fielddef id="postid" />
+                <fielddef id="status" />
+                <fielddef id="date" />
+                <fielddef id="author" />
+                <fielddef id="title" />
+                <fielddef id="tags" />
+                <fielddef id="body" />
+            </fielddefs>
+        </zobjectdef>
+
+        <zobjectdef name="sbs-comment" key-field="id" index="postid" allow-display="[!]" source='sbst-post'>
+            <style>
+                <caption>Options</caption>
+                <class>sbs-post</class>
+                <options addonlist="1" />
+            </style>
+            <action>php:zwpadmin_redirect_url</action>
+            <render name="wp-edit" type="edit" src="templates/zobjects-wp-admin-action-edit.xml" />
+            <!-- <render name="wp-edit" type="create" src="templates/zobjects-wp-admin-action-create.xml" /> -->
+            <xmlfile src="php:options_xml_file" list="/*/option/@userid" base="/*/option[@userid='@id']/" sort='userid' />
+            <fielddefs>
+                <fielddef id="commentid" />
+                <fielddef id="postid" />
+                <fielddef id="date" />
+                <fielddef id="author" />
+                <fielddef id="title" />
+                <fielddef id="tags" />
+                <fielddef id="comment-text" />
+                <fielddef id="body" />
+            </fielddefs>
+        </zobjectdef>
+
+        <ztabledef name='sbst-post' index='postid'>
+            <fielddefs>
+                <fielddef id="postid" datatype="string" access="@" required="1" allow-edit="[-]" allow-create="[-]" />
+                <fielddef id="status" datatype="sbs-post-status" access="@" />
+                <fielddef id="date" datatype="datetime" />
+                <fielddef id="author" datatype="string" />
+                <fielddef id="title" datatype="string" required="1" />
+                <fielddef id="tags" datatype="string" />
+                <fielddef id="body" datatype="sbs-post-body" />
+            </fielddefs>
+        </ztabledef>
+
+        <ztabledef name='sbst-comment' index='commentid'>
+            <fielddefs>
+                <fielddef id="commentid" datatype="string" access="@" required="1" allow-edit="[-]" allow-create="[-]" />
+                <fielddef id="postid" datatype="sbs-post-status" />
+                <fielddef id="date" datatype="string" />
+                <fielddef id="author" datatype="string" />
+                <fielddef id="title" datatype="string" required="1" />
+                <fielddef id="tags" datatype="string" />
+                <fielddef id="comment-text" datatype="string" />
+                <fielddef id="body" datatype="sbs-post-comment" />
+            </fielddefs>
+        </ztabledef>
+
+        <typedef name="sbs-post-status" html-type="select" db-type="varchar" maxlength="30" source="draft|review|private|published|deleted|recycle" />
+        <typedef name="sbs-post-body" html-type="select" db-type="memo" getter="php:sbs_blog_post_get" setter="php:sbs_blog_post_set" />
+        <typedef name="sbs-post-comment" html-type="select" db-type="memo" />
+    </module>
+</modules>
