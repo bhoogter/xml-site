@@ -131,7 +131,7 @@ class zobject
     static function FetchObjFieldDefault($n, $f) { return self::FetchObjFieldPart($n, $f, '@default'); }
     static function FetchObjFieldPart($n, $f, $p) {
         $x = xml_site::$source->get("//MODULES/modules/module/zobjectdef[@name='$n']/fielddefs/fielddef[@id='$f']/$p"); 
-        if ('' != $x &&  '' != ($s = self::FetchObjPart($n, '@source'))) 
+        if ($x == '' &&  ($s = self::FetchObjPart($n, '@source')) != '') 
             $x = xml_site::$source->get("//MODULES/modules/module/ztabledef[@name='$s']/fielddefs/fielddef[@id='$f']/$p");
         return $x;
     }

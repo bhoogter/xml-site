@@ -697,7 +697,7 @@ class zobject_query
         $x .= "  </row>\n";
         $x .= "</recordset>\n";
         //log_file("GetZObjectXmlFile", $x);log_file("GetZObjectXmlFile","-----------------");
-        //print $x;die();
+        // print $x;die();
         //$x=str_replace(array("\n"," "),array("<br/>","&nbsp;"),ESKf($x));print $x;die();
 
         $D = new DOMDocument;
@@ -804,6 +804,7 @@ class zobject_query
                     $M = $fieldinfo[$l]['multiple'];
                     //print "<br/>Multiple? " . YesNo($M);
                     php_logger::trace("field datatype=".$fieldinfo[$l]["datatype"]);
+                    // php_logger::alert("GETTER: " . php_hook::is_hook($fieldinfo[$l]["getter"]));
                     if (php_hook::is_hook($fieldinfo[$l]["getter"])) $v = php_hook::invoke($fieldinfo[$l]["getter"], $rowx);
                     else if (substr($fieldinfo[$l]["datatype"], 0, 1) == ":") $v = "";
                     else $v = $M ? GetMultiValuesFromDoc($D, $m) : $v = $D->fetch_part($m);

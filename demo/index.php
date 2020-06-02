@@ -48,6 +48,7 @@ php_logger::set_log_level('zobject_query', 'trace');
 // php_logger::set_log_level('zobject_query::GetZObjectCreateQuery', 'all');
 php_logger::set_log_level('options_api', 'all');
 // php_logger::set_log_level('xml_serve', 'all');
+php_logger::set_log_level('xml_file', 'all');
 
 
 // php_logger::clear_log_levels('none');
