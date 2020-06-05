@@ -101,8 +101,8 @@ class xml_site
     {
         xml_path_handlers::add("/ajax/handler/{elementName}", "GET", "xml_site::handle_element");
 
-        $extensions = $module->nds("/module/api");
-        foreach ($extensions as $e) {
+        $path_handlers = $module->nds("/module/api");
+        foreach ($path_handlers as $e) {
             $type = $e->getAttribute("type");
             $loca = $e->getAttribute("loc");
             $meth = $e->getAttribute("method");
@@ -111,6 +111,19 @@ class xml_site
 
             php_logger::trace("ADD PATH EXTENSION", $type, $loca, $meth, $targ);
             xml_path_handlers::add($loca, $meth, $targ);
+        }
+
+        $extensions = $module->nds("/module/specification/program/extension");
+        foreach ($extensions as $e) {
+            $name = $e->getAttribute("name");
+            if (!$name) $name = $module->get("/module/@name");
+            $type = $e->getAttribute("type");
+            $psrc = $e->getAttribute("src");
+            if (php_hook::is_hook($psrc)) $psrc = php_hook::get_callable($psrc);
+
+            php_logger::trace("ADD MODULE EXTENSION", $name, $type, $psrc);
+            // die();
+            xml_serve_extensions::add_extension_handler($name, $type, $psrc);
         }
     }
 

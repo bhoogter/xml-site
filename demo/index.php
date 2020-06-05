@@ -33,7 +33,7 @@ php_logger::$nanos = true;
 
 // php_logger::clear_log_levels('warning');
 php_logger::set_log_level('xml_site', 'all');
-// php_logger::set_log_level('xml_serve', 'all');
+php_logger::set_log_level('xml_serve', 'all');
 // php_logger::set_log_level('resource_resolver', 'trace');
 // php_logger::set_log_level('adjunct', 'all');
 // php_logger::set_log_level('page_source', 'all');

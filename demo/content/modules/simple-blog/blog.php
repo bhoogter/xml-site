@@ -1,7 +1,5 @@
 <?php
 
-
-
 function sbs_data_folder($sub) {
     return xml_site::$resource_folder . ($sub == '' ? '' : (DIRECTORY_SEPARATOR . $sub));
 }
@@ -25,3 +23,14 @@ function sbs_blog_post_set($postid, $body) {
     file_put_contents(sbs_post_file($postid), $body);
     return $body;
 }
+
+
+function sbs_page($a = null, $b = null, $c = null, $d = null) {
+    php_logger::call();
+    $x  = "<?xml version='1.0' ?>\n";
+    $x .= "<pagedef id='3'>";
+    $x .= "  <content id='content' type='html' src='blog.html' template='main' title='Blog Home'/>";
+    $x .= "</pagedef>";
+    return xml_file::toDoc($x)->documentElement;
+}
+

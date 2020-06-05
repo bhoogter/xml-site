@@ -10,16 +10,14 @@
             </description>
 
             <components>
-                <element name='post' render='zobject' src='zo' definition="zobjectdef/@name" />
-                <element name='comments' render='zobject_action' src='zo-class-zaction' definition="zactiondef/@name" />
-                <element name='feed' render='zobject_action' src='zo-class-zaction' definition="zactiondef/@name" />
+                <element name='sbs-post' render='zobject' src='zo' definition="zobjectdef/@name" />
+                <element name='sbs-comments' render='zobject_action' src='zo-class-zaction' definition="zactiondef/@name" />
+                <element name='sbs-feed' render='zobject_action' src='zo-class-zaction' definition="zactiondef/@name" />
+                <element name='sbs-feedload' render='zobject_action' src='zo-class-zaction' definition="zactiondef/@name" />
             </components>
 
             <program>
-                <control type="page" src="php:sbs_page" />
-                <control type="display" src="php:sbs_display" />
-                <control type="redirect" src="php:zwpadmin_admin_panel_redirect" />
-                <control type="autotemplate" src="zo-wpadmin-AutoTemplate.xsl" />
+                <extension name="simple-blog" type="page" src="php:sbs_page" />
             </program>
         </specification>
 
@@ -91,11 +89,11 @@
 
         <ztabledef name='sbst-post' index='postid'>
             <fielddefs>
-                <fielddef id="postid" datatype="string" access="@" required="1" allow-edit="[-]" allow-create="[-]" />
+                <fielddef id="postid" datatype="sbs-id" access="@" required="1" allow-edit="[-]" allow-create="[-]" />
                 <fielddef id="status" datatype="sbs-post-status" access="@" />
-                <fielddef id="date" datatype="datetime" />
-                <fielddef id="author" datatype="string" />
-                <fielddef id="title" datatype="string" required="1" />
+                <fielddef id="date" datatype="datetime" access='@' />
+                <fielddef id="author" datatype="string" access='@' />
+                <fielddef id="title" datatype="string" access='@' required="1" />
                 <fielddef id="tags" datatype="string" />
                 <fielddef id="body" datatype="sbs-post-body" />
             </fielddefs>
@@ -104,18 +102,17 @@
         <ztabledef name='sbst-comment' index='commentid'>
             <fielddefs>
                 <fielddef id="commentid" datatype="string" access="@" required="1" allow-edit="[-]" allow-create="[-]" />
-                <fielddef id="postid" datatype="sbs-post-status" />
-                <fielddef id="date" datatype="string" />
-                <fielddef id="author" datatype="string" />
-                <fielddef id="title" datatype="string" required="1" />
-                <fielddef id="tags" datatype="string" />
-                <fielddef id="comment-text" datatype="string" />
+                <fielddef id="postid" datatype="sbs-id" access='@' />
+                <fielddef id="refid" datatype="sbs-id" access='@' />
+                <fielddef id="date" datatype="string" access='@' />
+                <fielddef id="author" datatype="string" access='@' />
                 <fielddef id="body" datatype="sbs-post-comment" />
             </fielddefs>
         </ztabledef>
 
+        <typedef name="sbs-id" db-type="uuid"  />
         <typedef name="sbs-post-status" html-type="select" db-type="varchar" maxlength="30" source="draft|review|private|published|deleted|recycle" />
         <typedef name="sbs-post-body" html-type="select" db-type="memo" getter="php:sbs_blog_post_get" setter="php:sbs_blog_post_set" />
-        <typedef name="sbs-post-comment" html-type="select" db-type="memo" />
+        <typedef name="sbs-post-comment" html-type="select" db-type="memo"  getter="php:sbs_blog_comment_get" setter="php:sbs_blog_comment_set"/>
     </module>
 </modules>
