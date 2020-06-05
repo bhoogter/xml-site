@@ -1,0 +1,12 @@
+<?xml version='1.0' ?>
+<div class='sbs-comments'>
+    <row>
+        <span class='sbs-comment'>
+            <span class='sbs-comment-headline' />
+                Comment: <field id='author' /> - <field id='date' />
+            </span>
+            <span class='sbs-comment-body'>
+                <field id='body' />
+            </span>
+    </row>
+</div>
