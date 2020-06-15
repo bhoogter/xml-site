@@ -4,7 +4,7 @@ function sbs_data_folder($sub) {
     return xml_site::$resource_folder . ($sub == '' ? '' : (DIRECTORY_SEPARATOR . $sub));
 }
 
-function data_key() {
+function data_key($path) {
     
 }
 
@@ -24,8 +24,10 @@ function sbs_blog_post_set($postid, $body) {
     return $body;
 }
 
-
 function sbs_page($a = null, $b = null, $c = null, $d = null) {
+    php_logger::clear_log_levels("all");
+    php_logger::debug("a=$a, b=$b, c=$c");
+    php_logger::debug("ref=" . xml_serve::$url_reference);
     php_logger::call();
     $x  = "<?xml version='1.0' ?>\n";
     $x .= "<pagedef id='3'>";
