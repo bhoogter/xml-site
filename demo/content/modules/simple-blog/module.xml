@@ -10,10 +10,15 @@
             </description>
 
             <components>
-                <element name='sbs-post' render='zobject' src='zo' definition="zobjectdef/@name" />
-                <element name='sbs-comments' render='zobject_action' src='zo-class-zaction' definition="zactiondef/@name" />
+<!-- 
+                <element name='sbs-post' render='zobject' src='sbs' definition="zobjectdef/@name" />
+                <element name='sbs-comments' render='zobject' src='zo-comment' definition="zactiondef/@name" />
                 <element name='sbs-feed' render='zobject_action' src='zo-class-zaction' definition="zactiondef/@name" />
-                <element name='sbs-feedload' render='zobject_action' src='zo-class-zaction' definition="zactiondef/@name" />
+                <element name='sbs-feeditem' render='zobject_action' src='zo-class-zaction' definition="zactiondef/@name" />
+                <element name='zobject' render='zobject' src='zo' definition="zobjectdef/@name" /> 
+-->
+
+                <element name='sbs-feedload' render='sbs_feedload' src='sbs' />
             </components>
 
             <program>
@@ -22,6 +27,7 @@
         </specification>
 
         <file id='sbs' type='php' src='blog.php' mode='startup' />
+        <file id='sbs' type='php' src='blog_feedload.php' mode='startup' />
 
         <zobjectdef name="sbs-post-list" key-field="id" index="postid" allow-display="[!]" source='sbst-post'>
             <style>
@@ -40,6 +46,7 @@
                 <fielddef id="date" />
                 <fielddef id="author" />
                 <fielddef id="title" />
+                <fielddef id="slug" />
                 <fielddef id="tags" />
             </fielddefs>
         </zobjectdef>
@@ -94,6 +101,7 @@
                 <fielddef id="date" datatype="datetime" access='@' />
                 <fielddef id="author" datatype="string" access='@' />
                 <fielddef id="title" datatype="string" access='@' required="1" />
+                <fielddef id="slug" datatype="string" getter='php:sbs_slug,@title' />
                 <fielddef id="tags" datatype="string" />
                 <fielddef id="body" datatype="sbs-post-body" />
             </fielddefs>

@@ -30,6 +30,15 @@ class zobject
         } 
         if (!array_key_exists('name', $params)) throw new Exception("No 'name' found in parameters.");
 
+        if (!array_key_exists('mode', $params)) {
+            $tName = $el->getAttribute('mode');
+            if (is_string($tName)) $params['mode'] = $tName;
+        }
+        if (!$vArgs) {
+            $tName = $el->getAttribute('args');
+            if (is_string($tName)) $vArgs = $tName;
+        }
+
         if (is_array($vArgs)) $vArgs = http_build_query($vArgs);
 
         require_once('zobject-element.php');
