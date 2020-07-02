@@ -1,0 +1,8 @@
+<?xml version='1.0' ?>
+<posts>
+    <post postid='0ba71730-8df1-4684-90eb-b9de43bd946f' title='1, 2, 3!' slug='1-2-3' author='Jones' >
+        <slug>1-2-3</slug>
+        <title>1 2, 3!</title>
+        <author>Jones</author>
+    </post>
+</posts>

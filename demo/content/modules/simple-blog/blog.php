@@ -8,15 +8,15 @@ function sbs_slug($key) {
     return $slug;
 }
 
-function sbs_data_key($location) { return sbs_slug($location); }
+function sbs_data_key($location = "") { static $loc; $loc = $location ? $location : $loc; return $location ? sbs_slug($location) : "root"; }
 function sbs_data_folder($location, $sub = "") { return xml_site::$resource_folder . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "blog" . DIRECTORY_SEPARATOR . sbs_data_key($location) . ($sub == '' ? '' : (DIRECTORY_SEPARATOR . $sub)); }
 function sbs_posts_folder($location) { return sbs_data_folder($location, "posts"); }
 function sbs_data_file($location) { return sbs_data_folder($location, "posts.xml"); }
 function sbs_post_file($location, $postid) { return sbs_posts_folder($location) . DIRECTORY_SEPARATOR . $postid . ".md"; }
 function sbs_comment_file($location, $postid) { return sbs_data_folder($location, 'sbs-comments') . DIRECTORY_SEPARATOR . $postid . ".md"; }
 
-function sbs_blog_post_get($location, $postid) { return file_get_contents(sbs_post_file($location, $postid)); }
-function sbs_blog_post_set($location, $postid, $body) { return file_put_contents(sbs_post_file($location, $postid), $body); }
+function sbs_blog_post_get($postid) { return file_get_contents(sbs_post_file("", $postid)); }
+function sbs_blog_post_set($postid, $body) { return file_put_contents(sbs_post_file("", $postid), $body); }
 
 function sbs_post_id_from_slug($location, $slug) {
     php_logger::call();
@@ -67,6 +67,7 @@ function sbs_page($path = null, $location = null)
     if (strpos($path, 'posts/') == 0) {
         $slug = substr($path, 6);
         $id = sbs_post_id_from_slug($location, $slug);
+        zobject::set_key_value('id', $id);
         return xml_file::toDoc(sbs_post($id))->documentElement;
     }
     if (strpos($path, 'edit/') == 0) {

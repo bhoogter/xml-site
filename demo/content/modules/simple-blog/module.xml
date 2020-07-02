@@ -60,7 +60,7 @@
             <action>php:zwpadmin_redirect_url</action>
             <render name="wp-edit" type="edit" src="templates/zobjects-wp-admin-action-edit.xml" />
             <!-- <render name="wp-edit" type="create" src="templates/zobjects-wp-admin-action-create.xml" /> -->
-            <xmlfile src="php:options_xml_file" list="/*/option/@userid" base="/*/option[@userid='@id']/" sort='userid' />
+            <xmlfile src="php:sbs_data_file" list="/*/post/@postid" base="/*/post[@postid='@id']/" sort='postid' />
             <fielddefs>
                 <fielddef id="postid" />
                 <fielddef id="status" />
@@ -81,7 +81,7 @@
             <action>php:zwpadmin_redirect_url</action>
             <render name="wp-edit" type="edit" src="templates/zobjects-wp-admin-action-edit.xml" />
             <!-- <render name="wp-edit" type="create" src="templates/zobjects-wp-admin-action-create.xml" /> -->
-            <xmlfile src="php:options_xml_file" list="/*/option/@userid" base="/*/option[@userid='@id']/" sort='userid' />
+            <xmlfile src="php:sbs_data_file" list="/*/post/@postid" base="/*/post[@postid='@id']/" sort='date' />
             <fielddefs>
                 <fielddef id="commentid" />
                 <fielddef id="postid" />
@@ -99,8 +99,8 @@
                 <fielddef id="postid" datatype="sbs-id" access="@" required="1" allow-edit="[-]" allow-create="[-]" />
                 <fielddef id="status" datatype="sbs-post-status" access="@" />
                 <fielddef id="date" datatype="datetime" access='@' />
-                <fielddef id="author" datatype="string" access='@' />
-                <fielddef id="title" datatype="string" access='@' required="1" />
+                <fielddef id="author" datatype="string" />
+                <fielddef id="title" datatype="string" required="1" />
                 <fielddef id="slug" datatype="string" getter='php:sbs_slug,@title' />
                 <fielddef id="tags" datatype="string" />
                 <fielddef id="body" datatype="sbs-post-body" />

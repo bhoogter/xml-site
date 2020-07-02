@@ -38,7 +38,7 @@
             <xsl:attribute name='zrefresh'><xsl:value-of select='$zrefresh'/></xsl:attribute>
 
             <xsl:variable name='benchstart' select='php:functionString("zobject_bench::time", "transform")'/>
-            <xsl:variable name='named_template' select='php:functionString("zobject::named_template")'/>
+            <xsl:variable name='named_template' select='php:functionString("zobject::get", "named_template")'/>
             <xsl:variable name='specific_template' select='$ZDef/render[@type=$mode]/@src'/>
             <xsl:variable name='alt_template'>
                 <xsl:choose>

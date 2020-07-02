@@ -7,6 +7,7 @@ class zobject
     public const LOG_DIR = __DIR__ . "/../../../logs";
 
     private static $iOBJs = [];
+    private static $keys = [];
 
     static function DEBUG_TRANSFORM() { return ""; }
     static function DEBUG_TRANSFORM_ROW() { return ""; }
@@ -34,6 +35,7 @@ class zobject
             $tName = $el->getAttribute('mode');
             if (is_string($tName)) $params['mode'] = $tName;
         }
+        
         if (!$vArgs) {
             $tName = $el->getAttribute('args');
             if (is_string($tName)) $vArgs = $tName;
@@ -194,9 +196,17 @@ class zobject
         }
 
 
+    static function get_key_value($k) {
+        return @self::$keys[$k];
+    }
+    static function set_key_value($k, $v) {
+        return self::$keys[$k] = $v;
+    }
+
     static function KeyValue($k, $Args="", $alt="")
         {
         php_logger::call();
+        if ($v = self::get_key_value($k)) return $v;
 //        if ($k=='#USERNAME') return GetCurrentUsername();
         $v = @$_REQUEST[$k];
         if ($Args == "" && self::iOBJ()!=null)  {
@@ -272,6 +282,7 @@ class zobject
     static function field_mode($n, $f, $m) { return $m; }
 
     static function get($f) { return !self::iOBJ() ? '' : self::iOBJ()->get($f); }
+    static function set($f, $v) { return !self::iOBJ() ? '' : self::iOBJ()->set($f, $v); }
 
     static function require_test($c) { return !self::iOBJ() ? '' : self::iOBJ()->require_test($c); }
 

@@ -307,6 +307,9 @@ class zobject_element
             return $this->empty_render();
         }
 
+        if (!$this->named_template && key_exists("template", $params))
+            $this->named_template = @$params['template'];
+
         php_logger::trace("zobject::render:  name=$vName, mode=$vMode, args=$vArgs, px=$vPrefix, NT= " . $this->named_template);
         switch ($this->options['type']) {
             case "transform":
