@@ -197,9 +197,11 @@ class zobject
 
 
     static function get_key_value($k) {
+        php_logger::call();
         return @self::$keys[$k];
     }
     static function set_key_value($k, $v) {
+        php_logger::call();
         return self::$keys[$k] = $v;
     }
 
