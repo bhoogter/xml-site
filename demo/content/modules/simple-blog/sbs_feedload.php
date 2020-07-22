@@ -1,6 +1,6 @@
 <?php
 
-class blog_feedload {
+class sbs_feedload {
 
     static function render($el, $params = [], $vArgs = "") {
         $s = "";

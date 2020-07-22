@@ -18,7 +18,7 @@
                 <element name='zobject' render='zobject' src='zo' definition="zobjectdef/@name" /> 
 -->
 
-                <element name='sbs-feedload' render='sbs_feedload' src='sbs' />
+                <element name='sbs-feedload' render='sbs_feedload' src='sbs_feedload' />
             </components>
 
             <program>
@@ -26,8 +26,8 @@
             </program>
         </specification>
 
-        <file id='sbs' type='php' src='blog.php' mode='startup' />
-        <file id='sbs' type='php' src='blog_feedload.php' mode='startup' />
+        <file id='sbs' type='php' src='sbs.php' mode='startup' />
+        <file id='sbs_feedload' type='php' src='sbs_feedload.php' mode='startup' />
 
         <zobjectdef name="sbs-post-list" key-field="id" index="postid" allow-display="[!]" source='sbst-post'>
             <style>
