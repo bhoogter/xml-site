@@ -23,7 +23,8 @@ class zobject
         php_logger::call();
         if (!is_object($el) || (!is_a($el, "DOMElement") && !is_a($el, "DOMDocument")))
             throw new Exception("Bad argument 1 to zobject::render.  Expected DOMElement.  Got: ".print_r($el, true));
-        if (!is_array($params)) throw new Exception("Bad argument 2 to zobject::render.  Expected array.  Got: ".print_r($params, true));
+        if (!is_array($params)) 
+            throw new Exception("Bad argument 2 to zobject::render.  Expected array.  Got: ".print_r($params, true));
 
         if (!array_key_exists('name', $params)) {
             $tName = $el->getAttribute('name');

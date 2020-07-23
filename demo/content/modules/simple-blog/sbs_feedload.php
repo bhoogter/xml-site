@@ -1,15 +1,18 @@
 <?php
 
-class sbs_feedload {
+class sbs_feedload
+{
 
     //https://stackoverflow.com/questions/49932583/i-want-to-trigger-an-event-once-when-scrolled-into-view-with-jquery
-    static function render($el, $params = [], $vArgs = "") {
+    static function render($el, $params = [], $vArgs = "")
+    {
         php_logger::set_log_level("sbs_feedload", "debug");
         php_logger::call();
-        return self::loadmore_div('45');
+        return self::loadmore_div();
     }
 
-    static function loadmore_div($key = "", $ref = "") {
+    static function loadmore_div($key = "", $ref = "")
+    {
         $id = zobject::jsid();
         $url = self::loadmore_url($key, $ref);
         $script = self::loadmore_script($id, $url);
@@ -23,9 +26,10 @@ $script
 DOC;
     }
 
-    static function loadmore_script($id, $url) {
+    static function loadmore_script($id, $url)
+    {
         return <<<DOC
-// $(document).ready(function() { $('#$id').css('background-color', 'red');});
+$(document).ready(function() { $('#$id').css('background-color', 'red');});
 $(window).scroll(function() {
     if (!$('#$id') || !$('#$id').offset()) {
         $(window).off("scroll", arguments.callee);
@@ -40,23 +44,44 @@ $(window).scroll(function() {
 DOC;
     }
 
-    static function loadmore_url($key, $ref) {
-        $loc = $key ? $key : sbs_data_key(xml_serve::$url_reference);
+    static function loadmore_url($ref)
+    {
+        php_logger::call();
+        $loc = sbs_data_key(xml_serve::$url_reference);
         $url = zobject::FetchApiPart("sbs-load-feed", "@loc");
         $url .= "?loc=$loc";
         if (!!$ref) $url .= "&ref=$ref";
         return $url;
     }
 
-    static function load_feed($a = "", $method = "", $url = "") {
+    static function feed_post($id)
+    {
+        return xml_file::toXml(zobject::render_object('sbs-post-list', ['mode' => 'display'], "id=$id"));
+    }
+
+    static function load_feed($a = "", $method = "", $url = "")
+    {
         // php_logger::set_log_level("sbs_feedload", "debug");
         php_logger::call();
-        
-        $loc = @$_REQUEST['loc'];
+
+        // New call stack, so we need to set this.
+        sbs_data_key($loc = @$_REQUEST['loc']);
+        if (!$loc) return "";
+
         $ref = @$_REQUEST['ref'];
+        php_logger::info("FEED: ref=$ref, loc=$loc [key=" . sbs_data_key() . "]");
 
-        // print "FOUND THIS: loc='$loc' ref='$ref'<br/>";
+        $items = sbs_post_id_list_from($ref, 10);
+        php_logger::debug($items);
+        if (!sizeof($items)) return "";
 
-        return self::loadmore_div($loc, intval($ref) + 1);
+        $s = "";
+        foreach ($items as $i) {
+            $s .= self::feed_post($i);
+        }
+
+        $s .= self::loadmore_div($loc, $items[sizeof($items) - 1]);
+
+        return $s;
     }
 }

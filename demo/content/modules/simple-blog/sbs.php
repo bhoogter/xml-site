@@ -27,17 +27,37 @@ function sbs_comment_file($postid) { return sbs_data_folder('sbs-comments') . DI
 function sbs_blog_post_get($postid) { return file_get_contents(sbs_post_file($postid)); }
 function sbs_blog_post_set($postid, $body) { return file_put_contents(sbs_post_file($postid), $body); }
 
-function sbs_post_id_from_slug($slug)
-{
+function sbs_data_file_obj() {
     php_logger::call();
     $source_id = "sbs-source-" . sbs_data_key();
     $datafile = sbs_data_file();
     php_logger::log("sbs_post_id_from_slug: source_id=$source_id, datafile=$datafile");
     $f = xml_site::$source->force_document($source_id, $datafile);
+    return $f;
+}
 
-    $id = $f->get("/*/post[@slug='$slug']/@postid");
+function sbs_post_id_from_slug($slug)
+{
+
+    $id = sbs_data_file_obj()->get("/*/post[@slug='$slug']/@postid");
     php_logger::result($id);
     return $id;
+}
+
+function sbs_post_id_list() {
+    return sbs_data_file_obj()->lst("/*/post/@postid");
+}
+
+function sbs_post_id_list_from($ref, $n = 10) {
+    $lst = sbs_post_id_list();
+    $add = !$ref;
+    $res = [];
+    foreach($lst as $l) {
+        if ($add) $res += [$l];
+        else if ($l == $ref) $add = true;
+        if (--$n <= 0) break;
+    }
+    return $res;
 }
 
 function sbs_page_home()
