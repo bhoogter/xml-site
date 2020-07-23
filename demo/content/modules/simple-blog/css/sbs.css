@@ -1,0 +1,8 @@
+.sbs-loadmore {
+    text-align:center;
+    padding:10px;
+    display:block;
+    width:200px;
+    height:20px;
+    border: solid 1px black;
+}

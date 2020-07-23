@@ -29,6 +29,10 @@
         <file id='sbs' type='php' src='sbs.php' mode='startup' />
         <file id='sbs_feedload' type='php' src='sbs_feedload.php' mode='startup' />
 
+        <file id="sbs-css" type="css" src="css/zo-module-zobjects.css" />
+
+        <api name='sbs-load-feed' loc='/feed/load' type='rest' method='GET' target='sbs_feedload::load_feed' />
+
         <zobjectdef name="sbs-post-list" key-field="id" index="postid" allow-display="[!]" source='sbst-post'>
             <style>
                 <caption>Options</caption>

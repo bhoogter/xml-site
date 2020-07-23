@@ -17,35 +17,15 @@ function sbs_data_key($location = "")
     php_logger::result($res);
     return $res;
 }
-function sbs_data_folder($sub = "")
-{
-    return xml_site::$resource_folder . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "blog" . DIRECTORY_SEPARATOR . sbs_data_key() . ($sub == '' ? '' : (DIRECTORY_SEPARATOR . $sub));
-}
-function sbs_posts_folder()
-{
-    return sbs_data_folder("posts");
-}
-function sbs_data_file()
-{
-    return sbs_data_folder("posts.xml");
-}
-function sbs_post_file($postid)
-{
-    return sbs_posts_folder() . DIRECTORY_SEPARATOR . $postid . ".md";
-}
-function sbs_comment_file($postid)
-{
-    return sbs_data_folder('sbs-comments') . DIRECTORY_SEPARATOR . $postid . ".md";
-}
 
-function sbs_blog_post_get($postid)
-{
-    return file_get_contents(sbs_post_file($postid));
-}
-function sbs_blog_post_set($postid, $body)
-{
-    return file_put_contents(sbs_post_file($postid), $body);
-}
+function sbs_data_folder($sub = "") { return xml_site::$resource_folder . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "blog" . DIRECTORY_SEPARATOR . sbs_data_key() . ($sub == '' ? '' : (DIRECTORY_SEPARATOR . $sub)); }
+function sbs_posts_folder() { return sbs_data_folder("posts"); }
+function sbs_data_file() { return sbs_data_folder("posts.xml"); }
+function sbs_post_file($postid) { return sbs_posts_folder() . DIRECTORY_SEPARATOR . $postid . ".md"; }
+function sbs_comment_file($postid) { return sbs_data_folder('sbs-comments') . DIRECTORY_SEPARATOR . $postid . ".md"; }
+
+function sbs_blog_post_get($postid) { return file_get_contents(sbs_post_file($postid)); }
+function sbs_blog_post_set($postid, $body) { return file_put_contents(sbs_post_file($postid), $body); }
 
 function sbs_post_id_from_slug($slug)
 {
@@ -90,7 +70,7 @@ function sbs_feed($id)
 
 function sbs_page($path = null, $location = null)
 {
-    php_logger::clear_log_levels('debug');
+    // php_logger::clear_log_levels('debug');
     php_logger::call();
 
 

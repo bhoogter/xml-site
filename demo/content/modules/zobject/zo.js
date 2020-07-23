@@ -7,18 +7,22 @@ ConfirmCmd = "";
 ConfirmTgt = "";
 ConfirmSrc = "";
 
-function zoRefresh(id, mode) {
-    if (!(el = document.getElementById(id))) return;
-    if (!(token = el.getAttribute('zrefresh'))) return;
-    ref = '?token=' + token;
-    if (!!mode) ref += "&" + mode;
-    url = zoRefreshURL(ref);
+function zoRefreshUrl(id, url) {
     jQuery.get(url)
         .fail(function () {
             zoToast("Failed to load object.", 'error');
         }).done(function (msg) {
             jQuery('#'+id).replaceWith(msg);
         });
+}
+
+function zoRefresh(id, mode) {
+    if (!(el = document.getElementById(id))) return;
+    if (!(token = el.getAttribute('zrefresh'))) return;
+    ref = '?token=' + token;
+    if (!!mode) ref += "&" + mode;
+    url = zoRefreshURL(ref);
+    zoRefreshUrl(id, url);
 }
 
 function zoPostForm(id) {

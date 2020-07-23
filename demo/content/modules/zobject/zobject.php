@@ -168,6 +168,7 @@ class zobject
     static function handled_elements() { return xml_serve::handler_list(); }
     static function source_document($n) { php_logger::call();return xml_site::$source->get_source_doc($n); }
 
+    static function jsid($pfx = "js_") { return uniqid($pfx); }
     static function new_jsid($pfx = "js_") { return uniqid($pfx); }
 
     static function admin() { return ""; }
