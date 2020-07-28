@@ -90,7 +90,7 @@ function sbs_feed($id)
 
 function sbs_page($path = null, $location = null)
 {
-    // php_logger::clear_log_levels('debug');
+    php_logger::clear_log_levels('debug');
     php_logger::call();
 
 

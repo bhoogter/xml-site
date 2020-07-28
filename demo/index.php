@@ -32,19 +32,19 @@ php_logger::$nanos = true;
 
 
 // php_logger::clear_log_levels('warning');
-php_logger::set_log_level('xml_file', 'all');
+// php_logger::set_log_level('xml_file', 'all');
 // php_logger::set_log_level('xml_site', 'all');
 // php_logger::set_log_level('xml_serve', 'all');
-php_logger::set_log_level('xml_serve_extensions', 'all');
-// php_logger::set_log_level('resource_resolver', 'trace');
+// php_logger::set_log_level('xml_serve_extensions', 'all');
+php_logger::set_log_level('resource_resolver', 'all');
 // php_logger::set_log_level('page_source', 'all');
 // php_logger::set_log_level('render_content', 'trace');
 // php_logger::set_log_level('render_perfect', 'trace');
-php_logger::set_log_level('zobject', 'trace');
+// php_logger::set_log_level('zobject', 'trace');
 // php_logger::set_log_level('zobject_access', 'trace');
 // php_logger::set_log_level('zobject_autotemplate', 'all');
 php_logger::set_log_level('zobject_element', 'trace');
-php_logger::set_log_level('zobject_query', 'trace');
+// php_logger::set_log_level('zobject_query', 'trace');
 // php_logger::set_log_level('zobject_query::load_result', 'dump');
 // php_logger::set_log_level('zobject_query::GetZObjectCreateQuery', 'all');
 // php_logger::set_log_level('options_api', 'all');

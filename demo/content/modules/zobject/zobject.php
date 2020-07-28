@@ -65,7 +65,8 @@ class zobject
     {
         php_logger::call();
         $params['name'] = $n;
-        return self::render(xml_file::toDoc("<?xml version='1.0' ?>\n<$n />")->documentElement, $params, $vArgs);
+        $x = "<?xml version='1.0' ?>\n<$n />";
+        return self::render(xml_file::toDocEl($x), $params, $vArgs);
     }
 
     static function refresh_object() 

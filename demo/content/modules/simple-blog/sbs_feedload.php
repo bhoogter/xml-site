@@ -6,7 +6,7 @@ class sbs_feedload
     //https://stackoverflow.com/questions/49932583/i-want-to-trigger-an-event-once-when-scrolled-into-view-with-jquery
     static function render($el, $params = [], $vArgs = "")
     {
-        php_logger::set_log_level("sbs_feedload", "debug");
+        // php_logger::set_log_level("sbs_feedload", "debug");
         php_logger::call();
         return self::loadmore_div();
     }
@@ -56,7 +56,7 @@ DOC;
 
     static function feed_post($id)
     {
-        return xml_file::toXml(zobject::render_object('sbs-post-list', ['mode' => 'display'], "id=$id"));
+        return xml_file::toXml(zobject::render_object('sbs-post-list', ['mode' => 'feed', 'module' => 'simple-blog'], "id=$id"));
     }
 
     static function load_feed($a = "", $method = "", $url = "")

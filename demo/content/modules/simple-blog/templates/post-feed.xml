@@ -1,0 +1,7 @@
+<?xml version='1.0' ?>
+<div class='sbs-post-feed'>
+    <h3><a href='#'><field id='title' /></a></h3>
+    <h4>By: <field id='author' /> - <field id='date' format='shortdate' /></h4>
+    Comments: x<br/>
+    <field id='tags' format='taglist'/><br/>
+</div>

@@ -303,14 +303,16 @@ class zobject_element
         $vPrefix = @$params['prefix'];
         php_logger::debug("XXX=====   zobject::render($vName, $vMode, $vArgs, $vPrefix)   =====XXX");
 
-        if (!$this->process_arguments($vName, $vMode, $vArgs, $vPrefix)) {
+        if (!$this->process_arguments($vName, $vMode, $vArgs, $vPrefix, false)) {
             return $this->empty_render();
         }
+        if (@$this->options['module'] == '') $this->options['module'] = @$params['module'];
+
 
         if (!$this->named_template && key_exists("template", $params))
             $this->named_template = @$params['template'];
 
-        php_logger::trace("zobject::render:  name=$vName, mode=$vMode, args=$vArgs, px=$vPrefix, NT= " . $this->named_template);
+        php_logger::trace("zobject::render:  name=$vName, mode=$vMode, args=$vArgs, px=$vPrefix, NT=" . $this->named_template);
         switch ($this->options['type']) {
             case "transform":
                 $Ix = zobject::KeyValue("value");
@@ -588,8 +590,9 @@ class zobject_element
     function GetZObjectTemplate($FName = "", $ZName = "", $ZMode = "")
     {
         php_logger::call();
+        php_logger::set_log_level("resource_resolver", "all");
         if ($FName != '')
-            $FName = xml_site::resolve_file($FName, "module", $this->get_var("module"));
+            $FName = xml_site::resolve_file($FName, ["module"], ["module" => $this->get_var("module")], );
         php_logger::debug("FName=$FName");
         if (!($FName == "") && !file_exists($FName)) {
             php_logger::warn("Specified Template File Does Not Exists: $FName, " . getcwd() . "," . realpath($FName), "ZObj::GetZObjectTemplate");
