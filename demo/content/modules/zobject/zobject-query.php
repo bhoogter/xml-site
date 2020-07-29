@@ -620,7 +620,7 @@ class zobject_query
         return null;
     }
 
-    function GetXMLAutoNumber()
+    static function GetXMLAutoNumber()
     {
         php_logger::call("FIX ME");
         $D = self::GetXMLFile(zobject::iOBJ()->name, zobject::iOBJ()->args, $L);
@@ -680,8 +680,11 @@ class zobject_query
                 $d = zobject::FetchObjFieldPart($ZName, $l, "@datatype");
                 php_logger::trace("Field $l: DT=$d, Multiple=$M");
                 $getter = zobject::FetchDTPart($d, '@getter');
-                if (php_hook::is_hook($getter)) $v = php_hook::invoke($getter, $ixval);
-                else if (substr($d, 0, 1) == ":") $v = "";
+                if ($getter == '') $getter = zobject::FetchObjFieldPart($ZName, $l, '@getter');
+                if (php_hook::is_hook($getter)) {
+                    php_logger::log("Invoking getter [$getter]");
+                    $v = php_hook::invoke($getter, $ixval);
+                } else if (substr($d, 0, 1) == ":") $v = "";
                 else $v = $M ? self::GetMultiValuesFromDoc($D, $m) : $v = $D->fetch_part($m);
             }
             if ($v == "") $v = php_hook::call(zobject::FetchObjFieldPart($ZName, $l, "@default"), $ZArgs);
@@ -701,6 +704,7 @@ class zobject_query
         //$x=str_replace(array("\n"," "),array("<br/>","&nbsp;"),ESKf($x));print $x;die();
 
         $D = new DOMDocument;
+        php_logger::result($x);
         $D->loadXML($x);
         return $D;
     }
@@ -708,7 +712,7 @@ class zobject_query
     static function GetZObjectMultiXmlFile($ZName, $ZMode, $ZArgs, &$rc)
     {
         php_logger::call();
-        if ($ZName == "") throw new Excpetion("<span style='font-weight:bold;font-size:20'>DIE:</span> <u>No ZName in GetZObjectXmlFile</u>");
+        if ($ZName == "") throw new Exception("<span style='font-weight:bold;font-size:20'>DIE:</span> <u>No ZName in GetZObjectXmlFile</u>");
 
         $x = "";
 

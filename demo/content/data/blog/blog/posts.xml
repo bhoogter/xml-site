@@ -1,6 +1,6 @@
 <?xml version='1.0' ?>
 <posts>
-    <post postid='0ba71730-8df1-4684-90eb-b9de43bd946f' title='1, 2, 3!' slug='1-2-3' author='Jones' />
-    <post postid='c42b1077-2902-4ca2-a41f-aab93a41de93' title='Post #2' slug='post-2' author='Bill' />
-    <post postid='abea3b68-cc51-4f52-921e-da442f5f08cb' title='Post #3' slug='post-3' author='Bill' />
+    <post postid='0ba71730-8df1-4684-90eb-b9de43bd946f' date='1596004606' title='1, 2, 3!' slug='1-2-3' author='Jones' />
+    <post postid='c42b1077-2902-4ca2-a41f-aab93a41de93' date='1596024606' title='Post #2' slug='post-2' author='Bill' />
+    <post postid='abea3b68-cc51-4f52-921e-da442f5f08cb' date='1596044606' title='Post #3' slug='post-3' author='Bill' />
 </posts>

@@ -5,8 +5,13 @@ function sbs_slug($key)
     $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $key)));
     while (false !== strpos($slug, "--")) $slug = str_replace("--", "-", $slug);
     while (0 === strpos($slug, "-")) $slug = substr($slug, 1);
-    while (strlen($slug) - 1 === strpos($slug, "-")) $slug = substr($slug, 0, strlen($slug) - 1);
+    while (strlen($slug) - 1 === strrpos($slug, "-")) $slug = substr($slug, 0, strlen($slug) - 1);
     return $slug;
+}
+
+function sbs_slug_from_id($id) {
+    $title = sbs_post_field($id, "@title");
+    return sbs_slug($title);
 }
 
 function sbs_data_key($location = "")
@@ -36,9 +41,12 @@ function sbs_data_file_obj() {
     return $f;
 }
 
+function sbs_post_field($id, $part) {
+    return sbs_data_file_obj()->get("/*/post[@postid='$id']/$part");
+}
+
 function sbs_post_id_from_slug($slug)
 {
-
     $id = sbs_data_file_obj()->get("/*/post[@slug='$slug']/@postid");
     php_logger::result($id);
     return $id;
@@ -82,7 +90,7 @@ function sbs_post($id, $mode = "display")
 function sbs_feed($id)
 {
     $x  = "<?xml version='1.0' ?>\n";
-    $x .= "<pagedef id='3'>";
+    $x .= "<pagedef>";
     $x .= "  <content id='content' type='xml' src='feed.xml' />";
     $x .= "</pagedef>";
     return $x;
@@ -112,4 +120,14 @@ function sbs_page($path = null, $location = null)
         $id = sbs_post_id_from_slug($slug);
         return xml_file::toDoc(sbs_post($id, "edit"))->documentElement;
     }
+}
+
+function sbs_taglist() {
+    php_logger::call();
+    return "";
+}
+
+function sbs_shortdate($epoch) {
+    $dt = new DateTime("@$epoch");  // convert UNIX timestamp to PHP DateTime
+    return $dt->format('Y-m-d H:i:s'); 
 }

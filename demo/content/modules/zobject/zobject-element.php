@@ -245,9 +245,13 @@ class zobject_element
 
     function result_field($f, $rn = "")
     {
+        php_logger::call();
         if (!$this->result) return "";
         if ($rn == "") $rn = $this->RecNo();
-        return $this->result->fetch_part("//row[$rn]/field[@id='$f']");
+        php_logger::alert($this->result->saveXML());
+        $result = $this->result->fetch_part("//row[$rn]/field[@id='$f']");
+        php_logger::result($result);
+        return $result;
     }
 
     function set_result($D) { $this->result = new xml_file($D); }
@@ -534,17 +538,19 @@ class zobject_element
 
     //  Called on attributes when interpreting unhandled HTML elements.
     //  Allows fields to be handled inside of things like an HREF element
-    function TemplateEscapeTokens($s)
+    function TemplateEscapeTokens($s, $t = "", $u = "")
     {
         php_logger::call();
-        //if (strlen($s)<100)print "<br/>TemplateEscapeTokens($s)";else print "<br/>TemplateEscapeTokens(...)";
+        if (strlen($s)<100)print "<br/>TemplateEscapeTokens($s)";else print "<br/>TemplateEscapeTokens(...)";
+        php_logger::log("..........1");
         while (($a = strpos($s, "{@")) !== false) {
+            php_logger::log("..........2");
             $b = strpos($s, "}", $a);
             $c = substr($s, $a + 2, $b - $a - 2);
             $d = zobject::KeyValue($c, $this->args);
             //print "<br/>test=".zobject::KeyValue($c, $this->args);
 
-            if ($d == "") $d = DefaultValue(zobject::FetchObjFieldPart($this->name, $c, "@default"));
+            if ($d == "") $d = $this->DefaultValue(zobject::FetchObjFieldPart($this->name, $c, "@default"));
             //print "<br/>TemplateEscapeTokens 1: a=$a, b=$b, c=$c, d=$d";
             $s = str_replace("{@" . $c . "}", $d, $s);
         }

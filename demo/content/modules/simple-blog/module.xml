@@ -104,9 +104,10 @@
                 <fielddef id="date" datatype="datetime" access='@' />
                 <fielddef id="author" datatype="string" access='@'/>
                 <fielddef id="title" datatype="string" required="1" access='@' />
-                <fielddef id="slug" datatype="string" getter='php:sbs_slug,@title' />
                 <fielddef id="tags" datatype="string" />
                 <fielddef id="body" datatype="sbs-post-body" />
+                <fielddef id="slug" datatype="string" getter='php:sbs_slug_from_id' />
+                <fielddef id="commentcount" datatype="number" />
             </fielddefs>
         </ztabledef>
 
