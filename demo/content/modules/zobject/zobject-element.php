@@ -248,7 +248,6 @@ class zobject_element
         php_logger::call();
         if (!$this->result) return "";
         if ($rn == "") $rn = $this->RecNo();
-        php_logger::alert($this->result->saveXML());
         $result = $this->result->fetch_part("//row[$rn]/field[@id='$f']");
         php_logger::result($result);
         return $result;
@@ -541,17 +540,15 @@ class zobject_element
     function TemplateEscapeTokens($s, $t = "", $u = "")
     {
         php_logger::call();
-        if (strlen($s)<100)print "<br/>TemplateEscapeTokens($s)";else print "<br/>TemplateEscapeTokens(...)";
-        php_logger::log("..........1");
+        // if (strlen($s)<100)print "<br/>TemplateEscapeTokens($s)";else print "<br/>TemplateEscapeTokens(...)";
         while (($a = strpos($s, "{@")) !== false) {
-            php_logger::log("..........2");
             $b = strpos($s, "}", $a);
             $c = substr($s, $a + 2, $b - $a - 2);
             $d = zobject::KeyValue($c, $this->args);
-            //print "<br/>test=".zobject::KeyValue($c, $this->args);
+            php_logger::debug("test=".zobject::KeyValue($c, $this->args));
 
             if ($d == "") $d = $this->DefaultValue(zobject::FetchObjFieldPart($this->name, $c, "@default"));
-            //print "<br/>TemplateEscapeTokens 1: a=$a, b=$b, c=$c, d=$d";
+            php_logger::debug("TemplateEscapeTokens 1: a=$a, b=$b, c=$c, d=$d");
             $s = str_replace("{@" . $c . "}", $d, $s);
         }
 
@@ -560,10 +557,10 @@ class zobject_element
             $c = substr($s, $a + 5, $b - $a - 5);
             $d = zobject::KeyValue($c, $this->args);
             $d = php_hook::call("php:$c", $this->args);
-            //print "<br/>TemplateEscapeTokens 2: a=$a, b=$b, c=$c, d=$d";
+            php_logger::debug("TemplateEscapeTokens 2: a=$a, b=$b, c=$c, d=$d");
             $s = str_replace("{php:" . $c . "}", $d, $s);
         }
-        //print "<br/>s=$s";
+        php_logger::result($s);
         //die($s);
         return $s;
     }
@@ -596,9 +593,10 @@ class zobject_element
     function GetZObjectTemplate($FName = "", $ZName = "", $ZMode = "")
     {
         php_logger::call();
-        php_logger::set_log_level("resource_resolver", "all");
-        if ($FName != '')
-            $FName = xml_site::resolve_file($FName, ["module"], ["module" => $this->get_var("module")], );
+        if ($FName != '') {
+            $module = zobject::FetchObjPart($this->name, '../@name');
+            $FName = xml_site::resolve_file($FName, ["module"], ["module" => $module], );
+        }
         php_logger::debug("FName=$FName");
         if (!($FName == "") && !file_exists($FName)) {
             php_logger::warn("Specified Template File Does Not Exists: $FName, " . getcwd() . "," . realpath($FName), "ZObj::GetZObjectTemplate");

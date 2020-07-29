@@ -1,7 +1,7 @@
 <?xml version='1.0' ?>
 <div class='sbs-post-display'>
-    <h3><field id='title' />></h2>
-    <h4>By: <field id='author' /> - <field id='date' format='shortdate' /></h4>
+    <h3><field id='title' /></h3>
+    <h4>By: <field id='author' /> - <field id='date' format='php:sbs_shortdate' /></h4>
     <hr />
     <field id='body' />
     <hr />

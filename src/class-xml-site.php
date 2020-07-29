@@ -24,6 +24,7 @@ class xml_site
             self::$source->get_source("SITE")
         );
         self::load_modules();
+        // die(print_r(self::$source->get_source('MODULES')->saveXML(), true));
     }
 
     public static function resolve_files($resource, $types = [], $mappings = [], $subfolders = []) { return xml_serve::resource_resolver()->resolve_files($resource, $types, $mappings, $subfolders); }

@@ -56,7 +56,7 @@ DOC;
 
     static function feed_post($id)
     {
-        return xml_file::toXml(zobject::render_object('sbs-post-list', ['mode' => 'feed', 'module' => 'simple-blog'], "id=$id"));
+        return xml_file::toXml(zobject::render_object('sbs-post-list', ['mode' => 'feed'], "id=$id"));
     }
 
     static function load_feed($a = "", $method = "", $url = "")

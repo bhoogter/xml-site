@@ -47,7 +47,16 @@ function sbs_post_field($id, $part) {
 
 function sbs_post_id_from_slug($slug)
 {
-    $id = sbs_data_file_obj()->get("/*/post[@slug='$slug']/@postid");
+    $posts = sbs_data_file_obj()->nds("/*/post");
+    $id = '';
+    foreach ($posts as $post) {
+        $a = $post->getAttribute('title');
+        if (sbs_slug($a) === $slug) {
+            $id = $post->getAttribute('postid');
+            break;
+        }
+    }
+    // $id = sbs_data_file_obj()->get("/*/post[@slug='$slug']/@postid");
     php_logger::result($id);
     return $id;
 }
@@ -81,9 +90,8 @@ function sbs_post($id, $mode = "display")
 {
     $x  = "<?xml version='1.0' ?>\n";
     $x .= "<pagedef id='3'>";
-    $x .= "  <content id='content' type='xhtml' src='sbs-post-$mode.xml' />";
+    $x .= "  <content id='content' type='xhtml' src='pages/$mode.xml' />";
     $x .= "</pagedef>";
-    // $t = file_get_contents("C:\Users\bhoogter\Desktop\Personal\php\xml-site\demo\content\modules\simple-blog\sbs-post.xml");
     return $x;
 }
 
@@ -91,16 +99,14 @@ function sbs_feed($id)
 {
     $x  = "<?xml version='1.0' ?>\n";
     $x .= "<pagedef>";
-    $x .= "  <content id='content' type='xml' src='feed.xml' />";
+    $x .= "  <content id='content' type='xml' src='pages/feed.xml' />";
     $x .= "</pagedef>";
     return $x;
 }
 
 function sbs_page($path = null, $location = null)
 {
-    php_logger::clear_log_levels('debug');
     php_logger::call();
-
 
     if ($path == "") return xml_file::toDoc(sbs_page_home())->documentElement;
     if ($path == 'posts/feed') {
