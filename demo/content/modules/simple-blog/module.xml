@@ -109,7 +109,7 @@
 
         <typedef name="sbs-id" db-type="uuid"  />
         <typedef name="sbs-post-status" html-type="select" db-type="varchar" maxlength="30" source="draft|review|private|published|deleted|recycle" />
-        <typedef name="sbs-post-body" html-type="select" db-type="memo" getter="php:sbs_blog_post_get" setter="php:sbs_blog_post_set" />
-        <typedef name="sbs-post-comment" html-type="select" db-type="memo"  getter="php:sbs_blog_comment_get" setter="php:sbs_blog_comment_set"/>
+        <typedef name="sbs-post-body" html-type="select" db-type="memo" getter="php:sbs_blog_post_get" setter="php:sbs_blog_post_set" format='php:zobject_format::markdownToHtml' output-html='yes' />
+        <typedef name="sbs-post-comment" html-type="select" db-type="memo" getter="php:sbs_blog_comment_get" setter="php:sbs_blog_comment_set" format='php:zobject_format::markdownToHtml'/>
     </module>
 </modules>

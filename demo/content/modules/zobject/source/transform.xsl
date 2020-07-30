@@ -254,11 +254,19 @@
         <xsl:variable name='rn' select='php:functionString("zobject::recno")'/>
         <xsl:variable name='fid' select='@id' />
         <xsl:variable name='fDef' select='$ZDef/fielddefs/fielddef[@id=$fid]' />
+        <xsl:variable name='ztfDef' select='$TDef/fielddefs/fielddef[@id=$fid]' />
         <xsl:variable name='ixf' select='$ZDef/@index'/>
 
         <xsl:variable name='multiple' select='$fDef/@multiple'/>
 
-        <xsl:variable name='default' select='php:functionString("php_hook::call", $fDef/@default)'/>
+        <xsl:variable name='default'>
+            <xsl:choose>
+                <xsl:when test='0!=string-length(@default)'><xsl:value-of select='php:functionString("php_hook::call", @default)'/></xsl:when>
+                <xsl:when test='0!=string-length($fDef/@default)'><xsl:value-of select='php:functionString("php_hook::call", $fDef/@default)'/></xsl:when>
+                <xsl:when test='0!=string-length($ztfDef/@default)'><xsl:value-of select='php:functionString("php_hook::call", $ztfDef/@default)'/></xsl:when>
+                <xsl:otherwise></xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
         <xsl:variable name='bfvalue'>
             <xsl:choose>
                 <xsl:when test='string-length($obj/row[number($rn)]/field[@id=$fid])!=0'><xsl:value-of select='$obj/row[number($rn)]/field[@id=$fid]'/></xsl:when>
@@ -267,8 +275,9 @@
         </xsl:variable>
         <xsl:variable name='bfvalueFormat'>
             <xsl:choose>
-                <xsl:when test='string-length(@format)!=0'><xsl:value-of select='@format'/></xsl:when>
-                <xsl:otherwise><xsl:value-of select='@format'/></xsl:otherwise>
+                <xsl:when test='0!=string-length(@format)'><xsl:value-of select='@format'/></xsl:when>
+                <xsl:when test='0!=string-length($fDef/@format)'><xsl:value-of select='$fDef/@format'/></xsl:when>
+                <xsl:otherwise><xsl:value-of select='$ztfDef/@format'/></xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
         <xsl:variable name='Fbfvalue'>
@@ -280,7 +289,8 @@
         <xsl:variable name='datatype'>
             <xsl:choose>
                 <xsl:when test='string-length(@datatype)!=0'><xsl:value-of select='string(@datatype)'/></xsl:when>
-                <xsl:otherwise><xsl:value-of select='string($fDef/@datatype)'/></xsl:otherwise>
+                <xsl:when test='string-length($fDef/@datatype)!=0'><xsl:value-of select='string($fDef/@datatype)'/></xsl:when>
+                <xsl:otherwise><xsl:value-of select='string($ztfDef/@datatype)'/></xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
         <xsl:variable name='fmode1'>
@@ -300,8 +310,8 @@
         <xsl:variable name='sc3' select='@source'/>
         <xsl:variable name='tsource'>
             <xsl:choose>
-                <xsl:when test='$sc3 != ""'><xsl:value-of select='$sc3' /></xsl:when>
-                <xsl:when test='$sc2 != ""'><xsl:value-of select='$sc2' /></xsl:when>
+                <xsl:when test='0!=string-length($sc3)'><xsl:value-of select='$sc3' /></xsl:when>
+                <xsl:when test='0!=string-length($sc2)'><xsl:value-of select='$sc2' /></xsl:when>
                 <xsl:otherwise><xsl:value-of select='$sc1' /></xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
@@ -310,14 +320,16 @@
         <xsl:variable name='bvalidation'>
             <xsl:choose>
                 <xsl:when test='string-length(@validation)!=0'><xsl:value-of select='string(@validation)'/></xsl:when>
-                <xsl:when test='string-length($ZDef/fielddefs/fielddef[@id=$fid]/@validation)!=0'><xsl:value-of select='string($ZDef/fielddefs/fielddef[@id=$fid]/@validation)'/></xsl:when>
+                <xsl:when test='string-length($fDef/@validation)!=0'><xsl:value-of select='string($fDef/@validation)'/></xsl:when>
+                <xsl:when test='string-length($ztfDef/@validation)!=0'><xsl:value-of select='string($ztfDef/@validation)'/></xsl:when>
                 <xsl:otherwise><xsl:value-of select='string($DEFS/*/typedef[@name=$datatype]/@validation)'/></xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
         <xsl:variable name='rvalidation'>
             <xsl:choose>
                 <xsl:when test='string-length(@required)!=0'><xsl:value-of select='string(@required)'/></xsl:when>
-                <xsl:otherwise><xsl:value-of select='string($ZDef/fielddefs/fielddef[@id=$fid]/@required)'/></xsl:otherwise>
+                <xsl:when test='string-length($fDef/@required)!=0'><xsl:value-of select='string($fDef/@required)'/></xsl:when>
+                <xsl:otherwise><xsl:value-of select='string($ztfDef/@required)'/></xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
         <xsl:variable name='validation' select='php:functionString("zobject_validation::validation_string", string($bvalidation), string($rvalidation))'/>

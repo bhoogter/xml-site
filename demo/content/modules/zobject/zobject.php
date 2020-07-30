@@ -148,7 +148,7 @@ class zobject
             $x = xml_site::$source->get("//MODULES/modules/module/ztabledef[@name='$s']/fielddefs/fielddef[@id='$f']/$p");
         return $x;
     }
-    static function FetchObjFieldCategories($n) 
+    static function FetchObjFieldCategories($n)
         { 
             php_logger::log($n);
             $lst = array_unique(xml_site::$source->lst("//MODULES/modules/module/zobjectdef[@name='$n']/fieldsdefs/fielddef/@category"));

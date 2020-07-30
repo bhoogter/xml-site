@@ -80,26 +80,26 @@
         <typedef name="y_validation" db-type="varchar" max-length="50" />
         <typedef name="y_validation_required" html-type="checkbox" db-type="varchar" max-length="50" />
         <typedef name="y_validation_remote" db-type="varchar" max-length="50" />
-        <typedef name="yesno" html-type="select" db-type="integer" source="Yes|No" format="php:YesNo" normalize="php:YesNoVal" />
-        <typedef name="noyes" html-type="select" db-type="integer" source="No|Yes" format="php:YesNo" normalize="php:YesNoVal" />
+        <typedef name="yesno" html-type="select" db-type="integer" source="Yes|No" format="php:zobject_format::YesNo" normalize="php:zobject_format::YesNoVal" />
+        <typedef name="noyes" html-type="select" db-type="integer" source="No|Yes" format="php:zobject_format::YesNo" normalize="php:zobject_format::YesNoVal" />
         <typedef name="html_fragment" html-type="textarea" rows="2" cols="50" output-escape="1" />
         <typedef name="y_article_forum" html-type="select" source="php:ArticleForumList" />
         <typedef name="y_blog_linkstyle" html-type="select" source="Default|ID|UID|Date/Name|Month/Name" />
         <typedef name="" db-type="varchar" />
         <typedef name="hidden" html-type="hidden" />
         <typedef name="password" html-type="password" maxlength="50" size="20" db-type="varchar" />
-        <typedef name="checkbox" html-type="checkbox" db-type="integer" normalize="php:NoYesVal" format="php:YesNo" />
+        <typedef name="checkbox" html-type="checkbox" db-type="integer" normalize="php:zobject_format::NoYesVal" format="php:zobject_format::YesNo" />
         <typedef name="long" maxlength="15" size="10" db-type="integer" regexp="([-]?([1-9][0-9]*))|[0]" />
         <typedef name="username" maxlength="50" size="20" db-type="varchar" />
         <typedef name="uid" size="30" db-type="string" default="php:uniqid" />
         <typedef name="number" maxlength="15" size="10" regexp="(-?)([0-9]?)([0-9]*)(.?[0-9]*)" db-type="integer" />
         <typedef name="positive_integer" maxlength="15" regexp="[0-9]*" db-type="integer" />
-        <typedef name="date" maxlength="10" regexp="([0-9]?)([0-9])([/.:])([0-9]?)([0-9])([/.:])([0-9][0-9]?[0-9]?[0-9]?" size="10" normalize="php:CleanDate" format="php:CleanDate" db-type="date" />
-        <typedef name="date_today" maxlength="10" regexp="([0-9]?)([0-9])([/.:])([0-9]?)([0-9])([/.:])([0-9][0-9]?[0-9]?[0-9]?" size="10" normalize="php:CleanDate" format="php:CleanDate" db-type="date" default="php:Today" />
-        <typedef name="datetime" maxlength="30" size="15" normalize="php:CleanDateTime" format="php:CleanDateTime" db-type="date" />
-        <typedef name="datetime_now" maxlength="30" size="15" normalize="php:CleanDateTime" format="php:CleanDateTime" db-type="date" default="php:Now" />
-        <typedef name="dateunix" maxlength="10" regexp="([0-9]?)([0-9])([/.:])([0-9]?)([0-9])([/.:])([0-9][0-9]?[0-9]?[0-9]?" size="10" normalize="php:strtotime" format="php:DressUnixDate" db-type="integer" default="php:time" />
-        <typedef name="datetimeunix" maxlength="10" regexp="([0-9]?)([0-9])([/.:])([0-9]?)([0-9])([/.:])([0-9][0-9]?[0-9]?[0-9]?" size="10" normalize="php:strtotime" format="php:DressUnixDateTime" db-type="integer" default="php:time" />
+        <typedef name="date" maxlength="10" regexp="([0-9]?)([0-9])([/.:])([0-9]?)([0-9])([/.:])([0-9][0-9]?[0-9]?[0-9]?" size="10" normalize="php:zobject_format::CleanDate" format="php:zobject_format::CleanDate" db-type="date" />
+        <typedef name="date_today" maxlength="10" regexp="([0-9]?)([0-9])([/.:])([0-9]?)([0-9])([/.:])([0-9][0-9]?[0-9]?[0-9]?" size="10" normalize="php:zobject_format::CleanDate" format="php:zobject_format::CleanDate" db-type="date" default="php:zobject_format::Today" />
+        <typedef name="datetime" maxlength="30" size="15" normalize="php:zobject_format::CleanDateTime" format="php:zobject_format::CleanDateTime" db-type="date" />
+        <typedef name="datetime_now" maxlength="30" size="15" normalize="php:zobject_format::CleanDateTime" format="php:zobject_format::CleanDateTime" db-type="date" default="php:zobject_format::Now" />
+        <typedef name="dateunix" maxlength="10" regexp="([0-9]?)([0-9])([/.:])([0-9]?)([0-9])([/.:])([0-9][0-9]?[0-9]?[0-9]?" size="10" normalize="php:strtotime" format="php:zobject_format::DressUnixDate" db-type="integer" default="php:time" />
+        <typedef name="datetimeunix" maxlength="10" regexp="([0-9]?)([0-9])([/.:])([0-9]?)([0-9])([/.:])([0-9][0-9]?[0-9]?[0-9]?" size="10" normalize="php:strtotime" format="phpzobject_format:::DressUnixDateTime" db-type="integer" default="php:time" />
         <typedef name="string" size="50" db-type="varchar" />
         <typedef name="max_string" maxlength="255" size="50" db-type="varchar" />
         <typedef name="macro_string" maxlength="5000" size="50" db-type="varchar" />
@@ -115,8 +115,8 @@
         <typedef name="city" maxlength="30" size="30" db-type="varchar" />
         <typedef name="state" maxlength="2" size="2" db-type="varchar" />
         <typedef name="zip" maxlength="10" size="10" db-type="varchar" />
-        <typedef name="url" maxlength="255" size="30" db-type="varchar" format="php:DressURL" normalize="php:CleanURL" />
-        <typedef name="uri" maxlength="255" size="30" db-type="varchar" format="php:DressURL" normalize="php:CleanURL" />
+        <typedef name="url" maxlength="255" size="30" db-type="varchar" format="php:zobject_format::DressURL" normalize="php:zobject_format::CleanURL" />
+        <typedef name="uri" maxlength="255" size="30" db-type="varchar" format="php:zobject_format::DressURL" normalize="php:zobject_format::CleanURL" />
         <typedef name="phone" maxlength="20" db-type="varchar" />
         <typedef name="email" maxlength="200" db-type="varchar" />
         <typedef name="keywordlist" maxlength="200" size="50" db-type="varchar" />

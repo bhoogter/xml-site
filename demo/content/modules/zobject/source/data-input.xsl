@@ -26,7 +26,7 @@
             </xsl:choose>
         </xsl:variable>
 
-		<xsl:variable name='nValue'><xsl:value-of select='php:functionString("zobject_format::FormatDataField", string($value), string($datatype))'/></xsl:variable>
+		<xsl:variable name='nValue'><xsl:value-of select='php:function("zobject_format::FormatDataField", string($value), string($datatype))'/></xsl:variable>
 
         <xsl:if test='php:function("zobject::DEBUG_TRANSFORM_DATA_FIELD")'>
             <table class='DEBUG'>
@@ -151,11 +151,14 @@
 				</xsl:variable>
 				<xsl:variable name='pval' select='php:functionString("zobject_format::PrettyValue", $dispval)'/>
 				<xsl:choose>
-					<xsl:when test='string($iDataTypes/*/typedef[@name=$datatype]/@output-escape)!=""'>
-						<xsl:value-of disable-output-escaping='no' select='$pval' />
+					<xsl:when test='0!=string-length($iDataTypes/*/*/typedef[@name=$datatype]/@output-html)'>
+						<xsl:copy-of disable-output-escaping='no' select='php:function("xml_file::toDocEl", $dispval)' />
+					</xsl:when>
+					<xsl:when test='0!=string-length($iDataTypes/*/*/typedef[@name=$datatype]/@output-escape)'>
+						[<xsl:value-of disable-output-escaping='yes' select='$pval' />]
 					</xsl:when>
 					<xsl:otherwise>
-						<xsl:value-of disable-output-escaping='yes' select='$pval' />
+						<xsl:value-of disable-output-escaping='no' select='$pval' />
 					</xsl:otherwise>
 				</xsl:choose>
 			</xsl:otherwise>
