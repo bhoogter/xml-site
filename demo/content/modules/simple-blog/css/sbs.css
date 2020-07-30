@@ -6,3 +6,28 @@
     height:20px;
     border: solid 1px black;
 }
+
+.sbs-feed {
+    width: 100%;
+    padding: 2%;
+}
+
+.sbs-post-feed {
+    width: 100%;
+    border: solid 1px black;
+    border-radius: 3px;
+    margin: 20px 15px 10px 0px;
+    padding: 10px;
+}
+
+.sbs-post-feed h3 {
+    font-size: 110%;
+    font-weight: 900;
+    background-color: slateblue;
+    margin: 2px;
+    padding: 2px;
+}
+
+.sbs-post-feed * a {
+    color: blanchedalmond;
+}

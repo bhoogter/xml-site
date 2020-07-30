@@ -32,41 +32,16 @@ class zobject_format
         return $f;
     }
 
-    public static function CleanDate($s) {
-        return self::DressUnixDate($s);
-    }
+    public static function CleanDate($s) { return self::DressUnixDate($s); }
+    public static function CleanDateTime($s) { return self::DressUnixDateTime(strtotime($s)); }
 
-    public static function CleanDateTime($s) {
-        return self::DressUnixDateTime(strtotime($s));
-    }
+    public static function DressUnixDate($epoch) { return (new DateTime("@$epoch"))->format('Y-m-d'); }
+    public static function DressUnixDateTime($epoch) { return (new DateTime("@$epoch"))->format('Y-m-d H:i:s');      }
 
-    public static function DressUnixDate($epoch) {
-        $dt = new DateTime("@$epoch");  // convert UNIX timestamp to PHP DateTime
-        return $dt->format('Y-m-d'); 
-    }
+    public static function Now($epoch) { return self::DressUnixDateTime(time()); }
+    public static function Today($epoch) { return self::DressUnixDate(time()); }
 
-    public static function DressUnixDateTime($epoch) {
-        $dt = new DateTime("@$epoch");  // convert UNIX timestamp to PHP DateTime
-        return $dt->format('Y-m-d H:i:s'); 
-    }
-
-    public static function Now($epoch) {
-        return self::DressUnixDateTime(time());
-    }
-
-    public static function Today($epoch) {
-        return self::DressUnixDate(time());
-    }
-
-    public static function YesNo($v) {
-        return $v ? "Yes" : "No";
-    }
-
-    public static function TrueFalse($v) {
-        return $v ? "True" : "False";
-    }
-
-    public static function TrueFalseVal($v, $default = false) {
+    public static function TrueFalseVal($v, $default = false) { 
         switch(strtolower(substr("" . $v, 0, 1))) {
             case "t": case "y": case "1": return true;
             case "f": case "n": case "0": return false;
@@ -74,31 +49,15 @@ class zobject_format
         }
     }
 
-    public static function FalseTrueVal($v) {
-        return self::TrueFalseVal($v, false);
-    }
+    public static function FalseTrueVal($v) { return self::TrueFalseVal($v, false); }
+    public static function YesNoVal($v) { return self::TrueFalseVal($v, true); }
+    public static function NoYesVal($v) { return self::TrueFalseVal($v, false); }
+    public static function YesNo($v) { return $v ? "Yes" : "No"; }
+    public static function TrueFalse($v) { return $v ? "True" : "False"; }
 
-    public static function YesNoVal($v) {
-        return self::TrueFalseVal($v, true);
-    }
+    public static function CleanURL($v) { return $v; }
+    public static function DressURL($v) { return $v; }
 
-    public static function NoYesVal($v) {
-        return self::TrueFalseVal($v, false);
-    }
-
-    public static function CleanURL($v) {
-        return $v;
-    }
-
-    public static function DressURL($v) {
-        return $v;
-    }
-
-    public static function htmlToMarkdown($s) {
-        return xml_serve::htmlToMarkdown($s);
-    }
-
-    public static function markdownToHtml($s) {
-        return "<span>" . xml_serve::markdownToHtml($s, false) . "</span>";
-    }
+    public static function htmlToMarkdown($s) { return xml_serve::htmlToMarkdown($s); }
+    public static function markdownToHtml($s) { return "<span>" . xml_serve::markdownToHtml($s, false) . "</span>"; }
 }

@@ -270,7 +270,7 @@ class zobject
     }
 
     static function iOBJ($n = 0) {
-        return count(self::$iOBJs) <= $n ? null : self::$iOBJs[-$n];
+        return count(self::$iOBJs) <= $n ? null : self::$iOBJs[count(self::$iOBJs) - $n - 1];
     }
 
     static function iOBJ2() { return self::iOBJ(1); }

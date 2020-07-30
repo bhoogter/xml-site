@@ -18,10 +18,22 @@
             </program>
         </specification>
 
+        <header name='og:type' type='meta' content='website' />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="IHOP Network" />
+<meta property="og:title" content="Blog" />
+<meta property="og:url" content="http://www.ihopnetwork.com/index.php/blog" />
+<meta property="og:description" content="Articles on IHOPNetwork, generally relating to prayer, the prophetic, or some other prayer-related topic." />
+<meta property="og:locale" content="en_US" />
+<meta property="og:image" content="http://www.ihopnetwork.com/wp-content/plugins/hopdb/images/usmap.gif" />
+<meta property="og:image:type" content="image/gif" />
+
+
         <file id='sbs' type='php' src='sbs.php' mode='startup' />
         <file id='sbs_feedload' type='php' src='sbs_feedload.php' mode='startup' />
 
-        <file id="sbs-css" type="css" src="css/zo-module-zobjects.css" />
+        <file id="sbs-css" type="css" src="css/sbs.css" mode='startup'/>
 
         <api name='sbs-load-feed' loc='/feed/load' type='rest' method='GET' target='sbs_feedload::load_feed' />
 

@@ -8,14 +8,14 @@ class sbs_feedload
     {
         // php_logger::set_log_level("sbs_feedload", "debug");
         php_logger::call();
-        return self::loadmore_div();
+        return self::loadmore_div("", "", true);
     }
 
-    static function loadmore_div($key = "", $ref = "")
+    static function loadmore_div($key = "", $ref = "", $onload = false)
     {
         $id = zobject::jsid();
         $url = self::loadmore_url($key, $ref);
-        $script = self::loadmore_script($id, $url);
+        $script = self::loadmore_script($id, $url, $onload);
         return <<<DOC
 <div id='$id' class='sbs-loadmore'>
     <a href="javascript:zoRefreshUrl('$id', '$url');">Load More</a>
@@ -26,10 +26,11 @@ $script
 DOC;
     }
 
-    static function loadmore_script($id, $url)
+    static function loadmore_script($id, $url, $onload = false)
     {
-        return <<<DOC
-$(document).ready(function() { $('#$id').css('background-color', 'red');});
+        return $onload ? 
+            "$(document).ready(function() { zoRefreshUrl('$id', '$url'); });" :
+            <<<DOC
 $(window).scroll(function() {
     if (!$('#$id') || !$('#$id').offset()) {
         $(window).off("scroll", arguments.callee);
@@ -61,7 +62,8 @@ DOC;
 
     static function load_feed($a = "", $method = "", $url = "")
     {
-        // php_logger::set_log_level("sbs_feedload", "debug");
+        $N = 10;
+
         php_logger::call();
 
         // New call stack, so we need to set this.
@@ -71,7 +73,7 @@ DOC;
         $ref = @$_REQUEST['ref'];
         php_logger::info("FEED: ref=$ref, loc=$loc [key=" . sbs_data_key() . "]");
 
-        $items = sbs_post_id_list_from($ref, 10);
+        $items = sbs_post_id_list_from($ref, $N);
         php_logger::debug($items);
         if (!sizeof($items)) return "";
 
@@ -80,7 +82,8 @@ DOC;
             $s .= self::feed_post($i);
         }
 
-        $s .= self::loadmore_div($loc, $items[sizeof($items) - 1]);
+        if (sizeof($items) == $N)
+            $s .= self::loadmore_div($loc, $items[sizeof($items) - 1]);
 
         return $s;
     }

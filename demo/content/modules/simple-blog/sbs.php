@@ -70,7 +70,7 @@ function sbs_post_id_list_from($ref, $n = 10) {
     $add = !$ref;
     $res = [];
     foreach($lst as $l) {
-        if ($add) $res += [$l];
+        if ($add) $res[] = $l;
         else if ($l == $ref) $add = true;
         if (--$n <= 0) break;
     }
