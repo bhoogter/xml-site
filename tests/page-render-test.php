@@ -24,6 +24,7 @@ class page_render_tests extends TestCase
         return new xml_file($xml);
     }
 
+/*
     public function testDefaultLookup(): void
     {
         // php_logger::set_log_level("xml_serve", "all");
@@ -60,4 +61,5 @@ class page_render_tests extends TestCase
     //     $this->assertTrue(strpos($result, "Church of the Beyond") !== false);
     //     $this->assertTrue(strpos($result, "<a href=\"contact\">Contact Us</a>") !== false);
     // }
+*/
 }

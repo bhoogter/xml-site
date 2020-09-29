@@ -18,6 +18,7 @@ class xml_site_test extends TestCase
         print_r(self::$subject->get_source("SITE")->saveXML());
     }
 
+/*
     public function testXmlSiteLoads()
     {
         $this->assertNotNull(self::$subject);
@@ -45,4 +46,5 @@ class xml_site_test extends TestCase
         $result = self::$subject->render("/about");
         $this->assertNotNull($result);
     }
+*/
 }
