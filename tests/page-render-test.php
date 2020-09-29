@@ -24,6 +24,10 @@ class page_render_tests extends TestCase
         return new xml_file($xml);
     }
 
+    public function testDummy() {
+        $this->assertTrue(true);
+    }
+
 /*
     public function testDefaultLookup(): void
     {

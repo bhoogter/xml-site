@@ -9,6 +9,11 @@ class xml_site_test extends TestCase
     private const PAGES_XML = __DIR__ . "/resources/content/pages.xml";
     private static $subject = null;
 
+
+    public function testDummy() {
+        $this->assertTrue(true);
+    }
+
 /*
     public static function setUpBeforeClass(): void
     {
