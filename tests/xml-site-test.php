@@ -9,6 +9,7 @@ class xml_site_test extends TestCase
     private const PAGES_XML = __DIR__ . "/resources/content/pages.xml";
     private static $subject = null;
 
+/*
     public static function setUpBeforeClass(): void
     {
         php_logger::clear_log_levels('alert');
@@ -18,7 +19,7 @@ class xml_site_test extends TestCase
         print_r(self::$subject->get_source("SITE")->saveXML());
     }
 
-/*
+
     public function testXmlSiteLoads()
     {
         $this->assertNotNull(self::$subject);
