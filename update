@@ -8,3 +8,6 @@ cp ../php-dependency-manager/php-dependency-manager.phar demo/phars
 ../zobject/package
 cp ../zobject/zobject.phar demo/content/modules
 # wget -O demo/content/modules/zobject.phar https://github.com/bhoogter/zobject/releases/download/1.0.0/zobject.phar
+
+../simple-blog/package
+cp ../simple-blog/simple-blog.phar demo/content/modules

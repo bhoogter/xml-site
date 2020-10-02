@@ -1,7 +1,0 @@
-<?xml version='1.0' ?>
-<div class='sbs-post-feed'>
-    <h3><a href='{@slug}'><field id='title' /></a></h3>
-    <h4>By: <field id='author' /> - <field id='date' format='php:sbs_shortdate' /></h4>
-    Comments: <field id='commentcount' /><br/>
-    <field id='tags' format='php:sbs_taglist'/><br/>
-</div>

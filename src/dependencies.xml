@@ -5,7 +5,7 @@
             <dependency group="bhoogter" name="querystring" version="1.0.0" />
             <dependency group="bhoogter" name="php-hook" version="1.0.0" />
             <dependency group="bhoogter" name="xml-modules" version="0.1.13" />
-            <dependency group="bhoogter" name="xml-serve" version="0.1.63" />
+            <dependency group="bhoogter" name="xml-serve" version="0.1.64" />
         </dependencies>
     </module>
  </modules>
