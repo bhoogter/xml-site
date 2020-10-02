@@ -1,0 +1,10 @@
+{
+  "files": [
+    "README.md",
+    "VERSION",
+    "LICENSE"
+  ],
+  "map": [ {"src" : ""} ],
+  "directories" : [ "src" ],
+  "output": "xml-site.phar"
+}

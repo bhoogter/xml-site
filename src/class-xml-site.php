@@ -31,6 +31,7 @@ class xml_site
     public static function resolve_refs($resource, $types = [], $mappings = [], $subfolders = []) { return xml_serve::resource_resolver()->resolve_refs($resource, $types, $mappings, $subfolders); }
     public static function resolve_file($resource, $types = [], $mappings = [], $subfolders = []) { return xml_serve::resource_resolver()->resolve_file($resource, $types, $mappings, $subfolders); }
     public static function resolve_ref($resource, $types = [], $mappings = [], $subfolders = []) { return xml_serve::resource_resolver()->resolve_ref($resource, $types, $mappings, $subfolders); }
+    public static function ref($file) { return xml_serve::resource_resolver()->ref($file); }
     public static function content_type($filename) { return xml_serve::resource_resolver()->content_type($filename); }
 
     protected static function init_source()
@@ -47,12 +48,22 @@ class xml_site
         php_logger::call();
         $modules = new xml_file();
         $f = glob(self::$resource_folder . "/modules/*/module.xml");
+
+        $fphar = glob(self::$resource_folder . "/modules/*.phar");
+        foreach($fphar as $p) {
+            php_logger::debug($p);
+            $r = "phar://" . str_replace("/", DIRECTORY_SEPARATOR, $p) . "/module.xml";
+            php_logger::debug("MERGING PHAR MODULE [" .(file_exists($r)?"Y":"N")."]: " . $r);
+            $f[] = $r;
+        }
+
         php_logger::debug("DETECTED MODULES", $f);
         $modules->merge($f, "modules", "module", realpath(self::$resource_folder . "/content/generated/modules.xml"));
 
         self::$source->add_source("MODULES", $modules);
         self::read_modules();
         self::include_startup_files();
+        // die(print_r(xml_serve::$additional_scripts, true));
     }
     
     protected static function read_modules()
@@ -156,19 +167,24 @@ class xml_site
         foreach ($files as $ff) {
             $src = $ff->getAttribute("src");
             $module = $ff->parentNode->getAttribute("name");
+            $isphar = file_exists(self::$resource_folder . "/modules/$module.phar");
             $fType = $ff->getAttribute('type');
             if ($fType == '') $fType = pathinfo($src, PATHINFO_EXTENSION);
             if ($fType == '') $fType = $type;
-            $f = self::resolve_file($src, "module", $module);
+
+            if ($isphar) $f = "phar://" . self::$resource_folder . DIRECTORY_SEPARATOR . "modules" . DIRECTORY_SEPARATOR . "$module.phar/$src";
+            else $f = self::resolve_file($src, "module", $module);
+
             if ($f == "") throw new Exception("Could not find file for module.  Module=$module, src=$src");
-            php_logger::scan("src=$src, module=$module, type=$fType, f=$f");
+            php_logger::debug("src=$src, module=$module, type=$fType, f=$f");
             switch ($fType) {
                 case 'css':  case 'js':
-                    $r = self::resolve_ref($src, 'module', $module);
-                    php_logger::debug("SUPPORT FILE " . strtoupper($fType) . ": $r ($f)");
-                    if (file_exists(realpath(self::$http_root . $r))) {
-                        if ($fType == 'css') xml_serve::$additional_css[] = $r;
-                        if ($fType == 'js')  xml_serve::$additional_scripts[] = $r;
+                    $r = self::ref($f);
+                    if ($isphar) $r = str_replace("phar://", "", $r);
+                    php_logger::debug("SUPPORT FILE [" . strtoupper($fType) . "]: $r ($f)");
+                    if (file_exists(realpath(self::$http_root . $r)) || $isphar) {
+                        if ($fType == 'css') xml_serve::add_additional_css($r);
+                        if ($fType == 'js')  xml_serve::add_additional_script($r);
                     } else {
                         php_logger::warn(strtoupper($fType) . " Not found: $r");
                     }

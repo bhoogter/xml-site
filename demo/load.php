@@ -22,6 +22,7 @@ $x[] = microtime(true);
 
 $path = realpath(__DIR__ . "/content");
 
+php_logger::clear_log_levels('all');
 xml_site::init($path);
 $x[] = microtime(true);
 xml_serve::$doc_type = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">';

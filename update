@@ -4,3 +4,7 @@ cd $(dirname $0)
 ../php-dependency-manager/package
 cp ../php-dependency-manager/php-dependency-manager.phar src/phars
 cp ../php-dependency-manager/php-dependency-manager.phar demo/phars
+
+../zobject/package
+cp ../zobject/zobject.phar demo/content/modules
+# wget -O demo/content/modules/zobject.phar https://github.com/bhoogter/zobject/releases/download/1.0.0/zobject.phar

@@ -27,20 +27,22 @@ $init = microtime(true);
 require_once(__DIR__ . "/load.php");
 $init_end = microtime(true);
 
+
+// xml_serve::$_DEBUG_MAKE_PAGE = "true";
 // php_logger::$timestamp = true;
 php_logger::$nanos = true;
 
 
 // php_logger::clear_log_levels('warning');
 // php_logger::set_log_level('xml_file', 'all');
-// php_logger::set_log_level('xml_site', 'all');
-// php_logger::set_log_level('xml_serve', 'all');
+php_logger::set_log_level('xml_site', 'all');
+php_logger::set_log_level('xml_serve', 'all');
 // php_logger::set_log_level('xml_serve_extensions', 'all');
 // php_logger::set_log_level('resource_resolver', 'all');
 // php_logger::set_log_level('page_source', 'all');
 // php_logger::set_log_level('render_content', 'trace');
 // php_logger::set_log_level('render_perfect', 'trace');
-// php_logger::set_log_level('zobject', 'trace');
+php_logger::set_log_level('zobject', 'trace');
 // php_logger::set_log_level('zobject_access', 'trace');
 // php_logger::set_log_level('zobject_autotemplate', 'all');
 // php_logger::set_log_level('zobject_element', 'trace');
@@ -51,9 +53,16 @@ php_logger::$nanos = true;
 // php_logger::set_log_level('options_api', 'all');
 
 
-// php_logger::clear_log_levels('debug');
+// php_logger::clear_log_levels('all');
 // php_logger::$disable = true;
 // php_logger::$suppess_output = false;
+
+
+// xml_serve::$_DEBUG_MAKE_PAGE = "true";
+zobject::$_DEBUG_TRANSFORM = "true";
+zobject::$_DEBUG_TRANSFORM_FIELD = true;
+// die(print_r(xml_serve::$additional_scripts, true));
+
 
 $result = xml_serve::get_page($url);
 print $result;

@@ -1,6 +1,6 @@
 .idea/
 class-xml-file.phar
-xml-modules.phar
+xml-site.phar
 vendor/
 phars/
 ext/
