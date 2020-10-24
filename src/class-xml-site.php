@@ -141,7 +141,7 @@ class xml_site
 
     static function handle_element($params, $method, $path) {
         php_logger::$log_file = __DIR__ . "/handle_element.log";
-        php_logger::clear_log_levels();
+        // php_logger::clear_log_levels();
         php_logger::call();
         $n = $params['elementName'];
         return xml_file::toXmlFile(xml_serve::handle_element($n, xml_file::toDoc("<$n />")->documentElement))->saveXML();

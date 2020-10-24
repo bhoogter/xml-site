@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<modules>
+    <module name='auth'>
+        <specification>
+            <description>
+                <name>Basic Auth</name>
+                <version>1.0</version>
+                <short>Basic Auth Module Module</short>
+                <long><![CDATA[A module providing basic user authentication and prefs]]></long>
+            </description>
+
+            <components>
+                <element name='auth-status' render='auth_status' src='auth-status' />
+                <element name='auth-login' render='auth_login' src='auth-login' />
+                <ajax action='auth-login' render='auth_login' src='auth-login' />
+            </components>
+
+            <program>
+                <extension name="simple-blog" type="page" src="php:auth_page" />
+            </program>
+        </specification>
+
+        <api type='html' loc='/login' method='GET' target='auth_login_page' />
+
+        <file id='auth' type='php' src='auth.php' mode='startup' />
+        <file id='auth-status' type='php' src='auth_status.php' mode='startup' />
+        <file id='auth-login' type='php' src='auth_login.php' mode='startup' />
+        <file id='auth-css' type='css' src="auth.css" />
+
+        <zobjectdef name="auth-user" key-field="id" index="userid" allow-display="[!]" source='t-auth-user'>
+            <style>
+                <caption>User</caption>
+                <class>auth-user</class>
+            </style>
+            <xmlfile src="users.xml" list="/*/post/@postid" base="/*/post[@postid='@id']/" sort='date' />
+            <fielddefs>
+                <fielddef id="userid" />
+                <fielddef id="username" />
+                <fielddef id="avatar" />
+                <fielddef id="email" />
+                <fielddef id="firstname" />
+                <fielddef id="lastname" />
+                <fielddef id="timezone" />
+                <fielddef id="usergroups" />
+            </fielddefs>
+        </zobjectdef>
+
+        <zobjectdef name="auth-login" key-field="id" index="userid" allow-display="[!]" source='t-auth-user'>
+            <style>
+                <caption>login</caption>
+                <class>auth-login</class>
+            </style>
+            <fielddefs>
+                <fielddef id="username" />
+                <fielddef id="challenge" />
+            </fielddefs>
+        </zobjectdef>
+
+        <zobjectdef name="auth-status" key-field="id" index="userid" allow-display="[!]" source='t-auth-user'>
+            <style>
+                <caption>login</caption>
+                <class>auth-login</class>
+            </style>
+            <fielddefs>
+                <fielddef id="username" />
+                <fielddef id="avatar" />
+            </fielddefs>
+        </zobjectdef>
+
+        <ztabledef name='t-auth-user' index='userid'>
+            <fielddefs>
+                <fielddef id="userid" datatype="uuid" caption="ID" access="@" required="1" allow-edit="[-]" allow-create="[-]" />
+                <fielddef id="username" datatype="mediumstring" access="@" required="1"/>
+                <fielddef id="avatar" datatype="url" access="@" required="1"/>
+                <fielddef id="email" datatype="email" caption="EMail" access="@" />
+                <fielddef id="firstname" datatype="mediumstring" access="@" />
+                <fielddef id="lastname" datatype="mediumstring" access="@" />
+                <fielddef id="timezone" datatype="string" access="@" />
+                <fielddef id="password" datatype="mediumstring" access="@" />
+                <fielddef id="usergroups" datatype="string" access="@" />
+            </fielddefs>
+        </ztabledef>
+
+        <ztabledef name='t-auth-group' index='groupid'>
+            <fielddefs>
+                <fielddef id="groupid" datatype="uuid" caption="ID" access="@" required="1" allow-edit="[-]" allow-create="[-]" allow-display='[-]' />
+                <fielddef id="groupname" datatype="string" access="@" required="1"  />
+                <fielddef id="code" datatype="string" access="@" required="1" />
+            </fielddefs>
+        </ztabledef>
+
+        <ztabledef name='t-auth-permission' index='permissionid'>
+            <fielddefs>
+                <fielddef id="permissionid" datatype="uuid" caption="ID" access="@" required="1" allow-edit="[-]" allow-create="[-]" allow-display='[-]' />
+                <fielddef id="permissionname" datatype="string" access="@" required="1"  />
+                <fielddef id="groups" datatype="string" access="@" required="1" />
+            </fielddefs>
+        </ztabledef>
+    </module>
+</modules>

@@ -21,7 +21,7 @@
 	<pagebody>
 		<div id="main">
 			<content id='logo'>
-				<img src='logo-*'/>
+				<img src='images/logo-*'/>
 			</content>
 			<content id='links'/>
 			<div id='site_content'>

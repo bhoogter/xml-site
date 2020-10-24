@@ -35,8 +35,8 @@ php_logger::$nanos = true;
 
 // php_logger::clear_log_levels('warning');
 // php_logger::set_log_level('xml_file', 'all');
-php_logger::set_log_level('xml_site', 'debug');
-php_logger::set_log_level('xml_serve', 'debug');
+// php_logger::set_log_level('xml_site', 'debug');
+// php_logger::set_log_level('xml_serve', 'debug');
 // php_logger::set_log_level('xml_serve_extensions', 'all');
 // php_logger::set_log_level('resource_resolver', 'all');
 // php_logger::set_log_level('page_source', 'all');
@@ -63,6 +63,8 @@ php_logger::set_log_level('zobject', 'debug');
 // zobject::$_DEBUG_TRANSFORM_FIELD = true;
 // die(print_r(xml_serve::$additional_scripts, true));
 
+// die(print_r(xml_path_handlers::path_handler_list(), true));
+// die(print_r(xml_path_handlers::match_handler("/login", "GET"), true));
 
 $result = xml_serve::get_page($url);
 print $result;
