@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
-class page_render_tests extends TestCase
+class page_render_test extends TestCase
 {
     private static $site;
 

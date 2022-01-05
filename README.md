@@ -4,4 +4,4 @@ An xml-based CMS engine
 
 ## License
 
-- GPLv3
+- BSD 2 Clause

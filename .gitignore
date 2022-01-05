@@ -1,8 +1,6 @@
 .idea/
 class-xml-file.phar
-xml-site.phar
+xml-modules.phar
 vendor/
 phars/
-ext/
 composer.lock
-*.log
